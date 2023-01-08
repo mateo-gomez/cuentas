@@ -1,23 +1,24 @@
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import Constants from "expo-constants"
 import cuentasData from "../data/cuentas"
 import StyledText from "./StyledText"
 import NumberFormat from "./NumberFormat"
+import TransactionList from "./TransactionList"
 
 const Main = () => {
     return (
         <View style={styles.container}>
             <View style={styles.center}>
-                <StyledText bold big greenDark>
+                <StyledText
+                    fontWeight="bold"
+                    color="primary"
+                    fontSize="heading"
+                >
                     Mis Cuentas
                 </StyledText>
 
-                <StyledText bold green>
-                    {cuentasData.income}
-                </StyledText>
-                <StyledText bold red>
-                    {cuentasData.outcome}
-                </StyledText>
+                <NumberFormat value={cuentasData.income} />
+                <NumberFormat value={cuentasData.outcome} />
             </View>
 
             <View>
