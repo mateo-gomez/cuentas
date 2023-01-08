@@ -21,7 +21,8 @@ const TransactionItem = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
