@@ -1,4 +1,8 @@
 export const theme = {
+    appBar: {
+        primary: "#3F7C85",
+        textPrimary: "#FFF",
+    },
     fontSizes: {
         body: 14,
         subheading: 16,
@@ -19,6 +23,7 @@ export const theme = {
         greenLight: "#72F2EB",
         grey: "#747E7E",
         red: "#FF5F5D",
+        white: "#FEFEFE",
     },
     flex: {
         center: "center",
