@@ -1,35 +1,18 @@
 import { StyleSheet, Text } from "react-native"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
+import StyledText from "./StyledText"
 
-const NumberFormat = ({ value = 0, big, small, bold }) => {
-    const numberStyles = [
-        value < 0 ? styles.negative : styles.positive,
-        small && styles.small,
-        big && styles.big,
-        bold && styles.bold,
-    ]
-    const formated = formatNumber(value)
+const NumberFormat = ({ value = 0, fontWeight = "bold", ...restOfProps }) => {
+    const color = value < 0 ? "red" : "secondary"
+    const absoluteValue = Math.abs(value)
+    const formated = formatNumber(absoluteValue)
 
-    return <Text style={numberStyles}>{formated}</Text>
+    return (
+        <StyledText fontWeight={fontWeight} color={color} {...restOfProps}>
+            {formated}
+        </StyledText>
+    )
 }
-
-const styles = StyleSheet.create({
-    bold: {
-        fontWeight: theme.fontWeights.bold,
-    },
-    small: {
-        fontSize: theme.fontSizes.small,
-    },
-    big: {
-        fontSize: theme.fontSizes.big,
-    },
-    positive: {
-        color: theme.colors.primary,
-    },
-    negative: {
-        color: theme.colors.red,
-    },
-})
 
 export default NumberFormat

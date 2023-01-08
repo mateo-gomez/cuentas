@@ -3,41 +3,44 @@ import { theme } from "../theme"
 
 const styles = StyleSheet.create({
     text: {
-        fontSize: theme.fontSizes.normal,
-        color: theme.colors.grey,
+        fontSize: theme.fontSizes.body,
+        color: theme.colors.textPrimary,
+        fontFamily: theme.fonts.main,
+        fontWeight: theme.fontWeights.normal,
     },
     bold: { fontWeight: theme.fontWeights.bold },
-    big: { fontSize: theme.fontSizes.big },
-    small: { fontSize: theme.fontSizes.small },
-    primary: { color: theme.colors.primary },
-    secondary: { color: theme.colors.secondary },
-    greenLight: { color: theme.colors.greenLight },
-    grey: { color: theme.colors.grey },
-    red: { color: theme.colors.red },
+    subheading: { fontSize: theme.fontSizes.subheading },
+    heading: { fontSize: theme.fontSizes.heading },
+    colorPrimary: { color: theme.colors.textPrimary },
+    colorSecondary: { color: theme.colors.textSecondary },
+    colorGreen: { color: theme.colors.greenLight },
+    colorGrey: { color: theme.colors.grey },
+    colorRed: { color: theme.colors.red },
 })
 
 export default function StyledText({
     children,
-    bold,
-    big,
-    small,
-    primary,
-    secondary,
-    greenLight,
-    grey,
-    red,
+    fontSize,
+    fontWeight,
+    color,
+    style,
+    ...restOfProps
 }) {
     const textStyles = [
         styles.text,
-        bold && styles.bold,
-        big && styles.big,
-        small && styles.small,
-        primary && styles.primary,
-        secondary && styles.secondary,
-        greenLight && styles.greenLight,
-        grey && styles.grey,
-        red && styles.red,
+        fontWeight === "bold" && styles.bold,
+        fontSize === "subheading" && styles.subheading,
+        fontSize === "heading" && styles.heading,
+        color === "primary" && styles.colorPrimary,
+        color === "secondary" && styles.colorSecondary,
+        color === "grey" && styles.colorGrey,
+        color === "green" && styles.colorGreen,
+        color === "red" && styles.colorRed,
     ]
 
-    return <Text style={textStyles}>{children}</Text>
+    return (
+        <Text style={StyleSheet.compose(textStyles, style)} {...restOfProps}>
+            {children}
+        </Text>
+    )
 }
