@@ -1,5 +1,3 @@
-import { StyleSheet, Text } from "react-native"
-import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import StyledText from "./StyledText"
 
