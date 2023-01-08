@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     colorGreen: { color: theme.colors.greenLight },
     colorGrey: { color: theme.colors.grey },
     colorRed: { color: theme.colors.red },
+    colorWhite: { color: theme.colors.white },
 })
 
 export default function StyledText({
@@ -36,10 +37,12 @@ export default function StyledText({
         color === "grey" && styles.colorGrey,
         color === "green" && styles.colorGreen,
         color === "red" && styles.colorRed,
+        color === "white" && styles.colorWhite,
+        style,
     ]
 
     return (
-        <Text style={StyleSheet.compose(textStyles, style)} {...restOfProps}>
+        <Text style={textStyles} {...restOfProps}>
             {children}
         </Text>
     )
