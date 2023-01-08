@@ -1,18 +1,19 @@
 export const theme = {
     fontSizes: {
-        normal: 12,
-        big: 20,
-        small: 10,
+        body: 14,
+        subheading: 16,
+        heading: 20,
     },
     fontWeights: {
-        bold: "bold",
-        100: 100,
-        300: 300,
-        500: 500,
-        700: 700,
-        900: 900,
+        bold: "700",
+        normal: "400",
+    },
+    fonts: {
+        main: "System",
     },
     colors: {
+        textPrimary: "#747E7E",
+        textSecondary: "#00CCBF",
         secondary: "#00CCBF",
         primary: "#3F7C85",
         greenLight: "#72F2EB",
