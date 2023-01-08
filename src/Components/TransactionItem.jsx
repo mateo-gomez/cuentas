@@ -1,17 +1,19 @@
 import { StyleSheet, Text, View } from "react-native"
+import NumberFormat from "./NumberFormat"
+import StyledText from "./StyledText"
 
 const TransactionItem = (props) => {
     return (
         <View key={props.timestamp} style={styles.container}>
             <View>
-                <Text style={styles.box}>{props.type}</Text>
+                <Text>{props.type === "income" ? "⬆️" : "⬇️"}</Text>
             </View>
             <View style={styles.box}>
-                <Text>{props.category}</Text>
-                <Text>{props.description}</Text>
+                <StyledText>{props.category}</StyledText>
+                <StyledText>{props.description}</StyledText>
             </View>
             <View style={styles.price}>
-                <Text>{props.value}</Text>
+                <NumberFormat value={props.value} />
             </View>
         </View>
     )
