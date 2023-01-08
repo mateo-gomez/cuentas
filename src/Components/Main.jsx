@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from "react-native"
 import Constants from "expo-constants"
 import cuentasData from "../data/cuentas"
-import CuentasList from "./TransactionList"
 import StyledText from "./StyledText"
 import NumberFormat from "./NumberFormat"
 
@@ -29,7 +28,7 @@ const Main = () => {
                     <NumberFormat big bold value={cuentasData.balance} />
                 </View>
 
-                <CuentasList cuentas={cuentasData.bancolombia} />
+                <TransactionList cuentas={cuentasData.bancolombia} />
             </View>
         </View>
     )
