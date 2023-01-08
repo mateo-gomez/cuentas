@@ -1,5 +1,5 @@
 import { FlatList, Text, View } from "react-native"
-import CuentaItem from "./TransactionItem"
+import TransactionItem from "./TransactionItem"
 
 const TransactionList = ({ cuentas }) => {
     return (
@@ -7,7 +7,9 @@ const TransactionList = ({ cuentas }) => {
             <FlatList
                 data={cuentas}
                 ItemSeparatorComponent={<Text />}
-                renderItem={({ item: cuenta }) => <CuentaItem {...cuenta} />}
+                renderItem={({ item: cuenta }) => (
+                    <TransactionItem {...cuenta} />
+                )}
             />
         </View>
     )
