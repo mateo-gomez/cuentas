@@ -28,5 +28,16 @@
     "lint-staged": "^13.1.0",
     "prettier": "^2.8.2"
   },
-  "private": true
+  "private": true,
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
