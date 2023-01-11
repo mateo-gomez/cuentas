@@ -5,10 +5,11 @@ export default {
 
     accounts: ["Todas las cuentas", "bancolombia", "rappicard"],
 
-    bancolombia: [
+    transactions: [
         {
             timestamp: 1673139385096,
             value: -200000,
+            cuenta: "bancolombia",
             type: "outcome",
             category: "Mercado",
             description: "Mercado del mes",
@@ -16,6 +17,7 @@ export default {
         {
             timestamp: 1673139385034,
             value: -100000,
+            cuenta: "bancolombia",
             type: "outcome",
             category: "Ropa",
             description: "Camiseta",
@@ -23,6 +25,7 @@ export default {
         {
             timestamp: 1673139382345,
             value: 1500000,
+            cuenta: "bancolombia",
             type: "income",
             category: "Nómina",
             description: "Salario",
