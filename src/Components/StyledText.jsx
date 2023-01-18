@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     colorGrey: { color: theme.colors.grey },
     colorRed: { color: theme.colors.red },
     colorWhite: { color: theme.colors.white },
+    textCenter: { textAlign: "center" },
 })
 
 export default function StyledText({
@@ -24,6 +25,7 @@ export default function StyledText({
     fontSize,
     fontWeight,
     color,
+    textCenter,
     style,
     ...restOfProps
 }) {
@@ -38,6 +40,7 @@ export default function StyledText({
         color === "green" && styles.colorGreen,
         color === "red" && styles.colorRed,
         color === "white" && styles.colorWhite,
+        textCenter && styles.textCenter,
         style,
     ]
 
