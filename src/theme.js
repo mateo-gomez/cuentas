@@ -4,9 +4,9 @@ export const theme = {
         textPrimary: "#FFF",
     },
     fontSizes: {
-        body: 14,
-        subheading: 16,
-        heading: 20,
+        body: 16,
+        subheading: 20,
+        heading: 25,
     },
     fontWeights: {
         bold: "700",
