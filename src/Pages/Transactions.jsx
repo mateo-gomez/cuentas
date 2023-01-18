@@ -1,12 +1,13 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import cuentasData from "../data/cuentas"
-import StyledText from "./StyledText"
-import NumberFormat from "./NumberFormat"
-import TransactionList from "./TransactionList"
+import StyledText from "../Components/StyledText"
+import NumberFormat from "../Components/NumberFormat"
+import TransactionList from "../Components/TransactionList"
 import { useNavigate } from "react-router-native"
-import PlusIcon from "./PlusIcon"
+import PlusIcon from "../Components/svg/PlusIcon"
 import { theme } from "../theme"
-import MinusCircle from "./MinusCircle"
+import MinusCircle from "../Components/svg/MinusCircle"
+import AppBar from "../Components/AppBar"
 
 const Transactions = () => {
     const navigate = useNavigate()
@@ -21,6 +22,8 @@ const Transactions = () => {
 
     return (
         <View style={{ flex: 1 }}>
+            <AppBar title="Cuentas App" />
+
             <View style={styles.center}>
                 <StyledText
                     fontWeight="bold"
