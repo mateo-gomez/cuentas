@@ -1,7 +1,13 @@
+import { NativeModules } from "react-native"
+
 const intlCurrency = new Intl.NumberFormat("es-CO", {
-    maximumSignificantDigits: 2,
+    maximumFractionDigits: 2,
 })
 
 export const formatNumber = (value) => {
     return intlCurrency.format(value) + " COP"
+}
+
+export const locale = () => {
+    return NativeModules.I18nManager.localeIdentifier
 }
