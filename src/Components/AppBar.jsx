@@ -2,12 +2,19 @@ import StyledText from "./StyledText"
 import { StyleSheet, View } from "react-native"
 import Constants from "expo-constants"
 import { theme } from "../theme"
+import BackButton from "./BackButton"
 
-const AppBar = () => {
+const AppBar = ({ backButton = false, title = "" }) => {
     return (
         <View style={styles.container}>
-            <StyledText style={styles.title} color="white" fontWeight="bold">
-                Cuentas App
+            {backButton && <BackButton style={styles.backButton} />}
+
+            <StyledText
+                style={styles.title}
+                color={theme.colors.white}
+                fontWeight="bold"
+            >
+                {title}
             </StyledText>
         </View>
     )
@@ -15,13 +22,18 @@ const AppBar = () => {
 
 const styles = StyleSheet.create({
     container: {
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: theme.appBar.primary,
         marginTop: Constants.statusBarHeight,
-        padding: 10,
+        padding: 20,
     },
     title: {
         color: theme.appBar.textPrimary,
-        textTransform: "uppercase",
+        textTransform: "capitalize",
+    },
+    backButton: {
+        marginRight: 30,
     },
 })
 
