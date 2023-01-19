@@ -3,8 +3,8 @@ import { theme } from "../theme"
 import StyledText from "./StyledText"
 import PlusIcon from "./svg/PlusIcon"
 
-const Category = ({ name, icon, style, ...restOfProps }) => {
-    const styleWrapper = [styles.wrapper, style]
+const Category = ({ name, icon, size, style, ...restOfProps }) => {
+    const styleWrapper = [styles.wrapper, { width: size, height: size }, style]
 
     return (
         <TouchableOpacity {...restOfProps} style={styleWrapper}>
@@ -27,12 +27,10 @@ const Category = ({ name, icon, style, ...restOfProps }) => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        // padding: 10,
         borderStyle: "solid",
         borderColor: theme.colors.primary,
         width: 110,
         height: 110,
-        marginVertical: 5,
         borderWidth: 1,
     },
 })
