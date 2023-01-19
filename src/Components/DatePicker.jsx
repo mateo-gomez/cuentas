@@ -27,19 +27,13 @@ const DatePicker = ({ style, ...restOfProps }) => {
 
     return (
         <TouchableOpacity onPress={handlePress}>
-            <View
-                style={{
-                    justifyContent: "center",
-                    flexDirection: "row",
-                    alignItems: "center",
-                }}
-            >
+            <View {...restOfProps} style={datePickerStyles}>
                 <CalendarIcon
                     size={theme.fontSizes.subheading}
                     color={theme.colors.textPrimary}
                 />
                 <StyledText
-                    style={{ marginLeft: 5 }}
+                    style={styles.pickerText}
                     fontSize="subheading"
                     fontWeight="bold"
                 >
@@ -49,5 +43,14 @@ const DatePicker = ({ style, ...restOfProps }) => {
         </TouchableOpacity>
     )
 }
+
+const styles = StyleSheet.create({
+    pickerText: { marginLeft: 5 },
+    datePickerWrapper: {
+        justifyContent: "center",
+        flexDirection: "row",
+        alignItems: "center",
+    },
+})
 
 export default DatePicker
