@@ -11,3 +11,14 @@ export const formatNumber = (value) => {
 export const locale = () => {
     return NativeModules.I18nManager.localeIdentifier
 }
+
+const deviceLanguage = locale().replace("_", "-").toLowerCase()
+
+export const dateFormat = (date) => {
+    return date.toLocaleDateString(deviceLanguage, {
+        day: "2-digit",
+        weekday: "long",
+        year: "numeric",
+        month: "short",
+    })
+}

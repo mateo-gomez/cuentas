@@ -2,21 +2,14 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
 import { useState } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
-import { locale } from "../utils"
+import { dateFormat } from "../utils"
 import CalendarIcon from "./svg/CalendarIcon"
 import StyledText from "./StyledText"
 
-const DatePicker = () => {
+const DatePicker = ({ style, ...restOfProps }) => {
     const [date, setDate] = useState(new Date())
 
-    const deviceLanguage = locale().replace("_", "-").toLowerCase()
-
-    const dateFormatted = date.toLocaleDateString(deviceLanguage, {
-        day: "2-digit",
-        weekday: "long",
-        year: "numeric",
-        month: "short",
-    })
+    const dateFormatted = dateFormat(date)
 
     const handleChangeDate = (ev, date) => {
         setDate(() => date)
@@ -29,6 +22,8 @@ const DatePicker = () => {
             onChange: handleChangeDate,
         })
     }
+
+    const datePickerStyles = [styles.datePickerWrapper, style]
 
     return (
         <TouchableOpacity onPress={handlePress}>
