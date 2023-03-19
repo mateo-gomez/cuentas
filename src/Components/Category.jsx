@@ -3,11 +3,15 @@ import { theme } from "../theme"
 import StyledText from "./StyledText"
 import PlusIcon from "./svg/PlusIcon"
 
-const Category = ({ name, icon, size, style, ...restOfProps }) => {
+const Category = ({ name, icon, size, style, onPress, ...restOfProps }) => {
     const styleWrapper = [styles.wrapper, { width: size, height: size }, style]
 
     return (
-        <TouchableOpacity {...restOfProps} style={styleWrapper}>
+        <TouchableOpacity
+            onPress={onPress}
+            style={styleWrapper}
+            {...restOfProps}
+        >
             <View
                 style={{
                     flex: 1,

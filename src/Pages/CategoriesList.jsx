@@ -1,6 +1,7 @@
 import { Dimensions, FlatList, View } from "react-native"
 import categories from "../data/categories"
 import Category from "../Components/Category"
+import { useOutletContext } from "react-router-native"
 
 const CategoriesList = () => {
     const gap = 10
@@ -8,6 +9,8 @@ const CategoriesList = () => {
     const numColumns = Math.floor(
         Dimensions.get("window").width / categoryBoxSize,
     )
+
+    const { handleSelectCategory } = useOutletContext()
 
     return (
         <FlatList
@@ -25,6 +28,7 @@ const CategoriesList = () => {
                     ]}
                     name={category.name}
                     icon={category.icon}
+                    onPress={() => handleSelectCategory(category)}
                 />
             )}
         />
