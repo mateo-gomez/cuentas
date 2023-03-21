@@ -19,6 +19,26 @@ const AddTransaction = () => {
         setTransactionValue(val)
     }
 
+    const handleSubmit = async (data) => {
+        try {
+            console.log("data", data)
+            const response = await fetch("http://192.168.20.40:8000/", {
+                method: "POST",
+                headers: {
+                    accept: "application/json",
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+
+            const res = await response.json()
+
+            console.log("res", res)
+            navigate("/")
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleSelectCategory = (category) => {
         handleSubmit({
