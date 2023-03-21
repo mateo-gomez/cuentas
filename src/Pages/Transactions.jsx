@@ -48,11 +48,11 @@ const Transactions = () => {
                 <TransactionList cuentas={cuentasData.transactions} />
             </View>
             <View style={styles.buttons}>
-                <TouchableOpacity onPress={handlePressPlusButton}>
-                    <PlusIcon color={theme.colors.greenLight} size={150} />
-                </TouchableOpacity>
                 <TouchableOpacity onPress={handlePressMinusButton}>
                     <MinusCircle color={theme.colors.red} size={150} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handlePressPlusButton}>
+                    <PlusIcon color={theme.colors.greenLight} size={150} />
                 </TouchableOpacity>
             </View>
         </View>
