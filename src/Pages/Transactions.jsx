@@ -1,5 +1,4 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import cuentasData from "../data/cuentas"
 import StyledText from "../Components/StyledText"
 import NumberFormat from "../Components/NumberFormat"
 import TransactionList from "../Components/TransactionList"
@@ -8,9 +7,44 @@ import PlusIcon from "../Components/svg/PlusIcon"
 import { theme } from "../theme"
 import MinusCircle from "../Components/svg/MinusCircle"
 import AppBar from "../Components/AppBar"
+import { useEffect, useState } from "react"
+
+const initialSummaryTransactions = {
+    income: 0,
+    outcome: 0,
+    balance: 0,
+    accounts: [],
+    transactions: [],
+}
 
 const Transactions = () => {
     const navigate = useNavigate()
+
+    const [summaryTransactions, setSummaryTransactions] = useState(
+        initialSummaryTransactions,
+    )
+
+    useEffect(() => {
+        const getSummaryTransactions = async () => {
+            try {
+                const response = await fetch("http://192.168.20.40:8000/")
+                const data = await response.json()
+                const summary = data.map((item) => {
+                    const date = new Date(item.date)
+                    return {
+                        ...item,
+                        date: date,
+                    }
+                })
+
+                setSummaryTransactions(summary)
+            } catch (error) {
+                console.log(error.message)
+            }
+        }
+
+        getSummaryTransactions()
+    }, [])
 
     const handlePressPlusButton = () => {
         navigate("/transactions/add")
@@ -33,8 +67,8 @@ const Transactions = () => {
                     Mis Cuentas
                 </StyledText>
 
-                <NumberFormat value={cuentasData.income} />
-                <NumberFormat value={cuentasData.outcome} />
+                <NumberFormat value={20000} />
+                <NumberFormat value={200000} />
             </View>
 
             <View style={styles.list}>
@@ -42,10 +76,10 @@ const Transactions = () => {
                     <StyledText big bold>
                         Saldo:{" "}
                     </StyledText>
-                    <NumberFormat big bold value={cuentasData.balance} />
+                    <NumberFormat big bold value={200000} />
                 </View>
 
-                <TransactionList cuentas={cuentasData.transactions} />
+                <TransactionList cuentas={summaryTransactions} />
             </View>
             <View style={styles.buttons}>
                 <TouchableOpacity onPress={handlePressMinusButton}>
