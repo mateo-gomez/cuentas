@@ -22,14 +22,17 @@ const AddTransaction = () => {
     const handleSubmit = async (data) => {
         try {
             console.log("data", data)
-            const response = await fetch("http://192.168.20.40:8000/", {
-                method: "POST",
-                headers: {
-                    accept: "application/json",
-                    "content-type": "application/json",
+            const response = await fetch(
+                "http://192.168.20.40:8000/transactions",
+                {
+                    method: "POST",
+                    headers: {
+                        accept: "application/json",
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify(data),
                 },
-                body: JSON.stringify(data),
-            })
+            )
 
             const res = await response.json()
 

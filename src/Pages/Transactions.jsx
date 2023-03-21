@@ -9,25 +9,17 @@ import MinusCircle from "../Components/svg/MinusCircle"
 import AppBar from "../Components/AppBar"
 import { useEffect, useState } from "react"
 
-const initialSummaryTransactions = {
-    income: 0,
-    outcome: 0,
-    balance: 0,
-    accounts: [],
-    transactions: [],
-}
-
 const Transactions = () => {
     const navigate = useNavigate()
 
-    const [summaryTransactions, setSummaryTransactions] = useState(
-        initialSummaryTransactions,
-    )
+    const [summaryTransactions, setTransactions] = useState([])
 
     useEffect(() => {
-        const getSummaryTransactions = async () => {
+        const getTransactions = async () => {
             try {
-                const response = await fetch("http://192.168.20.40:8000/")
+                const response = await fetch(
+                    "http://192.168.20.40:8000/transactions",
+                )
                 const data = await response.json()
                 const summary = data.map((item) => {
                     const date = new Date(item.date)
@@ -37,13 +29,13 @@ const Transactions = () => {
                     }
                 })
 
-                setSummaryTransactions(summary)
+                setTransactions(summary)
             } catch (error) {
                 console.log(error.message)
             }
         }
 
-        getSummaryTransactions()
+        getTransactions()
     }, [])
 
     const handlePressPlusButton = () => {
