@@ -6,13 +6,11 @@ import { dateFormat } from "../utils"
 import CalendarIcon from "./svg/CalendarIcon"
 import StyledText from "./StyledText"
 
-const DatePicker = ({ style, ...restOfProps }) => {
-    const [date, setDate] = useState(new Date())
-
-    const dateFormatted = dateFormat(date)
+const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
+    const dateFormatted = dateFormat(date ?? new Date())
 
     const handleChangeDate = (ev, date) => {
-        setDate(() => date)
+        onChange(date)
     }
 
     const handlePress = () => {

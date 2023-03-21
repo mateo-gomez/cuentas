@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { BackHandler, StyleSheet, TextInput, View } from "react-native"
 import AppBar from "../Components/AppBar"
 import DatePicker from "../Components/DatePicker"
@@ -6,18 +6,35 @@ import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import { Outlet, useNavigate } from "react-router-native"
 
-const AddTransaction = () => {
-    const inputValueRef = useRef(null)
-    const inputDescriptionRef = useRef("")
+const initialDate = new Date()
 
-    const [transactionValue, setTransactionValue] = useState(formatNumber(0))
+const AddTransaction = () => {
+    const [transactionValue, setTransactionValue] = useState(0)
+    const [description, setDescription] = useState("")
+    const [date, setDate] = useState(initialDate)
 
     const navigate = useNavigate()
 
     const handlePressNumpad = (val) => {
-        const formated = formatNumber(val)
+        setTransactionValue(val)
+    }
 
-        setTransactionValue(formated)
+
+    const handleSelectCategory = (category) => {
+        handleSubmit({
+            value: transactionValue,
+            description,
+            date,
+            category: category.name,
+        })
+    }
+
+    const handleChangeDescription = (value) => {
+        setDescription(value)
+    }
+
+    const handleChangeDate = (value) => {
+        setDate(value)
     }
 
     useEffect(() => {
@@ -39,26 +56,32 @@ const AddTransaction = () => {
             <AppBar backButton title="Nuevo ingreso" />
 
             <View style={styles.wrapper}>
-                <DatePicker style={styles.datePicker} />
+                <DatePicker
+                    style={styles.datePicker}
+                    date={date}
+                    onChange={handleChangeDate}
+                />
 
                 <TextInput
                     placeholder="Descripción"
                     style={styles.description}
+                    onChangeText={handleChangeDescription}
                 />
 
                 <TextInput
-                    ref={inputValueRef}
                     textAlign="center"
                     numberOfLines={1}
                     maxLength={20}
                     showSoftInputOnFocus={false}
                     caretHidden={true}
                     style={styles.transactionInput}
-                    value={transactionValue}
+                    value={formatNumber(transactionValue)}
                 />
 
                 <View style={{ marginTop: 20 }}>
-                    <Outlet context={{ handlePressNumpad }} />
+                    <Outlet
+                        context={{ handlePressNumpad, handleSelectCategory }}
+                    />
                 </View>
             </View>
         </View>
