@@ -4,6 +4,7 @@ import AppBar from "../Components/AppBar"
 import DatePicker from "../Components/DatePicker"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
+import { Outlet, useNavigate, useParams } from "react-router-native"
 import Constants from "expo-constants"
 
 const initialDate = new Date()
@@ -48,6 +49,7 @@ const AddTransaction = () => {
             description,
             date,
             category: category.name,
+            type: type === "income" ? 1 : 0,
         })
     }
 
@@ -75,7 +77,10 @@ const AddTransaction = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <AppBar backButton title="Nuevo ingreso" />
+            <AppBar
+                backButton
+                title={type === "income" ? "Nuevo ingreso" : "Nuevo egreso"}
+            />
 
             <View style={styles.wrapper}>
                 <DatePicker

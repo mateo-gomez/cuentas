@@ -40,11 +40,11 @@ const Transactions = () => {
     }, [])
 
     const handlePressPlusButton = () => {
-        navigate("/transactions/add")
+        navigate("/transactions/income")
     }
 
     const handlePressMinusButton = () => {
-        navigate("/transactions/add")
+        navigate("/transactions/outcome")
     }
 
     return (

@@ -10,7 +10,7 @@ const Main = () => {
         <View style={styles.container}>
             <Routes>
                 <Route path="/" element={<Transactions />} />
-                <Route path="/transactions/add" element={<AddTransaction />}>
+                <Route path="/transactions/:type" element={<AddTransaction />}>
                     <Route index element={<NumPad />} />
                     <Route path="categories" element={<CategoriesList />} />
                 </Route>
