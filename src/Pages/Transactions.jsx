@@ -8,6 +8,9 @@ import { theme } from "../theme"
 import MinusCircle from "../Components/svg/MinusCircle"
 import AppBar from "../Components/AppBar"
 import { useEffect, useState } from "react"
+import Constants from "expo-constants"
+
+const { apiUrl } = Constants.expoConfig.extra
 
 const Transactions = () => {
     const navigate = useNavigate()
@@ -17,9 +20,7 @@ const Transactions = () => {
     useEffect(() => {
         const getTransactions = async () => {
             try {
-                const response = await fetch(
-                    "http://192.168.20.40:8000/transactions",
-                )
+                const response = await fetch(`${apiUrl}/transactions`)
                 const data = await response.json()
                 const summary = data.map((item) => {
                     const date = new Date(item.date)

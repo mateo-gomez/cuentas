@@ -4,15 +4,17 @@ import AppBar from "../Components/AppBar"
 import DatePicker from "../Components/DatePicker"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
-import { Outlet, useNavigate } from "react-router-native"
+import Constants from "expo-constants"
 
 const initialDate = new Date()
+const { apiUrl } = Constants.expoConfig.extra
 
 const AddTransaction = () => {
     const [transactionValue, setTransactionValue] = useState(0)
     const [description, setDescription] = useState("")
     const [date, setDate] = useState(initialDate)
 
+    const { type } = useParams()
     const navigate = useNavigate()
 
     const handlePressNumpad = (val) => {
@@ -22,17 +24,14 @@ const AddTransaction = () => {
     const handleSubmit = async (data) => {
         try {
             console.log("data", data)
-            const response = await fetch(
-                "http://192.168.20.40:8000/transactions",
-                {
-                    method: "POST",
-                    headers: {
-                        accept: "application/json",
-                        "content-type": "application/json",
-                    },
-                    body: JSON.stringify(data),
+            const response = await fetch(`${apiUrl}/transactions`, {
+                method: "POST",
+                headers: {
+                    accept: "application/json",
+                    "content-type": "application/json",
                 },
-            )
+                body: JSON.stringify(data),
+            })
 
             const res = await response.json()
 
