@@ -7,7 +7,7 @@ const TransactionItem = (props) => {
     return (
         <View key={props._id} style={styles.container}>
             <View>
-                <Text>{props.type === "income" ? "⬆️" : "⬇️"}</Text>
+                <Text>{props.type ? "⬆️" : "⬇️"}</Text>
             </View>
             <View style={styles.box}>
                 <StyledText>{props.category}</StyledText>
@@ -15,7 +15,10 @@ const TransactionItem = (props) => {
                 <StyledText>{dateFormat(props.date)}</StyledText>
             </View>
             <View style={styles.price}>
-                <NumberFormat value={props.value} />
+                <NumberFormat
+                    value={props.value}
+                    color={props.type ? "green" : "red"}
+                />
             </View>
         </View>
     )
