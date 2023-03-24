@@ -5,11 +5,13 @@ import StyledText from "../Components/StyledText"
 import { theme } from "../theme"
 
 const NumPad = () => {
-    const { handlePressNumpad } = useOutletContext()
+    const { handlePressNumpad, isValidTransactionValue } = useOutletContext()
 
     const navigate = useNavigate()
 
     const handlePressCategories = () => {
+        if (!isValidTransactionValue()) return
+
         navigate("categories")
     }
 
