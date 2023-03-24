@@ -24,6 +24,7 @@ export const theme = {
         grey: "#747E7E",
         red: "#FF5F5D",
         white: "#FEFEFE",
+        transparent: "transparent",
     },
     flex: {
         center: "center",
