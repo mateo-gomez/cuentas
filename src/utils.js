@@ -14,11 +14,16 @@ export const locale = () => {
 
 const deviceLanguage = locale().replace("_", "-").toLowerCase()
 
-export const dateFormat = (date) => {
-    return date.toLocaleDateString(deviceLanguage, {
+export const dateFormat = (
+    date,
+    options = {
         day: "2-digit",
         weekday: "long",
         year: "numeric",
         month: "short",
-    })
+    },
+) => {
+    return date.toLocaleDateString(deviceLanguage, options)
+}
+
 }
