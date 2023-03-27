@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
         color: theme.colors.textPrimary,
         fontFamily: theme.fonts.main,
         fontWeight: theme.fontWeights.normal,
+        textAlignVertical: "center",
     },
     bold: { fontWeight: theme.fontWeights.bold },
     subheading: { fontSize: theme.fontSizes.subheading },
