@@ -12,18 +12,20 @@
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "6.5.2",
-    "dotenv": "^16.0.3",
+    "accordion-collapse-react-native": "^1.1.1",
     "expo": "~47.0.12",
     "expo-constants": "~14.0.2",
     "expo-status-bar": "~1.4.2",
+    "iconoir-react-native": "^6.5.0",
     "react": "18.1.0",
     "react-native": "0.70.5",
-    "react-native-svg": "13.4.0",
     "react-native-virtual-keyboard": "1.2.2",
-    "react-router-native": "6.6.1"
+    "react-router-native": "6.6.1",
+    "react-native-svg": "13.4.0"
   },
   "devDependencies": {
     "@babel/core": "7.12.9",
+    "dotenv": "16.0.3",
     "eslint": "8.31.0",
     "eslint-config-prettier": "8.6.0",
     "eslint-config-standard": "17.0.0",
