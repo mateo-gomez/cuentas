@@ -22,7 +22,7 @@ const Transactions = () => {
             try {
                 const response = await fetch(`${apiUrl}/transactions`)
                 const data = await response.json()
-                const summary = data.map((item) => {
+                const transactions = data.map((item) => {
                     const date = new Date(item.date)
                     return {
                         ...item,
@@ -30,7 +30,7 @@ const Transactions = () => {
                     }
                 })
 
-                setTransactions(summary)
+                setTransactions(transactions)
             } catch (error) {
                 console.log(error.message)
             }
@@ -72,7 +72,7 @@ const Transactions = () => {
                     <NumberFormat big bold value={200000} />
                 </View>
 
-                <TransactionList cuentas={summaryTransactions} />
+                <TransactionList transactions={summaryTransactions} />
             </View>
             <View style={styles.buttons}>
                 <TouchableOpacity onPress={handlePressMinusButton}>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     buttons: {
-        paddingVertical: 20,
+        paddingVertical: 10,
         alignItems: "center",
         justifyContent: "space-around",
         flexDirection: "row",

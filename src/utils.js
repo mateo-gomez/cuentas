@@ -26,4 +26,19 @@ export const dateFormat = (
     return date.toLocaleDateString(deviceLanguage, options)
 }
 
+export const groupTransactions = (data, key) => {
+    const grouped = data.reduce((acc, item) => {
+        const date = dateFormat(item[key], {
+            day: "2-digit",
+            month: "long",
+        })
+        const dataGroup = date in acc ? acc[date].data : []
+
+        dataGroup.push(item)
+        acc[date] = { title: date, data: dataGroup }
+
+        return acc
+    }, {})
+
+    return Object.values(grouped)
 }

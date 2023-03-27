@@ -1,18 +1,16 @@
 import { StyleSheet, Text, View } from "react-native"
-import { dateFormat } from "../utils"
 import NumberFormat from "./NumberFormat"
 import StyledText from "./StyledText"
 
 const TransactionItem = (props) => {
     return (
-        <View key={props._id} style={styles.container}>
+        <View style={styles.container}>
             <View>
                 <Text>{props.type ? "⬆️" : "⬇️"}</Text>
             </View>
             <View style={styles.box}>
                 <StyledText>{props.category}</StyledText>
-                <StyledText>{props.description}</StyledText>
-                <StyledText>{dateFormat(props.date)}</StyledText>
+                <StyledText color="grey">{props.description}</StyledText>
             </View>
             <View style={styles.price}>
                 <NumberFormat
