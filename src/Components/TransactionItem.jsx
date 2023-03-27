@@ -1,4 +1,6 @@
-import { StyleSheet, Text, View } from "react-native"
+import { ArrowDownCircle, ArrowUpCircle } from "iconoir-react-native"
+import { StyleSheet, View } from "react-native"
+import { theme } from "../theme"
 import NumberFormat from "./NumberFormat"
 import StyledText from "./StyledText"
 
@@ -6,17 +8,26 @@ const TransactionItem = (props) => {
     return (
         <View style={styles.container}>
             <View>
-                <Text>{props.type ? "⬆️" : "⬇️"}</Text>
+                {props.type ? (
+                    <ArrowUpCircle
+                        color={theme.colors.greenLight}
+                        height={20}
+                        width={20}
+                    />
+                ) : (
+                    <ArrowDownCircle
+                        color={theme.colors.red}
+                        height={20}
+                        width={20}
+                    />
+                )}
             </View>
             <View style={styles.box}>
                 <StyledText>{props.category}</StyledText>
                 <StyledText color="grey">{props.description}</StyledText>
             </View>
             <View style={styles.price}>
-                <NumberFormat
-                    value={props.value}
-                    color={props.type ? "green" : "red"}
-                />
+                <NumberFormat fontWeight="normal" value={props.value} />
             </View>
         </View>
     )
@@ -24,7 +35,6 @@ const TransactionItem = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 20,
         paddingVertical: 10,
         flexDirection: "row",
         justifyContent: "space-between",
@@ -32,10 +42,10 @@ const styles = StyleSheet.create({
     },
     price: {
         flex: 1,
-        paddingHorizontal: 10,
         alignItems: "flex-end",
     },
     box: {
+        marginLeft: 20,
         paddingHorizontal: 10,
     },
 })
