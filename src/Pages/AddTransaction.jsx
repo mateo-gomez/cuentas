@@ -29,7 +29,6 @@ const AddTransaction = () => {
 
     const handleSubmit = async (data) => {
         try {
-            console.log("data", data)
             const response = await fetch(`${apiUrl}/transactions`, {
                 method: "POST",
                 headers: {
