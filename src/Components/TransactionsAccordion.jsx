@@ -4,11 +4,12 @@ import {
     CollapseHeader,
 } from "accordion-collapse-react-native"
 import { useState } from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
 import StyledText from "./StyledText"
 import TransactionItem from "./TransactionItem"
 import { NavArrowDown, NavArrowUp } from "iconoir-react-native"
 import { theme } from "../theme"
+import NumberFormat from "./NumberFormat"
 
 export const TransactionsAccordion = ({ title, transactions }) => {
     const [expanded, setExpanded] = useState(true)
@@ -16,25 +17,37 @@ export const TransactionsAccordion = ({ title, transactions }) => {
         setExpanded((expanded) => !expanded)
     }
 
+    const total = transactions.reduce((sum, transaction) => {
+        const value = Number(transaction.value) * (transaction.type ? 1 : -1)
+
+        return sum + value
+    }, 0)
+
     return (
         <Collapse isExpanded={expanded} onToggle={toggleCollapse}>
             <CollapseHeader style={styles.headerContainer}>
-                {expanded ? (
-                    <NavArrowUp
-                        color={theme.colors.grey}
-                        height={20}
-                        width={20}
-                    />
-                ) : (
-                    <NavArrowDown
-                        color={theme.colors.grey}
-                        height={20}
-                        width={20}
-                    />
-                )}
-                <StyledText fontWeight={"bold"}>{title}</StyledText>
+                <View style={styles.headerPrice}>
+                    {expanded ? (
+                        <NavArrowUp
+                            color={theme.colors.grey}
+                            height={20}
+                            width={20}
+                        />
+                    ) : (
+                        <NavArrowDown
+                            color={theme.colors.grey}
+                            height={20}
+                            width={20}
+                        />
+                    )}
+                    <StyledText fontWeight={"bold"}>{title}</StyledText>
+                </View>
+                <NumberFormat
+                    value={total}
+                    color={total > 0 ? "green" : "red"}
+                />
             </CollapseHeader>
-            <CollapseBody>
+            <CollapseBody style={styles.accordionBody}>
                 {transactions.map((transaction) => (
                     <TransactionItem
                         key={transaction._id}
@@ -53,7 +66,15 @@ export const TransactionsAccordion = ({ title, transactions }) => {
 
 const styles = StyleSheet.create({
     headerContainer: {
+        justifyContent: "space-between",
         alignContent: "center",
         flexDirection: "row",
+    },
+    headerPrice: {
+        alignContent: "center",
+        flexDirection: "row",
+    },
+    accordionBody: {
+        marginLeft: 20,
     },
 })
