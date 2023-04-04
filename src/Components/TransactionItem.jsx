@@ -23,7 +23,7 @@ const TransactionItem = (props) => {
                 )}
             </View>
             <View style={styles.box}>
-                <StyledText>{props.category}</StyledText>
+                <StyledText>{props.category.name}</StyledText>
                 <StyledText color="grey">{props.description}</StyledText>
             </View>
             <View style={styles.price}>
