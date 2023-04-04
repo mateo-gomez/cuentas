@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import StyledText from "./StyledText"
-import PlusIcon from "./svg/PlusIcon"
+import { Ionicons } from "@expo/vector-icons"
 
 const Category = ({ name, icon, size, style, onPress, ...restOfProps }) => {
     const styleWrapper = [styles.wrapper, { width: size, height: size }, style]
@@ -21,7 +21,11 @@ const Category = ({ name, icon, size, style, onPress, ...restOfProps }) => {
                 }}
             >
                 <View style={{ justifyContent: "center", flex: 1 }}>
-                    <PlusIcon />
+                    <Ionicons
+                        name={icon}
+                        color={theme.colors.primary}
+                        size={70}
+                    />
                 </View>
                 <StyledText numberOfLines={1}>{name}</StyledText>
             </View>
