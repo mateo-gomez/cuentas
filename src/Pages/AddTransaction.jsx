@@ -52,7 +52,7 @@ const AddTransaction = () => {
             value: transactionValue,
             description,
             date,
-            category: category.name,
+            category: category._id,
             type: type === "income" ? 1 : 0,
         })
     }
