@@ -18,7 +18,7 @@
     "expo-status-bar": "~1.4.2",
     "iconoir-react-native": "^6.5.0",
     "react": "18.1.0",
-    "react-native": "0.70.5",
+    "react-native": "0.70.8",
     "react-native-virtual-keyboard": "1.2.2",
     "react-router-native": "6.6.1",
     "react-native-svg": "13.4.0"
