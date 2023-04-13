@@ -29,7 +29,7 @@ const AddTransaction = () => {
         setTransactionValue(val)
     }
 
-    const handleSubmit = async (data) => {
+    const handleSubmit = async (newTransaction) => {
         try {
             const response = await fetch(`${apiUrl}/transactions`, {
                 method: "POST",
@@ -37,15 +37,15 @@ const AddTransaction = () => {
                     accept: "application/json",
                     "content-type": "application/json",
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(newTransaction),
             })
 
-            const res = await response.json()
+            const data = await response.json()
 
-            console.log("res", res)
+            console.log("add category response", data)
             navigate("/")
         } catch (error) {
-            console.log(error)
+            console.error("add transaction error", error)
         }
     }
 
