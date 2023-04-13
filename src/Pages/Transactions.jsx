@@ -56,7 +56,11 @@ const Transactions = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <AppBar title="Cuentas App" />
+            <AppBar>
+                <StyledText color={"white"} fontWeight="bold">
+                    Cuentas App
+                </StyledText>
+            </AppBar>
             <DrawerLayoutAndroid
                 ref={drawerRef}
                 drawerPosition="right"

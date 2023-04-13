@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { useNavigate } from "react-router-native"
 import { theme } from "../theme"
 import BackArrowIcon from "./svg/BackArrowIcon"
@@ -12,7 +12,7 @@ const BackButton = ({ to = -1, size, color, ...restOfProps }) => {
 
     return (
         <TouchableOpacity onPress={handlePress}>
-            <View {...restOfProps}>
+            <View style={styles.container} {...restOfProps}>
                 <BackArrowIcon
                     color={size || theme.colors.white}
                     size={color || theme.fontSizes.subheading}
@@ -21,5 +21,11 @@ const BackButton = ({ to = -1, size, color, ...restOfProps }) => {
         </TouchableOpacity>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        marginRight: 30,
+    },
+})
 
 export default BackButton

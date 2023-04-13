@@ -6,6 +6,8 @@ import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import { Outlet, useNavigate, useParams } from "react-router-native"
 import Constants from "expo-constants"
+import StyledText from "../Components/StyledText"
+import BackButton from "../Components/BackButton"
 
 const initialDate = new Date()
 const { apiUrl } = Constants.expoConfig.extra
@@ -93,10 +95,13 @@ const AddTransaction = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <AppBar
-                backButton
-                title={type === "income" ? "Nuevo ingreso" : "Nuevo egreso"}
-            />
+            <AppBar>
+                <BackButton />
+
+                <StyledText color={"white"} fontWeight="bold">
+                    {type === "income" ? "Nuevo ingreso" : "Nuevo egreso"}
+                </StyledText>
+            </AppBar>
 
             <View style={styles.wrapper}>
                 <DatePicker
