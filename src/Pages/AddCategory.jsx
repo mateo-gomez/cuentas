@@ -5,7 +5,6 @@ import BackButton from "../Components/BackButton"
 import { theme } from "../theme"
 import { useState } from "react"
 import CategoryList from "../Components/CategoryList"
-import useCategories from "../hooks/useCategories"
 import { categoryIcons } from "../constants/availableCategories"
 import Constants from "expo-constants"
 import { useNavigate } from "react-router-native"
@@ -32,6 +31,14 @@ const AddCategory = ({ category }) => {
     }
 
     const handleSubmit = async () => {
+        if (!name || !categorySelected) {
+            setErrors(() => ({
+                name: !name ? "Nombre inválido" : "",
+                icon: !categorySelected ? "Categoría no seleccionada" : "",
+            }))
+            return
+        }
+
         const newCategory = {
             name,
             icon: categorySelected.icon,
