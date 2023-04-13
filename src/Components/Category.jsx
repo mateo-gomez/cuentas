@@ -3,12 +3,32 @@ import { theme } from "../theme"
 import StyledText from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 
-const Category = ({ name, icon, size, style, onPress, ...restOfProps }) => {
-    const styleWrapper = [styles.wrapper, { width: size, height: size }, style]
+const Category = ({
+    name,
+    icon,
+    size,
+    style,
+    color,
+    onPress,
+    ...restOfProps
+}) => {
+    const styleWrapper = [
+        styles.wrapper,
+        {
+            width: size,
+            height: size,
+            borderColor: color || theme.colors.primary,
+        },
+        style,
+    ]
+
+    const handlePressCategory = () => {
+        onPress()
+    }
 
     return (
         <TouchableOpacity
-            onPress={onPress}
+            onPress={handlePressCategory}
             style={styleWrapper}
             {...restOfProps}
         >
@@ -23,11 +43,19 @@ const Category = ({ name, icon, size, style, onPress, ...restOfProps }) => {
                 <View style={{ justifyContent: "center", flex: 1 }}>
                     <Ionicons
                         name={icon}
-                        color={theme.colors.primary}
+                        color={color || theme.colors.primary}
                         size={70}
                     />
                 </View>
-                <StyledText numberOfLines={1}>{name}</StyledText>
+                {name ? (
+                    <StyledText
+                        fontWeight={"bold"}
+                        style={{ color: color || theme.colors.primary }}
+                        numberOfLines={1}
+                    >
+                        {name}
+                    </StyledText>
+                ) : null}
             </View>
         </TouchableOpacity>
     )
