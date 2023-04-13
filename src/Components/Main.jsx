@@ -1,9 +1,10 @@
 import { StyleSheet, View } from "react-native"
 import { Route, Routes } from "react-router-native"
 import AddTransaction from "../Pages/AddTransaction"
-import CategoriesList from "../Pages/CategoriesList"
+import Categories from "../Pages/Categories"
 import NumPad from "../Pages/NumPad"
 import Transactions from "../Pages/Transactions"
+import AddCategory from "../Pages/AddCategory"
 
 const Main = () => {
     return (
@@ -12,7 +13,7 @@ const Main = () => {
                 <Route path="/" element={<Transactions />} />
                 <Route path="/transactions/:type" element={<AddTransaction />}>
                     <Route index element={<NumPad />} />
-                    <Route path="categories" element={<CategoriesList />} />
+                    <Route path="categories" element={<Categories />} />
                 </Route>
             </Routes>
         </View>
