@@ -1,15 +1,16 @@
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import StyledText from "../Components/StyledText"
-import AppBar from "../Components/AppBar"
-import BackButton from "../Components/BackButton"
-import { theme } from "../theme"
+import StyledText from "../../Components/StyledText"
+import AppBar from "../../Components/AppBar"
+import BackButton from "../../Components/BackButton"
+import { theme } from "../../theme"
 import { useEffect, useState } from "react"
-import CategoryList from "../Components/CategoryList"
-import { categoryIcons } from "../constants/availableCategories"
+import CategoryList from "../../Components/CategoryList"
+import { categoryIcons } from "../../constants/availableCategories"
 import { useNavigate, useParams } from "react-router-native"
-import { useCategory } from "../hooks/useCategory"
-import { client } from "../helpers/client"
+import { useCategory } from "../../hooks/useCategory"
+import { client } from "../../helpers/client"
 import { Ionicons } from "@expo/vector-icons"
+import { useSelect } from "../../hooks/useSelect"
 
 const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
 
@@ -36,15 +37,16 @@ const Category = () => {
     const { id } = useParams()
     const { category, loading, error } = useCategory(id)
     const [name, setName] = useState("")
-    const [categorySelected, setCategorySelected] = useState(null)
     const [errors, setErrors] = useState({
         name: null,
         icon: null,
     })
 
+    const { selected: categorySelected, setSelected: setCategorySelected } =
+        useSelect(category)
+
     useEffect(() => {
         if (category) {
-            setCategorySelected(() => category)
             setName(() => category.name)
         }
     }, [category])
