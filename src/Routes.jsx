@@ -1,15 +1,15 @@
 import { StyleSheet, View } from "react-native"
-import { Route, Routes } from "react-router-native"
-import AddTransaction from "../Pages/AddTransaction"
-import Categories from "../Pages/Categories"
-import NumPad from "../Pages/NumPad"
-import Transactions from "../Pages/Transactions"
-import AddCategory from "../Pages/AddCategory"
+import { Route, Routes as Router } from "react-router-native"
+import AddTransaction from "./Pages/AddTransaction"
+import Categories from "./Pages/Categories"
+import NumPad from "./Pages/NumPad"
+import Transactions from "./Pages/Transactions"
+import AddCategory from "./Pages/AddCategory"
 
-const Main = () => {
+const Routes = () => {
     return (
         <View style={styles.container}>
-            <Routes>
+            <Router>
                 <Route path="/" element={<Transactions />} />
                 <Route path="/transactions/:type" element={<AddTransaction />}>
                     <Route index element={<NumPad />} />
@@ -17,7 +17,7 @@ const Main = () => {
                 </Route>
                 <Route path="/categories/create" element={<AddCategory />} />
                 <Route path="/categories/:id" element={<AddCategory />} />
-            </Routes>
+            </Router>
         </View>
     )
 }
@@ -29,4 +29,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Main
+export default Routes
