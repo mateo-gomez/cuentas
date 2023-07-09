@@ -1,0 +1,23 @@
+{
+  "name": "cuentas",
+  "version": "1.0.0",
+  "description": "personal finance app made with React Native and Deno",
+  "main": "index.js",
+  "scripts": {
+    "app:dev": "cd ./cuentas && npx expo start",
+    "server:dev": "cd ./backend && deno task dev",
+    "dev": "npm run app:dev && npm run server:dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mateo-gomez/cuentas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mateo-gomez/cuentas/issues"
+  },
+  "homepage": "https://github.com/mateo-gomez/cuentas#readme"
+}
