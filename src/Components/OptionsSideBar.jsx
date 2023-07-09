@@ -50,7 +50,7 @@ const OptionsSideBar = () => (
                     </View>
                 </CollapseHeader>
                 <CollapseBody>
-                    <CategoriesOptions />
+                    {option.options}
                 </CollapseBody>
             </Collapse>
         ))}

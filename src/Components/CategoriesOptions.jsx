@@ -1,4 +1,4 @@
-import { FlatList, TouchableHighlight, View } from "react-native"
+import { FlatList, View } from "react-native"
 import { useEffect, useState } from "react"
 import Constants from "expo-constants"
 import StyledText from "./StyledText"
@@ -41,7 +41,7 @@ const CategoriesOptions = () => {
             data={categories}
             horizontal={false}
             ListHeaderComponent={
-                <Link to={"/category"}>
+                <Link to={"/categories/create"}>
                     <View
                         style={{
                             flexDirection: "row",
@@ -72,7 +72,7 @@ const CategoriesOptions = () => {
                 )
             }
             renderItem={({ item: category }) => (
-                <TouchableHighlight onPress={() => {}}>
+                <Link to={`/categories/${category._id}`}>
                     <View
                         style={{
                             flexDirection: "row",
@@ -92,7 +92,7 @@ const CategoriesOptions = () => {
                             {category.name}
                         </StyledText>
                     </View>
-                </TouchableHighlight>
+                </Link>
             )}
         />
     )

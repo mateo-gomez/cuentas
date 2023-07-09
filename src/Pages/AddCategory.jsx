@@ -3,24 +3,44 @@ import StyledText from "../Components/StyledText"
 import AppBar from "../Components/AppBar"
 import BackButton from "../Components/BackButton"
 import { theme } from "../theme"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import CategoryList from "../Components/CategoryList"
 import { categoryIcons } from "../constants/availableCategories"
-import Constants from "expo-constants"
-import { useNavigate } from "react-router-native"
+import { useNavigate, useParams } from "react-router-native"
+import {useCategory} from "../hooks/useCategory"
+import { client } from "../helpers/client"
 
-const { apiUrl } = Constants.expoConfig.extra
 const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
 
-const AddCategory = ({ category }) => {
-    const navigate = useNavigate()
+const updateCategory = async (id, category) => {
+    const data = await client.put(`categories/${id}`, category)
 
+    return data
+}
+
+const createCategory = async (newCategory) => {
+    const data = await client.post('/categories', newCategory)
+
+    return data
+}
+
+const AddCategory = () => {
+    const navigate = useNavigate()
+    const { id } = useParams()
+    const { category, loading, error } = useCategory(id)
     const [name, setName] = useState("")
     const [categorySelected, setCategorySelected] = useState(null)
     const [errors, setErrors] = useState({
         name: null,
         icon: null,
     })
+
+    useEffect(() => {
+        if (category) {
+            setCategorySelected(() => category)
+            setName(() => category.name)
+        }
+    }, [category])
 
     const handleChangeName = (text) => {
         setName(() => text)
@@ -39,28 +59,27 @@ const AddCategory = ({ category }) => {
             return
         }
 
-        const newCategory = {
+        const categoryData = {
             name,
             icon: categorySelected.icon,
         }
 
         try {
-            const response = await fetch(`${apiUrl}/categories`, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newCategory),
-            })
+            if (id) {
+                await updateCategory(id, categoryData)
+            }
 
-            const data = await response.json()
-
-            console.log("add category response", data)
+            if (!id) {
+                await createCategory(categoryData)
+            }
 
             navigate("/")
         } catch (error) {
-            console.error("add category error", error)
+            console.error('Error: ' + error.message)
+
+            if (error.errors) {
+                setErrors(error.errors)
+            }
         }
     }
 
@@ -76,7 +95,7 @@ const AddCategory = ({ category }) => {
                 </View>
 
                 <TouchableHighlight onPress={handleSubmit}>
-                    <StyledText color={"white"}>AÑADIR</StyledText>
+                    <StyledText color={"white"}>{id ? 'GUARDAR' : 'AÑADIR'}</StyledText>
                 </TouchableHighlight>
             </AppBar>
             <View style={styles.container}>
@@ -92,11 +111,21 @@ const AddCategory = ({ category }) => {
                 />
 
                 <View style={styles.categories}>
-                    <CategoryList
-                        categories={availableCategories}
-                        onSelect={handleSelectCategory}
-                        selection={categorySelected}
-                    />
+                    {error ?
+                        <StyledText>
+                            "Ha ocurrido un error al cargar las categorías"
+                        </StyledText>
+                    : null}
+
+                    {loading ? <StyledText>Cargando...</StyledText> : null}
+
+                    {!loading && !error ?
+                        <CategoryList
+                            categories={availableCategories}
+                            onSelect={handleSelectCategory}
+                            selection={categorySelected}
+                        />
+                    : null}
                 </View>
             </View>
         </View>

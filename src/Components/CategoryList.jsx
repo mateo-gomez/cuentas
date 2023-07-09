@@ -22,7 +22,9 @@ const CategoryList = ({ categories, onSelect, selection }) => {
                 <StyledText textCenter>Sin categorías</StyledText>
             }
             renderItem={({ item: category, index }) => {
-                const isSelected = selection && category._id === selection._id
+                // TODO: separar categroyList de categoryOptions, esto puede ocacionar que al editar
+                // una transacción se seleccione la categoría que no es, si la categoria comparte icon con otra
+                const isSelected = selection && category.icon === selection.icon
 
                 return (
                     <Category

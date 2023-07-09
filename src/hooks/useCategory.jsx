@@ -3,22 +3,28 @@ import Constants from "expo-constants"
 
 const { apiUrl } = Constants.expoConfig.extra
 
-export const useCategories = () => {
-    const [categories, setCategories] = useState([])
+export const useCategory = (id) => {
+    const [category, setCategory] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
     useEffect(() => {
         const getCategories = async () => {
+            if (!id) null
+
             setLoading(true)
 
-            const url = `${apiUrl}/categories`
+            const url = `${apiUrl}/categories/${id}`
 
             try {
                 const response = await fetch(url)
                 const data = await response.json()
 
-                setCategories(data)
+                if (response.status === 404) {
+                    throw new Error(data.error)
+                }
+
+                setCategory(data)
             } catch (error) {
                 setError(error.message)
             } finally {
@@ -29,5 +35,5 @@ export const useCategories = () => {
         getCategories()
     }, [])
 
-    return { categories, loading, error }
+    return { category, loading, error }
 }

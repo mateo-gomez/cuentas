@@ -42,3 +42,7 @@ export const groupTransactions = (data, key) => {
 
     return Object.values(grouped)
 }
+
+export const removeInitialSlash = (endpoint) => {
+    return endpoint.at(0) === '/' ? endpoint.substring(1) : endpoint
+}

@@ -15,7 +15,8 @@ const Main = () => {
                     <Route index element={<NumPad />} />
                     <Route path="categories" element={<Categories />} />
                 </Route>
-                <Route path="/category" element={<AddCategory />} />
+                <Route path="/categories/create" element={<AddCategory />} />
+                <Route path="/categories/:id" element={<AddCategory />} />
             </Routes>
         </View>
     )
