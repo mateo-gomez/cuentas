@@ -7,10 +7,9 @@ import { useEffect, useState } from "react"
 import CategoryList from "../Components/CategoryList"
 import { categoryIcons } from "../constants/availableCategories"
 import { useNavigate, useParams } from "react-router-native"
-import {useCategory} from "../hooks/useCategory"
+import { useCategory } from "../hooks/useCategory"
 import { client } from "../helpers/client"
 import { Ionicons } from "@expo/vector-icons"
-
 
 const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
 
@@ -21,7 +20,7 @@ const updateCategory = async (id, category) => {
 }
 
 const createCategory = async (newCategory) => {
-    const data = await client.post('/categories', newCategory)
+    const data = await client.post("/categories", newCategory)
 
     return data
 }
@@ -83,7 +82,7 @@ const Category = () => {
 
             navigate("/")
         } catch (error) {
-            console.error('Error: ' + error.message)
+            console.error("Error: " + error.message)
 
             if (error.errors) {
                 setErrors(error.errors)
@@ -112,16 +111,18 @@ const Category = () => {
                     </StyledText>
                 </View>
 
-                <View style={{flexDirection: 'row', gap: 10}}>
+                <View style={{ flexDirection: "row", gap: 10 }}>
                     <TouchableOpacity onPress={handleDeleteCategory}>
                         <Ionicons
-                            name={'trash-outline'}
+                            name={"trash-outline"}
                             color={theme.colors.white}
                             size={theme.fontSizes.subheading}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSubmit}>
-                        <StyledText color={"white"}>{id ? 'GUARDAR' : 'AÑADIR'}</StyledText>
+                        <StyledText color={"white"}>
+                            {id ? "GUARDAR" : "AÑADIR"}
+                        </StyledText>
                     </TouchableOpacity>
                 </View>
             </AppBar>
@@ -137,23 +138,21 @@ const Category = () => {
                     value={name}
                 />
 
-                <View style={styles.categories}>
-                    {error ?
-                        <StyledText>
-                            "Ha ocurrido un error al cargar las categorías"
-                        </StyledText>
-                    : null}
+                {error ? (
+                    <StyledText>
+                        "Ha ocurrido un error al cargar las categorías"
+                    </StyledText>
+                ) : null}
 
-                    {loading ? <StyledText>Cargando...</StyledText> : null}
+                {loading ? <StyledText>Cargando...</StyledText> : null}
 
-                    {!loading && !error ?
-                        <CategoryList
-                            categories={availableCategories}
-                            onSelect={handleSelectCategory}
-                            selection={categorySelected}
-                        />
-                    : null}
-                </View>
+                {!loading && !error ? (
+                    <CategoryList
+                        categories={availableCategories}
+                        onSelect={handleSelectCategory}
+                        selection={categorySelected}
+                    />
+                ) : null}
             </View>
         </View>
     )
@@ -168,7 +167,7 @@ const styles = StyleSheet.create({
         color: theme.colors.white,
         padding: 10,
         fontSize: theme.fontSizes.heading * 1.5,
-        marginTop: 20,
+        marginVertical: 20,
     },
     error: {
         borderColor: theme.colors.red,
