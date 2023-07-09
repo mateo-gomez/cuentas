@@ -12,7 +12,7 @@ import BackButton from "../Components/BackButton"
 const initialDate = new Date()
 const { apiUrl } = Constants.expoConfig.extra
 
-const AddTransaction = () => {
+const Transaction = () => {
     const [transactionValue, setTransactionValue] = useState(0)
     const [description, setDescription] = useState("")
     const [date, setDate] = useState(initialDate)
@@ -170,4 +170,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default AddTransaction
+export default Transaction

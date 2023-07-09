@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, TouchableHighlight, View } from "react-native"
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
 import StyledText from "../Components/StyledText"
 import AppBar from "../Components/AppBar"
 import BackButton from "../Components/BackButton"
@@ -9,6 +9,8 @@ import { categoryIcons } from "../constants/availableCategories"
 import { useNavigate, useParams } from "react-router-native"
 import {useCategory} from "../hooks/useCategory"
 import { client } from "../helpers/client"
+import { Ionicons } from "@expo/vector-icons"
+
 
 const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
 
@@ -24,7 +26,13 @@ const createCategory = async (newCategory) => {
     return data
 }
 
-const AddCategory = () => {
+const deleteCategory = async (id) => {
+    const data = await client.delete(`/categories/${id}`)
+
+    return data
+}
+
+const Category = () => {
     const navigate = useNavigate()
     const { id } = useParams()
     const { category, loading, error } = useCategory(id)
@@ -83,6 +91,16 @@ const AddCategory = () => {
         }
     }
 
+    const handleDeleteCategory = async () => {
+        try {
+            await deleteCategory(id)
+
+            navigate("/")
+        } catch (error) {
+            throw error
+        }
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <AppBar style={{ justifyContent: "space-between" }}>
@@ -94,9 +112,18 @@ const AddCategory = () => {
                     </StyledText>
                 </View>
 
-                <TouchableHighlight onPress={handleSubmit}>
-                    <StyledText color={"white"}>{id ? 'GUARDAR' : 'AÑADIR'}</StyledText>
-                </TouchableHighlight>
+                <View style={{flexDirection: 'row', gap: 10}}>
+                    <TouchableOpacity onPress={handleDeleteCategory}>
+                        <Ionicons
+                            name={'trash-outline'}
+                            color={theme.colors.white}
+                            size={theme.fontSizes.subheading}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSubmit}>
+                        <StyledText color={"white"}>{id ? 'GUARDAR' : 'AÑADIR'}</StyledText>
+                    </TouchableOpacity>
+                </View>
             </AppBar>
             <View style={styles.container}>
                 <TextInput
@@ -156,4 +183,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default AddCategory
+export default Category

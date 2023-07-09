@@ -14,8 +14,8 @@ const BackButton = ({ to = -1, size, color, ...restOfProps }) => {
         <TouchableOpacity onPress={handlePress}>
             <View style={styles.container} {...restOfProps}>
                 <BackArrowIcon
-                    color={size || theme.colors.white}
-                    size={color || theme.fontSizes.subheading}
+                    color={color || theme.colors.white}
+                    size={size || theme.fontSizes.subheading}
                 />
             </View>
         </TouchableOpacity>
