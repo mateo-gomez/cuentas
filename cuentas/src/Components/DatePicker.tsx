@@ -2,8 +2,9 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { dateFormat } from "../utils"
-import CalendarIcon from "./svg/CalendarIcon"
+// import CalendarIcon from "./svg/CalendarIcon"
 import StyledText from "./StyledText"
+import { Calendar } from "iconoir-react-native"
 
 const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
     const dateFormatted = dateFormat(date ?? new Date())
@@ -25,15 +26,13 @@ const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
     return (
         <TouchableOpacity onPress={handlePress}>
             <View {...restOfProps} style={datePickerStyles}>
-                <CalendarIcon
-                    size={theme.fontSizes.subheading}
+                <Calendar
+                    width={theme.fontSizes.subheading}
+                    height={theme.fontSizes.subheading}
                     color={theme.colors.textPrimary}
+                    style={{ marginRight: 5 }}
                 />
-                <StyledText
-                    style={styles.pickerText}
-                    fontSize="subheading"
-                    fontWeight="bold"
-                >
+                <StyledText fontSize="subheading" fontWeight="bold">
                     {dateFormatted}
                 </StyledText>
             </View>
