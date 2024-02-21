@@ -1,106 +1,106 @@
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import StyledText from "../../Components/StyledText";
-import AppBar from "../../Components/AppBar";
-import BackButton from "../../Components/BackButton";
-import { theme } from "../../theme";
-import { useEffect, useState } from "react";
-import CategoryList from "../../Components/CategoryList";
-import { categoryIcons } from "../../constants/availableCategories";
-import { useNavigate, useParams } from "react-router-native";
-import { useCategory } from "../../hooks/useCategory";
-import { client } from "../../helpers/client";
-import { Ionicons } from "@expo/vector-icons";
-import { useSelect } from "../../hooks/useSelect";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
+import StyledText from "../../Components/StyledText"
+import AppBar from "../../Components/AppBar"
+import BackButton from "../../Components/BackButton"
+import { theme } from "../../theme"
+import { useEffect, useState } from "react"
+import CategoryList from "../../Components/CategoryList"
+import { categoryIcons } from "../../constants/availableCategories"
+import { useNavigate, useParams } from "react-router-native"
+import { useCategory } from "../../hooks/useCategory"
+import { client } from "../../helpers/client"
+import { Ionicons } from "@expo/vector-icons"
+import { useSelect } from "../../hooks/useSelect"
 
-const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }));
+const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
 
 const updateCategory = async (id, category) => {
-  const data = await client.put(`categories/${id}`, category);
+  const data = await client.put(`categories/${id}`, category)
 
-  return data;
-};
+  return data
+}
 
 const createCategory = async (newCategory) => {
-  const data = await client.post("/categories", newCategory);
+  const data = await client.post("/categories", newCategory)
 
-  return data;
-};
+  return data
+}
 
 const deleteCategory = async (id) => {
-  const data = await client.delete(`/categories/${id}`);
+  const data = await client.delete(`/categories/${id}`)
 
-  return data;
-};
+  return data
+}
 
 const Category = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const { category, loading, error } = useCategory(id);
-  const [name, setName] = useState("");
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const { category, loading, error } = useCategory(id)
+  const [name, setName] = useState("")
   const [errors, setErrors] = useState({
     name: null,
     icon: null,
-  });
+  })
 
   const { selected: categorySelected, setSelected: setCategorySelected } =
-    useSelect(category);
+    useSelect(category)
 
   useEffect(() => {
     if (category) {
-      setName(() => category.name);
+      setName(() => category.name)
     }
-  }, [category]);
+  }, [category])
 
   const handleChangeName = (text) => {
-    setName(() => text);
-  };
+    setName(() => text)
+  }
 
   const handleSelectCategory = (category) => {
-    setCategorySelected(() => category);
-  };
+    setCategorySelected(() => category)
+  }
 
   const handleSubmit = async () => {
     if (!name || !categorySelected) {
       setErrors(() => ({
         name: !name ? "Nombre inválido" : "",
         icon: !categorySelected ? "Categoría no seleccionada" : "",
-      }));
-      return;
+      }))
+      return
     }
 
     const categoryData = {
       name,
       icon: categorySelected.icon,
-    };
+    }
 
     try {
       if (id) {
-        await updateCategory(id, categoryData);
+        await updateCategory(id, categoryData)
       }
 
       if (!id) {
-        await createCategory(categoryData);
+        await createCategory(categoryData)
       }
 
-      navigate("/");
+      navigate("/")
     } catch (error) {
-      console.error("Error: " + error.message);
+      console.error("Error: " + error.message)
 
       if (error.errors) {
-        setErrors(error.errors);
+        setErrors(error.errors)
       }
     }
-  };
+  }
 
   const handleDeleteCategory = async () => {
     try {
-      await deleteCategory(id);
+      await deleteCategory(id)
 
-      navigate("/");
+      navigate("/")
     } catch (error) {
-      throw error;
+      throw error
     }
-  };
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -122,9 +122,7 @@ const Category = () => {
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSubmit}>
-            <StyledText color={"white"}>
-              {id ? "GUARDAR" : "AÑADIR"}
-            </StyledText>
+            <StyledText color={"white"}>{id ? "GUARDAR" : "AÑADIR"}</StyledText>
           </TouchableOpacity>
         </View>
       </AppBar>
@@ -140,29 +138,25 @@ const Category = () => {
           value={name}
         />
 
-        {error
-          ? (
-            <StyledText>
-              "Ha ocurrido un error al cargar las categorías"
-            </StyledText>
-          )
-          : null}
+        {error ? (
+          <StyledText>
+            "Ha ocurrido un error al cargar las categorías"
+          </StyledText>
+        ) : null}
 
         {loading ? <StyledText>Cargando...</StyledText> : null}
 
-        {!loading && !error
-          ? (
-            <CategoryList
-              categories={availableCategories}
-              onSelect={handleSelectCategory}
-              selection={categorySelected}
-            />
-          )
-          : null}
+        {!loading && !error ? (
+          <CategoryList
+            categories={availableCategories}
+            onSelect={handleSelectCategory}
+            selection={categorySelected}
+          />
+        ) : null}
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   nameInput: {
@@ -186,6 +180,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-});
+})
 
-export default Category;
+export default Category

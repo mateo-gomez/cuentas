@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eslint": "eslint . --fix",
-    "format": "prettier --check .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "tsc": "tsc"
   },
   "dependencies": {

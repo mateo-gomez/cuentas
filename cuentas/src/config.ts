@@ -1,7 +1,7 @@
 import Constants from "expo-constants"
 
 interface Config {
-    apiUrl: string
+  apiUrl: string
 }
 
 const config = Constants.expoConfig?.extra || ({ apiUrl: "" } as Config)

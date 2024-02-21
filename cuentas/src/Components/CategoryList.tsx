@@ -1,14 +1,14 @@
-import { Dimensions, FlatList, View } from "react-native";
-import Category from "./Category";
-import StyledText from "./StyledText";
-import { theme } from "../theme";
+import { Dimensions, FlatList, View } from "react-native"
+import Category from "./Category"
+import StyledText from "./StyledText"
+import { theme } from "../theme"
 
 const CategoryList = ({ categories, onSelect, selection }) => {
-  const gap = 10;
-  const categoryBoxSize = 100 + gap;
+  const gap = 10
+  const categoryBoxSize = 100 + gap
   const numColumns = Math.floor(
     Dimensions.get("window").width / categoryBoxSize,
-  );
+  )
 
   return (
     <FlatList
@@ -22,7 +22,7 @@ const CategoryList = ({ categories, onSelect, selection }) => {
       renderItem={({ item: category, index }) => {
         // TODO: separar categroyList de categoryOptions, esto puede ocacionar que al editar
         // una transacción se seleccione la categoría que no es, si la categoria comparte icon con otra
-        const isSelected = selection && category.icon === selection.icon;
+        const isSelected = selection && category.icon === selection.icon
 
         return (
           <Category
@@ -38,10 +38,10 @@ const CategoryList = ({ categories, onSelect, selection }) => {
             name={category.name}
             onPress={() => onSelect(category)}
           />
-        );
+        )
       }}
     />
-  );
-};
+  )
+}
 
-export default CategoryList;
+export default CategoryList

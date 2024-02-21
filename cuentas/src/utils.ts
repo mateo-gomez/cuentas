@@ -1,19 +1,19 @@
-import { NativeModules } from "react-native";
-import { type Transaction } from "./Pages/Transaction";
+import { NativeModules } from "react-native"
+import { type Transaction } from "./Pages/Transaction"
 
 const intlCurrency = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 2,
-});
+})
 
 export const formatNumber = (value: number | bigint) => {
-  return intlCurrency.format(value) + " COP";
-};
+  return intlCurrency.format(value) + " COP"
+}
 
 export const locale = () => {
-  return NativeModules.I18nManager.localeIdentifier;
-};
+  return NativeModules.I18nManager.localeIdentifier
+}
 
-const deviceLanguage = locale().replace("_", "-").toLowerCase();
+const deviceLanguage = locale().replace("_", "-").toLowerCase()
 
 export const dateFormat = (
   date: Date,
@@ -24,16 +24,16 @@ export const dateFormat = (
     month: "short",
   },
 ) => {
-  return date.toLocaleDateString(deviceLanguage, options);
-};
+  return date.toLocaleDateString(deviceLanguage, options)
+}
 
 export interface GroupedTransaction {
-  title: string;
-  data: Transaction[];
+  title: string
+  data: Transaction[]
 }
 export type AccGroupTransactions = {
-  [x: string]: GroupedTransaction;
-};
+  [x: string]: GroupedTransaction
+}
 
 export const groupTransactions = (transactions: Transaction[], key: string) => {
   const grouped = transactions.reduce(
@@ -41,20 +41,20 @@ export const groupTransactions = (transactions: Transaction[], key: string) => {
       const date = dateFormat(item[key], {
         day: "2-digit",
         month: "long",
-      });
-      const dataGroup: Transaction[] = date in acc ? acc[date].data : [];
+      })
+      const dataGroup: Transaction[] = date in acc ? acc[date].data : []
 
-      dataGroup.push(item);
-      acc[date] = { title: date, data: dataGroup };
+      dataGroup.push(item)
+      acc[date] = { title: date, data: dataGroup }
 
-      return acc as AccGroupTransactions;
+      return acc as AccGroupTransactions
     },
     {},
-  );
+  )
 
-  return Object.values(grouped);
-};
+  return Object.values(grouped)
+}
 
 export const removeInitialSlash = (endpoint: string) => {
-  return endpoint.at(0) === "/" ? endpoint.substring(1) : endpoint;
-};
+  return endpoint.at(0) === "/" ? endpoint.substring(1) : endpoint
+}

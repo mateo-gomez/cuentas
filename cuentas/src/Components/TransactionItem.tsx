@@ -5,49 +5,45 @@ import NumberFormat from "./NumberFormat"
 import StyledText from "./StyledText"
 
 const TransactionItem = (props) => {
-    return (
-        <View style={styles.container}>
-            <View>
-                {props.type ? (
-                    <ArrowUpCircle
-                        color={theme.colors.greenLight}
-                        height={20}
-                        width={20}
-                    />
-                ) : (
-                    <ArrowDownCircle
-                        color={theme.colors.red}
-                        height={20}
-                        width={20}
-                    />
-                )}
-            </View>
-            <View style={styles.box}>
-                <StyledText>{props.category.name}</StyledText>
-                <StyledText color="grey">{props.description}</StyledText>
-            </View>
-            <View style={styles.price}>
-                <NumberFormat fontWeight="normal" value={props.value} />
-            </View>
-        </View>
-    )
+  return (
+    <View style={styles.container}>
+      <View>
+        {props.type ? (
+          <ArrowUpCircle
+            color={theme.colors.greenLight}
+            height={20}
+            width={20}
+          />
+        ) : (
+          <ArrowDownCircle color={theme.colors.red} height={20} width={20} />
+        )}
+      </View>
+      <View style={styles.box}>
+        <StyledText>{props.category.name}</StyledText>
+        <StyledText color="grey">{props.description}</StyledText>
+      </View>
+      <View style={styles.price}>
+        <NumberFormat fontWeight="normal" value={props.value} />
+      </View>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        paddingVertical: 10,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    price: {
-        flex: 1,
-        alignItems: "flex-end",
-    },
-    box: {
-        marginLeft: 20,
-        paddingHorizontal: 10,
-    },
+  container: {
+    paddingVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  price: {
+    flex: 1,
+    alignItems: "flex-end",
+  },
+  box: {
+    marginLeft: 20,
+    paddingHorizontal: 10,
+  },
 })
 
 export default TransactionItem

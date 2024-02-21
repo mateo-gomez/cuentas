@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { BackHandler, StyleSheet, TextInput, View } from "react-native";
-import AppBar from "../Components/AppBar";
-import DatePicker from "../Components/DatePicker";
-import { theme } from "../theme";
-import { formatNumber } from "../utils";
-import { Outlet, useNavigate, useParams } from "react-router-native";
-import Constants from "expo-constants";
-import StyledText from "../Components/StyledText";
-import BackButton from "../Components/BackButton";
-import { Category } from "./category/types";
+import { useEffect, useState } from "react"
+import { BackHandler, StyleSheet, TextInput, View } from "react-native"
+import AppBar from "../Components/AppBar"
+import DatePicker from "../Components/DatePicker"
+import { theme } from "../theme"
+import { formatNumber } from "../utils"
+import { Outlet, useNavigate, useParams } from "react-router-native"
+import Constants from "expo-constants"
+import StyledText from "../Components/StyledText"
+import BackButton from "../Components/BackButton"
+import { Category } from "./category/types"
 
-const initialDate = new Date();
-const { apiUrl } = Constants.expoConfig.extra;
+const initialDate = new Date()
+const { apiUrl } = Constants.expoConfig.extra
 
 enum TransactionType {
   expenses,
@@ -19,33 +19,33 @@ enum TransactionType {
 }
 
 export type Transaction = {
-  _id: string;
-  date: Date;
-  value: Number;
-  account: String;
-  category: Category;
-  type: TransactionType;
-  description: String;
-  createdAt: Date;
-  updatedAt: Date;
-};
+  _id: string
+  date: Date
+  value: Number
+  account: String
+  category: Category
+  type: TransactionType
+  description: String
+  createdAt: Date
+  updatedAt: Date
+}
 
 const Transaction = () => {
-  const [transactionValue, setTransactionValue] = useState(0);
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(initialDate);
+  const [transactionValue, setTransactionValue] = useState(0)
+  const [description, setDescription] = useState("")
+  const [date, setDate] = useState(initialDate)
   const [errors, setErrors] = useState({
     date: null,
     transactionValue: null,
     description: null,
-  });
+  })
 
-  const { type } = useParams();
-  const navigate = useNavigate();
+  const { type } = useParams()
+  const navigate = useNavigate()
 
   const handlePressNumpad = (val) => {
-    setTransactionValue(val);
-  };
+    setTransactionValue(val)
+  }
 
   const handleSubmit = async (newTransaction) => {
     try {
@@ -56,16 +56,16 @@ const Transaction = () => {
           "content-type": "application/json",
         },
         body: JSON.stringify(newTransaction),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
-      console.log("add category response", data);
-      navigate("/");
+      console.log("add category response", data)
+      navigate("/")
     } catch (error) {
-      console.error("add transaction error", error);
+      console.error("add transaction error", error)
     }
-  };
+  }
 
   const handleSelectCategory = (category) => {
     handleSubmit({
@@ -74,42 +74,42 @@ const Transaction = () => {
       date,
       category: category._id,
       type: type === "income" ? 1 : 0,
-    });
-  };
+    })
+  }
 
   const handleChangeDescription = (value) => {
-    setDescription(value);
-  };
+    setDescription(value)
+  }
 
   const handleChangeDate = (value) => {
-    setDate(value);
-  };
+    setDate(value)
+  }
 
   const isValidTransactionValue = () => {
-    if (transactionValue) return true;
+    if (transactionValue) return true
 
-    setErrors((errors) => ({ ...errors, transactionValue: true }));
-  };
+    setErrors((errors) => ({ ...errors, transactionValue: true }))
+  }
 
   useEffect(() => {
     const onBackPress = () => {
-      navigate(-1);
+      navigate(-1)
 
-      return true;
-    };
+      return true
+    }
 
-    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+    BackHandler.addEventListener("hardwareBackPress", onBackPress)
 
     return () => {
-      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-    };
-  }, []);
+      BackHandler.removeEventListener("hardwareBackPress", onBackPress)
+    }
+  }, [])
 
   useEffect(() => {
     if (errors.transactionValue && transactionValue) {
-      setErrors((errors) => ({ ...errors, transactionValue: null }));
+      setErrors((errors) => ({ ...errors, transactionValue: null }))
     }
-  }, [transactionValue]);
+  }, [transactionValue])
 
   return (
     <View style={{ flex: 1 }}>
@@ -158,8 +158,8 @@ const Transaction = () => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   transactionInput: {
@@ -186,6 +186,6 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.red,
     borderWidth: 2,
   },
-});
+})
 
-export default Transaction;
+export default Transaction
