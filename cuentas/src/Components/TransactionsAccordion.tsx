@@ -64,6 +64,7 @@ export const TransactionsAccordion = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
+    paddingVertical: 10,
     justifyContent: "space-between",
     alignContent: "center",
     flexDirection: "row",

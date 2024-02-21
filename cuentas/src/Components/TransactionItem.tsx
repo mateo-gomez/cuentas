@@ -20,7 +20,11 @@ const TransactionItem = (props) => {
       </View>
       <View style={styles.box}>
         <StyledText>{props.category.name}</StyledText>
-        <StyledText color="grey">{props.description}</StyledText>
+        {props.description ? (
+          <StyledText fontSize="small" color="grey">
+            {props.description}
+          </StyledText>
+        ) : null}
       </View>
       <View style={styles.price}>
         <NumberFormat fontWeight="normal" value={props.value} />
@@ -31,7 +35,7 @@ const TransactionItem = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
+    height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
