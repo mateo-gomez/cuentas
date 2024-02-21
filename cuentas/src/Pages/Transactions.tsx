@@ -21,14 +21,19 @@ const Transactions = () => {
     const navigate = useNavigate()
     const drawerRef = useRef(null)
     const [summaryTransactions, setTransactions] = useState([])
+    const [totals, setTotals] = useState({
+        balance: 0,
+        income: 0,
+        expenses: 0,
+    })
 
     useEffect(() => {
         const getTransactions = async () => {
             try {
-                console.log(`${config.apiUrl}/transactions`)
                 const response = await fetch(`${config.apiUrl}/transactions`)
-                const data = await response.json()
-                const transactions = data.map((item) => {
+                const { transactions, totals } = await response.json()
+
+                const data = transactions.map((item) => {
                     const date = new Date(item.date)
                     return {
                         ...item,
@@ -36,7 +41,8 @@ const Transactions = () => {
                     }
                 })
 
-                setTransactions(transactions)
+                setTotals(totals)
+                setTransactions(data)
             } catch (error) {
                 console.log(error.message)
             }
@@ -66,42 +72,40 @@ const Transactions = () => {
                 drawerWidth={300}
                 renderNavigationView={OptionsSideBar}
             >
-                <View style={styles.center}>
-                    <StyledText
-                        fontWeight="bold"
-                        color="primary"
-                        fontSize="heading"
-                    >
-                        Mis Cuentas
-                    </StyledText>
-
-                    <NumberFormat value={20000} />
-                    <NumberFormat value={200000} />
+                <View style={styles.balanceContainer}>
+                    <View style={styles.balance}>
+                        <StyledText
+                            fontSize="subheading"
+                            color="white"
+                            fontWeight={theme.fontWeights.bold}
+                        >
+                            Saldo:{" "}
+                        </StyledText>
+                        <NumberFormat
+                            color="white"
+                            fontSize="subheading"
+                            bold
+                            value={totals.balance}
+                        />
+                    </View>
                 </View>
 
                 <View style={styles.list}>
-                    <View style={styles.balance}>
-                        <StyledText fontWeight={theme.fontWeights.bold}>
-                            Saldo:{" "}
-                        </StyledText>
-                        <NumberFormat big bold value={200000} />
-                    </View>
-
                     <TransactionList transactions={summaryTransactions} />
                 </View>
                 <View style={styles.buttons}>
                     <TouchableOpacity onPress={handlePressMinusButton}>
                         <MinusCircle
                             color={theme.colors.red}
-                            width={150}
-                            height={150}
+                            width={120}
+                            height={120}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handlePressPlusButton}>
                         <PlusCircle
                             color={theme.colors.greenLight}
-                            width={150}
-                            height={150}
+                            width={120}
+                            height={120}
                         />
                     </TouchableOpacity>
                 </View>
@@ -118,6 +122,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
+        color: theme.colors.textSecondary,
+    },
+    balanceContainer: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.primary,
+        backgroundColor: theme.colors.grey,
     },
     list: {
         marginBottom: 10,

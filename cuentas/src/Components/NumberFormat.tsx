@@ -3,6 +3,7 @@ import StyledText from "./StyledText"
 
 const NumberFormat = ({
     value = 0,
+    fontSize = "body",
     fontWeight = "bold",
     color = "black",
     ...restOfProps
@@ -11,7 +12,12 @@ const NumberFormat = ({
     const formated = formatNumber(absoluteValue)
 
     return (
-        <StyledText fontWeight={fontWeight} color={color} {...restOfProps}>
+        <StyledText
+            fontSize={fontSize}
+            fontWeight={fontWeight}
+            color={color}
+            {...restOfProps}
+        >
             {formated}
         </StyledText>
     )

@@ -1,6 +1,6 @@
-import { StyleSheet, Text } from "react-native";
-import { theme } from "../theme";
-import { PropsWithChildren } from "react";
+import { StyleSheet, Text } from "react-native"
+import { theme } from "../theme"
+import { PropsWithChildren } from "react"
 
 export type FontWeight =
   | "bold"
@@ -13,14 +13,14 @@ export type FontWeight =
   | "500"
   | "600"
   | "800"
-  | "900";
+  | "900"
 
 export interface StyledTextProps {
-  fontSize?: "subheading" | "heading";
-  fontWeight?: FontWeight | string;
-  color?: "primary" | "secondary" | "grey" | "green" | "red" | "white";
-  textCenter?: boolean;
-  style?: StyleSheet.NamedStyles<any>;
+  fontSize?: "subheading" | "heading" | "small"
+  fontWeight?: FontWeight | string
+  color?: "primary" | "secondary" | "grey" | "green" | "red" | "white"
+  textCenter?: boolean
+  style?: StyleSheet.NamedStyles<any>
 }
 
 const styles = StyleSheet.create({
@@ -34,6 +34,8 @@ const styles = StyleSheet.create({
   bold: { fontWeight: theme.fontWeights.bold as FontWeight },
   subheading: { fontSize: theme.fontSizes.subheading },
   heading: { fontSize: theme.fontSizes.heading },
+  small: { fontSize: theme.fontSizes.small },
+  body: { fontSize: theme.fontSizes.body },
   colorPrimary: { color: theme.colors.textPrimary },
   colorSecondary: { color: theme.colors.textSecondary },
   colorGreen: { color: theme.colors.greenLight },
@@ -41,7 +43,7 @@ const styles = StyleSheet.create({
   colorRed: { color: theme.colors.red },
   colorWhite: { color: theme.colors.white },
   textCenter: { textAlign: "center" },
-});
+})
 
 export default function StyledText({
   children,
@@ -57,6 +59,7 @@ export default function StyledText({
     fontWeight === "bold" && styles.bold,
     fontSize === "subheading" && styles.subheading,
     fontSize === "heading" && styles.heading,
+    fontSize === "small" && styles.small,
     color === "primary" && styles.colorPrimary,
     color === "secondary" && styles.colorSecondary,
     color === "grey" && styles.colorGrey,
@@ -65,11 +68,11 @@ export default function StyledText({
     color === "white" && styles.colorWhite,
     textCenter && styles.textCenter,
     style,
-  ];
+  ]
 
   return (
     <Text style={textStyles} {...restOfProps}>
       {children}
     </Text>
-  );
+  )
 }

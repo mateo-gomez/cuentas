@@ -4,12 +4,13 @@ export const theme = {
         textPrimary: "#FFF",
     },
     fontSizes: {
+        small: 12,
         body: 16,
         subheading: 20,
-        heading: 25,
+        heading: 28,
     },
     fontWeights: {
-        bold: "700",
+        bold: "bold",
         normal: "400",
     },
     fonts: {
@@ -20,7 +21,7 @@ export const theme = {
         textSecondary: "#00CCBF",
         secondary: "#00CCBF",
         primary: "#3F7C85",
-        greenLight: "#72F2EB",
+        greenLight: "#57cc99",
         grey: "#9da7a7",
         red: "#FF5F5D",
         white: "#FEFEFE",
