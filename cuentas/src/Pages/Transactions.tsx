@@ -84,7 +84,6 @@ const Transactions = () => {
             <NumberFormat
               color="white"
               fontSize="subheading"
-              bold
               value={totals.balance}
             />
           </View>

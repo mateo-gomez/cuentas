@@ -5,8 +5,7 @@ import StyledText from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 import { theme } from "../theme"
 import { Link } from "react-router-native"
-
-const { apiUrl } = Constants.expoConfig.extra
+import config from "../config"
 
 const CategoriesOptions = () => {
   const [categories, setCategories] = useState([])
@@ -18,7 +17,7 @@ const CategoriesOptions = () => {
       setLoading(true)
 
       try {
-        const response = await fetch(`${apiUrl}/categories`)
+        const response = await fetch(`${config.apiUrl}/categories`)
         const data = await response.json()
 
         setCategories(data)

@@ -1,9 +1,3 @@
-import Constants from "expo-constants"
-
-interface Config {
-  apiUrl: string
+export default {
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000",
 }
-
-const config = Constants.expoConfig?.extra || ({ apiUrl: "" } as Config)
-
-export default config
