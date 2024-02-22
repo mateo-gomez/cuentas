@@ -16,7 +16,7 @@ export type FontWeight =
   | "900"
 
 export interface StyledTextProps {
-  fontSize?: "subheading" | "heading" | "small"
+  fontSize?: "subheading" | "heading" | "small" | "body"
   fontWeight?: FontWeight | string
   color?: "primary" | "secondary" | "grey" | "green" | "red" | "white"
   textCenter?: boolean
@@ -60,6 +60,7 @@ export default function StyledText({
     fontSize === "subheading" && styles.subheading,
     fontSize === "heading" && styles.heading,
     fontSize === "small" && styles.small,
+    fontSize === "body" && styles.body,
     color === "primary" && styles.colorPrimary,
     color === "secondary" && styles.colorSecondary,
     color === "grey" && styles.colorGrey,

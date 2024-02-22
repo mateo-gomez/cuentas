@@ -1,13 +1,14 @@
+import { theme } from "../theme"
 import { formatNumber } from "../utils"
-import StyledText from "./StyledText"
+import StyledText, { StyledTextProps } from "./StyledText"
 
 const NumberFormat = ({
   value = 0,
   fontSize = "body",
   fontWeight = "bold",
-  color = "black",
+  color = "primary",
   ...restOfProps
-}) => {
+}: StyledTextProps & { value: number }) => {
   const absoluteValue = Math.abs(value)
   const formated = formatNumber(absoluteValue)
 
