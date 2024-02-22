@@ -14,7 +14,7 @@ const requestInitData = (method: Method, data?: Record<string, any>) => {
     "Content-Type": "application/json",
   }
 
-  if (method === "PUT" || method === "POST")
+  if (method === Method.PUT || method === Method.POST)
     return {
       method,
       headers,
