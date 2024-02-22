@@ -1,14 +1,14 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import { groupTransactions } from "../utils";
-import { TransactionsAccordion } from "./TransactionsAccordion";
-import { type Transaction } from "../Pages/Transaction";
+import { ScrollView, StyleSheet, View } from "react-native"
+import { groupTransactions } from "../utils"
+import { TransactionsAccordion } from "./TransactionsAccordion"
+import { type Transaction } from "../Pages/Transaction"
 
 export interface TransactionListProps {
-  transactions: Transaction[];
+  transactions: Transaction[]
 }
 
 const TransactionList = ({ transactions }) => {
-  const data = groupTransactions(transactions, "date");
+  const data = groupTransactions(transactions, "date")
 
   return (
     <View style={styles.container}>
@@ -22,13 +22,13 @@ const TransactionList = ({ transactions }) => {
         ))}
       </ScrollView>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 10,
   },
-});
+})
 
-export default TransactionList;
+export default TransactionList

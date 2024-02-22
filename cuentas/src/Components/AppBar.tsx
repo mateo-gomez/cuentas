@@ -1,10 +1,10 @@
-import { StyleSheet, View } from "react-native";
-import Constants from "expo-constants";
-import { theme } from "../theme";
+import { StyleSheet, View } from "react-native"
+import Constants from "expo-constants"
+import { theme } from "../theme"
 
 const AppBar = ({ children, style = {} }) => {
-  return <View style={[styles.container, [style]]}>{children}</View>;
-};
+  return <View style={[styles.container, [style]]}>{children}</View>
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -12,8 +12,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.appBar.primary,
     marginTop: Constants.statusBarHeight,
-    padding: 20,
+    minHeight: 70,
+    paddingHorizontal: 20,
   },
-});
+})
 
-export default AppBar;
+export default AppBar

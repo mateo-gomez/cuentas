@@ -1,6 +1,6 @@
 {
-    "deno.enablePaths": ["./backend"],
-    "editor.defaultFormatter": "denoland.vscode-deno",
-    "editor.formatOnSave": true
-
+	"deno.enable": false,
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "denoland.vscode-deno",
+	"deno.enablePaths": ["./backend"]
 }
