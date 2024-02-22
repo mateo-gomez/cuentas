@@ -1,7 +1,25 @@
 import Constants from "expo-constants"
 import { removeInitialSlash } from "../utils"
+import config from "../config"
 
-const { apiUrl } = Constants.expoConfig.extra
+const requestInitData = (method: string, data?: Record<string, any>) => {
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  }
+
+  if (method === "PUT" || method === "POST")
+    return {
+      method,
+      headers,
+      body: JSON.stringify(data),
+    }
+
+  return {
+    method,
+    headers,
+  }
+}
 
 export const client = {
   get: (endpoint) => fetcher("GET", endpoint),
@@ -12,22 +30,16 @@ export const client = {
 
 export const fetcher = async (method, endpoint = "", data = {}) => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
-  const url = `${apiUrl}/${normalizedEndpoint}`
+  const url = `${config.apiUrl}/${normalizedEndpoint}`
 
-  const response = await fetch(url, {
-    method,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
+  const response = await fetch(url, requestInitData(method, data))
 
   let result
 
   try {
     result = await response.json()
   } catch (error) {
+    console.log({ status: response.status })
     throw new Error("Error parsing server response")
   }
 
