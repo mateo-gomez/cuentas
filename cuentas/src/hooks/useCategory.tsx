@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import Constants from "expo-constants"
-
-const { apiUrl } = Constants.expoConfig.extra
+import config from "../config"
 
 export const useCategory = (id) => {
   const [category, setCategory] = useState(null)
@@ -14,7 +13,7 @@ export const useCategory = (id) => {
 
       setLoading(true)
 
-      const url = `${apiUrl}/categories/${id}`
+      const url = `${config.apiUrl}/categories/${id}`
 
       try {
         const response = await fetch(url)

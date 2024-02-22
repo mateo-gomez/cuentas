@@ -1,14 +1,20 @@
-import Constants from "expo-constants"
 import { removeInitialSlash } from "../utils"
 import config from "../config"
 
-const requestInitData = (method: string, data?: Record<string, any>) => {
+enum Method {
+  POST = "POST",
+  PUT = "PUT",
+  GET = "GET",
+  DELETE = "DELETE",
+}
+
+const requestInitData = (method: Method, data?: Record<string, any>) => {
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
   }
 
-  if (method === "PUT" || method === "POST")
+  if (method === Method.PUT || method === Method.POST)
     return {
       method,
       headers,
@@ -22,13 +28,15 @@ const requestInitData = (method: string, data?: Record<string, any>) => {
 }
 
 export const client = {
-  get: (endpoint) => fetcher("GET", endpoint),
-  post: (endpoint, data) => fetcher("POST", endpoint, data),
-  put: (endpoint, data) => fetcher("PUT", endpoint, data),
-  delete: (endpoint) => fetcher("DELETE", endpoint),
+  get: (endpoint: string) => fetcher(Method.GET, endpoint),
+  post: (endpoint: string, data: Record<string, any>) =>
+    fetcher(Method.POST, endpoint, data),
+  put: (endpoint: string, data: Record<string, any>) =>
+    fetcher(Method.PUT, endpoint, data),
+  delete: (endpoint: string) => fetcher(Method.DELETE, endpoint),
 }
 
-export const fetcher = async (method, endpoint = "", data = {}) => {
+export const fetcher = async (method: Method, endpoint = "", data = {}) => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
   const url = `${config.apiUrl}/${normalizedEndpoint}`
 

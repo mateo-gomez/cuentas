@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import Constants from "expo-constants"
-
-const { apiUrl } = Constants.expoConfig.extra
+import config from "../config"
 
 export const useCategories = () => {
   const [categories, setCategories] = useState([])
@@ -12,7 +11,7 @@ export const useCategories = () => {
     const getCategories = async () => {
       setLoading(true)
 
-      const url = `${apiUrl}/categories`
+      const url = `${config.apiUrl}/categories`
 
       try {
         const response = await fetch(url)
