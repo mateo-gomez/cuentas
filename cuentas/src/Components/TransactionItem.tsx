@@ -1,35 +1,56 @@
 import { ArrowDownCircle, ArrowUpCircle } from "iconoir-react-native"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import NumberFormat from "./NumberFormat"
 import StyledText from "./StyledText"
+import { TransactionType } from "../Pages/Transaction"
+import { Link } from "react-router-native"
 
-const TransactionItem = (props) => {
+interface TransactionItemProps {
+  id: string
+  type: TransactionType
+  description: string
+  value: number
+  categoryName: string
+}
+
+const TransactionItem = ({
+  id,
+  type,
+  description,
+  value,
+  categoryName,
+}: TransactionItemProps) => {
   return (
-    <View style={styles.container}>
-      <View>
-        {props.type ? (
-          <ArrowUpCircle
-            color={theme.colors.greenLight}
-            height={20}
-            width={20}
-          />
-        ) : (
-          <ArrowDownCircle color={theme.colors.red} height={20} width={20} />
-        )}
+    <Link
+      underlayColor={theme.colors.highlight}
+      to={`/transactions/${TransactionType[type]}/${id}`}
+    >
+      <View style={styles.container}>
+        <View>
+          {type ? (
+            <ArrowUpCircle
+              color={theme.colors.greenLight}
+              height={20}
+              width={20}
+            />
+          ) : (
+            <ArrowDownCircle color={theme.colors.red} height={20} width={20} />
+          )}
+        </View>
+        <View style={styles.box}>
+          <StyledText>{categoryName}</StyledText>
+          {description ? (
+            <StyledText fontSize="small" color="grey">
+              {description}
+            </StyledText>
+          ) : null}
+        </View>
+        <View style={styles.price}>
+          <NumberFormat fontWeight="normal" value={value} />
+        </View>
       </View>
-      <View style={styles.box}>
-        <StyledText>{props.category.name}</StyledText>
-        {props.description ? (
-          <StyledText fontSize="small" color="grey">
-            {props.description}
-          </StyledText>
-        ) : null}
-      </View>
-      <View style={styles.price}>
-        <NumberFormat fontWeight="normal" value={props.value} />
-      </View>
-    </View>
+    </Link>
   )
 }
 

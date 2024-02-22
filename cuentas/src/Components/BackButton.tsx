@@ -7,6 +7,7 @@ export interface BackButtonProps {
   to?: number
   size?: number
   color?: string
+  onPress?: () => void
   [x: string]: any
 }
 
@@ -14,11 +15,13 @@ const BackButton = ({
   to = -1,
   size = theme.fontSizes.subheading,
   color = theme.colors.white,
+  onPress,
   ...restOfProps
 }: BackButtonProps) => {
   const navigate = useNavigate()
 
   const handlePress = () => {
+    onPress && onPress()
     navigate(to)
   }
 

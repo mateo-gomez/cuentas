@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react"
-import { BackHandler, StyleSheet, TextInput, View } from "react-native"
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
 import AppBar from "../Components/AppBar"
 import DatePicker from "../Components/DatePicker"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import { Outlet, useNavigate, useParams } from "react-router-native"
-import Constants from "expo-constants"
 import StyledText from "../Components/StyledText"
 import BackButton from "../Components/BackButton"
 import { Category } from "./category/types"
+import { useTransaction } from "../hooks/useTransaction"
+import OverlayLoader from "../Components/OverlayLoader"
+import { client } from "../helpers/client"
 
 const initialDate = new Date()
-const { apiUrl } = Constants.expoConfig.extra
 
-enum TransactionType {
+export enum TransactionType {
   expenses,
   income,
 }
@@ -21,16 +22,27 @@ enum TransactionType {
 export type Transaction = {
   _id: string
   date: Date
-  value: Number
-  account: String
+  value: number
+  account: string
   category: Category
   type: TransactionType
-  description: String
+  description: string
   createdAt: Date
   updatedAt: Date
 }
 
+const createTransaction = async (newTransaction) => {
+  return client.post("transactions", newTransaction)
+}
+
+const updateTransaction = async (transaction) => {
+  return await client.put(`transactions/${transaction.id}`, transaction)
+}
+
 const Transaction = () => {
+  const { type, id } = useParams()
+  const navigate = useNavigate()
+  const { transaction, loading } = useTransaction(id)
   const [transactionValue, setTransactionValue] = useState(0)
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(initialDate)
@@ -40,35 +52,46 @@ const Transaction = () => {
     description: null,
   })
 
-  const { type } = useParams()
-  const navigate = useNavigate()
+  useEffect(() => {
+    if (transaction) {
+      setTransactionValue(transaction.value)
+      setDescription(transaction.description)
+      setDate(transaction.date)
+    }
+  }, [transaction])
 
   const handlePressNumpad = (val) => {
     setTransactionValue(val)
   }
 
-  const handleSubmit = async (newTransaction) => {
+  const handleSubmit = async (transaction) => {
     try {
-      const response = await fetch(`${apiUrl}/transactions`, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(newTransaction),
-      })
+      if (transaction.id) {
+        await updateTransaction(transaction)
+      } else {
+        await createTransaction(transaction)
+      }
 
-      const data = await response.json()
-
-      console.log("add category response", data)
       navigate("/")
     } catch (error) {
-      console.error("add transaction error", error)
+      console.error("submit transaction error: ", error)
     }
+  }
+
+  const handleSave = () => {
+    return handleSubmit({
+      id,
+      value: transactionValue,
+      description,
+      date,
+      category: transaction.category._id,
+      type: type === "income" ? 1 : 0,
+    })
   }
 
   const handleSelectCategory = (category) => {
     handleSubmit({
+      id,
       value: transactionValue,
       description,
       date,
@@ -91,19 +114,24 @@ const Transaction = () => {
     setErrors((errors) => ({ ...errors, transactionValue: true }))
   }
 
-  useEffect(() => {
-    const onBackPress = () => {
-      navigate(-1)
+  const isDirty = (record, reference) => {
+    if (!record) return false
 
-      return true
+    return Object.entries(reference).some(
+      ([key, value]) => record[key] !== value,
+    )
+  }
+
+  const handleBackPress = () => {
+    const isTransactionDirty = isDirty(transaction, {
+      value: transactionValue,
+      description,
+      date,
+    })
+    if (isTransactionDirty) {
+      handleSave()
     }
-
-    BackHandler.addEventListener("hardwareBackPress", onBackPress)
-
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", onBackPress)
-    }
-  }, [])
+  }
 
   useEffect(() => {
     if (errors.transactionValue && transactionValue) {
@@ -113,14 +141,29 @@ const Transaction = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppBar>
-        <BackButton />
+      <AppBar style={{ justifyContent: "space-between", borderWidth: 1 }}>
+        <View style={{ flexDirection: "row" }}>
+          <BackButton onPress={handleBackPress} />
 
-        <StyledText color={"white"} fontWeight="bold">
-          {type === "income" ? "Nuevo ingreso" : "Nuevo egreso"}
-        </StyledText>
+          <StyledText color={"white"} fontWeight="bold">
+            {id ? "Editando " : " Nuevo "}
+            {type === "income" ? "ingreso" : "gasto"}
+          </StyledText>
+        </View>
+
+        <TouchableOpacity
+          style={{
+            padding: 8,
+            borderRadius: 4,
+            borderWidth: 1,
+            borderColor: theme.colors.grey,
+          }}
+          onPress={handleSave}
+        >
+          <StyledText color="white">Guardar</StyledText>
+        </TouchableOpacity>
       </AppBar>
-
+      {loading ? <OverlayLoader message="Cargando registro..." /> : null}
       <View style={styles.wrapper}>
         <DatePicker
           style={styles.datePicker}

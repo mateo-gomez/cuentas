@@ -1,6 +1,7 @@
 export type Category = {
-  name: String
-  icon: String
+  _id?: string
+  name: string
+  icon: string
   createdAt: Date
   updatedAt: Date
 }

@@ -12,7 +12,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.appBar.primary,
     marginTop: Constants.statusBarHeight,
-    padding: 20,
+    minHeight: 70,
+    paddingHorizontal: 20,
   },
 })
 

@@ -11,10 +11,12 @@ const Routes = () => {
     <View style={styles.container}>
       <Router>
         <Route path="/" element={<Transactions />} />
-        <Route path="/transactions/:type" element={<Transaction />}>
-          <Route index element={<NumPad />} />
-          <Route path="categories" element={<Categories />} />
-        </Route>
+        {["/transactions/:type", "/transactions/:type/:id"].map((path) => (
+          <Route key={path} path={path} element={<Transaction />}>
+            <Route index element={<NumPad />} />
+            <Route path="categories" element={<Categories />} />
+          </Route>
+        ))}
         <Route path="/categories/create" element={<Category />} />
         <Route path="/categories/:id" element={<Category />} />
       </Router>
