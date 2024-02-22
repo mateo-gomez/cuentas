@@ -33,6 +33,18 @@ export const getTransactions = async ({ response }: RouterContext<string>) => {
 	};
 };
 
+export const getTransaction = async ({
+	response,
+	params,
+}: RouterContext<string>) => {
+	const { id } = params;
+
+	const transaction = await Transaction.findById(id);
+
+	response.status = Status.OK;
+	response.body = transaction;
+};
+
 export const saveTransaction = async ({
 	response,
 	request,
@@ -41,5 +53,29 @@ export const saveTransaction = async ({
 	const transaction = await Transaction.create(body);
 
 	response.status = Status.Created;
+	response.body = transaction;
+};
+
+export const updateTransaction = async ({
+	response,
+	request,
+	params,
+}: RouterContext<string>) => {
+	const { id } = params;
+	const body = await request.body({ type: "json" }).value;
+	const transaction = await Transaction.findById(id);
+
+	if (!transaction) {
+		response.status = Status.NotFound;
+		response.body = { message: "Error 404: Recurso no encontrado" };
+		return;
+	}
+
+	transaction.value = body.value || transaction.value;
+	transaction.date = body.date || transaction.date;
+	transaction.description = body.description || transaction.description;
+	await transaction.save();
+
+	response.status = Status.OK;
 	response.body = transaction;
 };
