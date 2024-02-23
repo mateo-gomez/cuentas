@@ -25,7 +25,7 @@ const options = [
   //     icon: "settings-outline",
   //     options: <CategoriesOptions />,
   // },
-]
+] as const
 
 const OptionsSideBar = () => (
   <View style={styles.container}>

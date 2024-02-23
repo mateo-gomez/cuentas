@@ -58,4 +58,4 @@ export const categoryIcons = [
   "subway-outline",
   "thermometer-outline",
   "train-outline",
-]
+] as const
