@@ -3,7 +3,7 @@ import { theme } from "../theme"
 import StyledText from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 
-const Category = ({
+const CategoryItem = ({
   name,
   icon,
   size,
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Category
+export default CategoryItem
