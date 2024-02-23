@@ -1,9 +1,20 @@
 import { Dimensions, FlatList, View } from "react-native"
-import Category from "./Category"
+import CategoryItem from "./CategoryItem"
 import StyledText from "./StyledText"
 import { theme } from "../theme"
+import { Category } from "../Pages/category/types"
 
-const CategoryList = ({ categories, onSelect, selection }) => {
+interface CategoryListProps {
+  categories: Category[]
+  onSelect: (category: Category) => void
+  highlightCriteria: (category: Category) => boolean
+}
+
+const CategoryList = ({
+  categories,
+  onSelect,
+  highlightCriteria,
+}: CategoryListProps) => {
   const gap = 10
   const categoryBoxSize = 100 + gap
   const numColumns = Math.floor(
@@ -20,20 +31,18 @@ const CategoryList = ({ categories, onSelect, selection }) => {
       ItemSeparatorComponent={() => <View style={{ marginBottom: 10 }} />}
       ListEmptyComponent={<StyledText textCenter>Sin categorías</StyledText>}
       renderItem={({ item: category, index }) => {
-        // TODO: separar categroyList de categoryOptions, esto puede ocacionar que al editar
-        // una transacción se seleccione la categoría que no es, si la categoria comparte icon con otra
-        const isSelected = selection && category.icon === selection.icon
+        const isHighlight = highlightCriteria && highlightCriteria(category)
 
         return (
-          <Category
+          <CategoryItem
             size={categoryBoxSize}
             style={[
               index % numColumns !== 0 && { marginLeft: gap },
-              isSelected && {
+              isHighlight && {
                 backgroundColor: theme.colors.primary,
               },
             ]}
-            color={isSelected ? theme.colors.white : theme.colors.primary}
+            color={isHighlight ? theme.colors.white : theme.colors.primary}
             icon={category.icon}
             name={category.name}
             onPress={() => onSelect(category)}

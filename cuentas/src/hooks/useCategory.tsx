@@ -1,27 +1,24 @@
 import { useEffect, useState } from "react"
-import Constants from "expo-constants"
-import config from "../config"
+import { client } from "../helpers/client"
+import { Category } from "../Pages/category/types"
 
-export const useCategory = (id) => {
+const getCategory = async (id: string): Promise<Category | null | never> => {
+  return await client.get(`categories/${id}`)
+}
+
+export const useCategory = (id: string) => {
   const [category, setCategory] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    const getCategories = async () => {
-      if (!id) null
+    const fetchCategory = async () => {
+      if (!id) return
 
       setLoading(true)
 
-      const url = `${config.apiUrl}/categories/${id}`
-
       try {
-        const response = await fetch(url)
-        const data = await response.json()
-
-        if (response.status === 404) {
-          throw new Error(data.error)
-        }
+        const data = await getCategory(id)
 
         setCategory(data)
       } catch (error) {
@@ -31,7 +28,7 @@ export const useCategory = (id) => {
       }
     }
 
-    getCategories()
+    fetchCategory()
   }, [])
 
   return { category, loading, error }

@@ -11,8 +11,15 @@ import { useCategory } from "../../hooks/useCategory"
 import { client } from "../../helpers/client"
 import { Ionicons } from "@expo/vector-icons"
 import { useSelect } from "../../hooks/useSelect"
+import { Category as CategoryType } from "./types"
 
-const availableCategories = categoryIcons.map((icon) => ({ _id: icon, icon }))
+const availableCategories = categoryIcons.map(
+  (icon): CategoryType => ({
+    _id: icon,
+    icon,
+    name: "",
+  }),
+)
 
 const updateCategory = async (id, category) => {
   const data = await client.put(`categories/${id}`, category)
@@ -43,7 +50,7 @@ const Category = () => {
   })
 
   const { selected: categorySelected, setSelected: setCategorySelected } =
-    useSelect(category)
+    useSelect<CategoryType>(category)
 
   useEffect(() => {
     if (category) {
@@ -150,7 +157,9 @@ const Category = () => {
           <CategoryList
             categories={availableCategories}
             onSelect={handleSelectCategory}
-            selection={categorySelected}
+            highlightCriteria={(category) =>
+              category.icon === categorySelected.icon
+            }
           />
         ) : null}
       </View>

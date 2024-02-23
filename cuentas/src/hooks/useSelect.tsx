@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
-export const useSelect = (item) => {
-  const [selected, setSelected] = useState(item)
+export const useSelect = <T,>(item: T) => {
+  const [selected, setSelected] = useState<T>(item)
 
   useEffect(() => {
     if (item) {

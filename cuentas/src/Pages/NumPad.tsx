@@ -4,8 +4,14 @@ import { useNavigate, useOutletContext } from "react-router-native"
 import StyledText from "../Components/StyledText"
 import { theme } from "../theme"
 
+interface NumpadOutletContext {
+  handlePressNumpad: (num: number) => void
+  isValidTransactionValue: () => boolean
+}
+
 const NumPad = () => {
-  const { handlePressNumpad, isValidTransactionValue } = useOutletContext()
+  const { handlePressNumpad, isValidTransactionValue } =
+    useOutletContext<NumpadOutletContext>()
 
   const navigate = useNavigate()
 

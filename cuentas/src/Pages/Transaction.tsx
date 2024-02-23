@@ -31,11 +31,20 @@ export type Transaction = {
   updatedAt: Date
 }
 
-const createTransaction = async (newTransaction) => {
+export interface TransactionDTO {
+  id?: string
+  date: Date
+  value: number
+  description: string
+  category: string
+  type: number
+}
+
+const createTransaction = async (newTransaction: TransactionDTO) => {
   return client.post("transactions", newTransaction)
 }
 
-const updateTransaction = async (transaction) => {
+const updateTransaction = async (transaction: TransactionDTO) => {
   return await client.put(`transactions/${transaction.id}`, transaction)
 }
 
@@ -60,11 +69,11 @@ const Transaction = () => {
     }
   }, [transaction])
 
-  const handlePressNumpad = (val) => {
+  const handlePressNumpad = (val: number) => {
     setTransactionValue(val)
   }
 
-  const handleSubmit = async (transaction) => {
+  const handleSubmit = async (transaction: TransactionDTO) => {
     try {
       if (transaction.id) {
         await updateTransaction(transaction)
@@ -89,7 +98,7 @@ const Transaction = () => {
     })
   }
 
-  const handleSelectCategory = (category) => {
+  const handleSelectCategory = (category: Category) => {
     handleSubmit({
       id,
       value: transactionValue,
@@ -100,11 +109,11 @@ const Transaction = () => {
     })
   }
 
-  const handleChangeDescription = (value) => {
+  const handleChangeDescription = (value: string) => {
     setDescription(value)
   }
 
-  const handleChangeDate = (value) => {
+  const handleChangeDate = (value: Date) => {
     setDate(value)
   }
 
@@ -196,6 +205,7 @@ const Transaction = () => {
               handlePressNumpad,
               handleSelectCategory,
               isValidTransactionValue,
+              categoryId: transaction?.category._id,
             }}
           />
         </View>

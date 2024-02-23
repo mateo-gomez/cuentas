@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from "react-native"
+import { StyleSheet, Text, TextProps } from "react-native"
 import { theme } from "../theme"
 import { PropsWithChildren } from "react"
 
@@ -20,7 +20,6 @@ export interface StyledTextProps {
   fontWeight?: FontWeight | string
   color?: "primary" | "secondary" | "grey" | "green" | "red" | "white"
   textCenter?: boolean
-  style?: StyleSheet.NamedStyles<any>
 }
 
 const styles = StyleSheet.create({
@@ -53,7 +52,7 @@ export default function StyledText({
   textCenter,
   style,
   ...restOfProps
-}: PropsWithChildren<StyledTextProps>) {
+}: PropsWithChildren<StyledTextProps & TextProps>) {
   const textStyles = [
     styles.text,
     fontWeight === "bold" && styles.bold,

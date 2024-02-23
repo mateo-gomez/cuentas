@@ -55,7 +55,7 @@ const CategoriesOptions = () => {
               {"Categoria"}
             </StyledText>
             <Ionicons
-              name={"md-add"}
+              name={"add"}
               size={25}
               style={{ marginRight: 10 }}
               color={theme.colors.white}

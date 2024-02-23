@@ -39,7 +39,11 @@ export const getTransaction = async ({
 }: RouterContext<string>) => {
 	const { id } = params;
 
-	const transaction = await Transaction.findById(id);
+	const transaction = await Transaction.findById(id).populate("category", [
+		"_id",
+		"name",
+		"icon",
+	]);
 
 	response.status = Status.OK;
 	response.body = transaction;
