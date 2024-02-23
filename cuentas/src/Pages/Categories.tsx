@@ -16,7 +16,7 @@ const Categories = () => {
   const currentCategory = categories.find(
     (category) => category._id === categoryId,
   )
-  console.log({ selection: currentCategory, categoryId })
+
   return (
     <CategoryList
       highlightCriteria={(category) =>
