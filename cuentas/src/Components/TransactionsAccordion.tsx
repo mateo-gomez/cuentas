@@ -10,27 +10,24 @@ import TransactionItem from "./TransactionItem"
 import { NavArrowDown, NavArrowUp } from "iconoir-react-native"
 import { theme } from "../theme"
 import NumberFormat from "./NumberFormat"
-import { type Transaction } from "../Pages/Transaction"
+import { Transaction } from "../../types/transaction"
+import { Balance } from "../../types/balance"
 
 export interface TransactionsAccordionProps {
   title: string
   transactions: Transaction[]
+  totals: Balance
 }
 
 export const TransactionsAccordion = ({
   title,
   transactions,
+  totals,
 }: TransactionsAccordionProps) => {
   const [expanded, setExpanded] = useState(true)
   const toggleCollapse = () => {
     setExpanded((expanded) => !expanded)
   }
-
-  const total = transactions.reduce((sum, transaction) => {
-    const value = Number(transaction.value) * (transaction.type ? 1 : -1)
-
-    return sum + value
-  }, 0)
 
   return (
     <Collapse isExpanded={expanded} onToggle={toggleCollapse}>
@@ -43,7 +40,10 @@ export const TransactionsAccordion = ({
           )}
           <StyledText fontWeight={"bold"}>{title}</StyledText>
         </View>
-        <NumberFormat value={total} color={total > 0 ? "green" : "red"} />
+        <NumberFormat
+          value={totals.balance}
+          color={totals.balance > 0 ? "green" : "red"}
+        />
       </CollapseHeader>
       <CollapseBody style={styles.accordionBody}>
         {transactions.map((transaction) => (

@@ -3,8 +3,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import NumberFormat from "./NumberFormat"
 import StyledText from "./StyledText"
-import { TransactionType } from "../Pages/Transaction"
 import { Link } from "react-router-native"
+import { TransactionType } from "../../types/transaction"
 
 interface TransactionItemProps {
   id: string

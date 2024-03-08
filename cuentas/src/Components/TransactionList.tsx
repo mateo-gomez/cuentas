@@ -1,23 +1,21 @@
 import { ScrollView, StyleSheet, View } from "react-native"
-import { groupTransactions } from "../utils"
 import { TransactionsAccordion } from "./TransactionsAccordion"
-import { type Transaction } from "../Pages/Transaction"
+import { TransactionAggregate } from "../../types/transaction"
 
 export interface TransactionListProps {
-  transactions: Transaction[]
+  transactionsGrouped: TransactionAggregate[]
 }
 
-const TransactionList = ({ transactions }) => {
-  const data = groupTransactions(transactions, "date")
-
+const TransactionList = ({ transactionsGrouped }: TransactionListProps) => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {data.map((group) => (
+        {transactionsGrouped.map((group) => (
           <TransactionsAccordion
-            key={group.title}
-            title={group.title}
-            transactions={group.data}
+            key={group._id}
+            title={group._id}
+            totals={group.balance}
+            transactions={group.transactions}
           />
         ))}
       </ScrollView>

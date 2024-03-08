@@ -11,34 +11,9 @@ import { Category } from "./category/types"
 import { useTransaction } from "../hooks/useTransaction"
 import OverlayLoader from "../Components/OverlayLoader"
 import { client } from "../helpers/client"
+import { TransactionDTO } from "../../types/transaction"
 
 const initialDate = new Date()
-
-export enum TransactionType {
-  expenses,
-  income,
-}
-
-export type Transaction = {
-  _id: string
-  date: Date
-  value: number
-  account: string
-  category: Category
-  type: TransactionType
-  description: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface TransactionDTO {
-  id?: string
-  date: Date
-  value: number
-  description: string
-  category: string
-  type: number
-}
 
 const createTransaction = async (newTransaction: TransactionDTO) => {
   return client.post("transactions", newTransaction)
