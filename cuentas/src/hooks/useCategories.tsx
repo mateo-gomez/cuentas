@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react"
 import { client } from "../helpers"
 import { Category } from "../../types"
-
-const getCategories = async (): Promise<Category[]> => {
-  return await client.get("categories")
-}
+import { getCategories } from "../services"
 
 export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([])

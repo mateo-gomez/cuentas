@@ -3,7 +3,6 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import { Outlet, useNavigate, useParams } from "react-router-native"
-import { client } from "../helpers"
 import { Category, TransactionDTO } from "../../types"
 import {
   AppBar,
@@ -13,16 +12,9 @@ import {
   DatePicker,
 } from "../Components"
 import { useTransaction } from "../hooks"
+import { createTransaction, updateTransaction } from "../services"
 
 const initialDate = new Date()
-
-const createTransaction = async (newTransaction: TransactionDTO) => {
-  return client.post("transactions", newTransaction)
-}
-
-const updateTransaction = async (transaction: TransactionDTO) => {
-  return await client.put(`transactions/${transaction.id}`, transaction)
-}
 
 const Transaction = () => {
   const { type, id } = useParams()

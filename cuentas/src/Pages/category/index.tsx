@@ -4,36 +4,18 @@ import { useEffect, useState } from "react"
 import { AppBar, BackButton, CategoryList, StyledText } from "../../Components"
 import { categoryIcons } from "../../constants/"
 import { useNavigate, useParams } from "react-router-native"
-import { client } from "../../helpers"
 import { Ionicons } from "@expo/vector-icons"
 import { Category as CategoryType } from "../../../types"
 import { useCategory, useSelect } from "../../hooks"
+import { createCategory, deleteCategory, updateCategory } from "../../services"
 
-const availableCategories = categoryIcons.map(
+const availableCategories = Object.values(categoryIcons).map(
   (icon): CategoryType => ({
     _id: icon,
     icon,
     name: "",
   }),
 )
-
-const updateCategory = async (id, category) => {
-  const data = await client.put(`categories/${id}`, category)
-
-  return data
-}
-
-const createCategory = async (newCategory) => {
-  const data = await client.post("/categories", newCategory)
-
-  return data
-}
-
-const deleteCategory = async (id) => {
-  const data = await client.delete(`/categories/${id}`)
-
-  return data
-}
 
 const Category = () => {
   const navigate = useNavigate()

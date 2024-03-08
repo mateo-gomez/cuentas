@@ -28,21 +28,21 @@ const requestInitData = (method: Method, data?: Record<string, any>) => {
 }
 
 export const client = {
-  get: (endpoint: string) => fetcher(Method.GET, endpoint),
-  post: (endpoint: string, data: Record<string, any>) =>
-    fetcher(Method.POST, endpoint, data),
-  put: (endpoint: string, data: Record<string, any>) =>
-    fetcher(Method.PUT, endpoint, data),
-  delete: (endpoint: string) => fetcher(Method.DELETE, endpoint),
+  get: <T>(endpoint: string) => fetcher<T>(Method.GET, endpoint),
+  post: <T>(endpoint: string, data: Record<string, any>) =>
+    fetcher<T>(Method.POST, endpoint, data),
+  put: <T>(endpoint: string, data: Record<string, any>) =>
+    fetcher<T>(Method.PUT, endpoint, data),
+  delete: <T>(endpoint: string) => fetcher<T>(Method.DELETE, endpoint),
 }
 
-export const fetcher = async (method: Method, endpoint = "", data = {}) => {
+export const fetcher = async <T>(method: Method, endpoint = "", data = {}) => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
   const url = `${config.apiUrl}/${normalizedEndpoint}`
 
   const response = await fetch(url, requestInitData(method, data))
 
-  let result
+  let result: T
 
   try {
     result = await response.json()

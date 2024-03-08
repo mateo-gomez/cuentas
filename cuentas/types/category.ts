@@ -5,3 +5,8 @@ export interface Category {
   createdAt?: Date
   updatedAt?: Date
 }
+
+export interface CategoryDTO {
+  name: string
+  icon: string
+}

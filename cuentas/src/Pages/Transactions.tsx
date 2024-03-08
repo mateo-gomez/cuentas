@@ -8,8 +8,7 @@ import { useNavigate } from "react-router-native"
 import { PlusCircle, MinusCircle } from "iconoir-react-native"
 import { theme } from "../theme"
 import { useEffect, useRef, useState } from "react"
-import config from "../config"
-import { Balance, TransactionAggregate } from "../../types"
+
 import {
   AppBar,
   StyledText,
@@ -17,11 +16,7 @@ import {
   NumberFormat,
   TransactionList,
 } from "../Components"
-
-interface TransactionResponse {
-  transactions: TransactionAggregate[]
-  totals: Balance
-}
+import { getTransactions } from "../services"
 
 const Transactions = () => {
   const navigate = useNavigate()
@@ -34,34 +29,14 @@ const Transactions = () => {
   })
 
   useEffect(() => {
-    const getTransactions = async () => {
-      try {
-        const response = await fetch(`${config.apiUrl}/transactions`)
-        const { transactions, totals } =
-          (await response.json()) as TransactionResponse
-
-        const data = transactions.map((item) => {
-          const transactions = item.transactions.map((transaction) => ({
-            ...transaction,
-            date: transaction.date,
-          }))
-
-          return {
-            ...item,
-            minDate: new Date(item.minDate),
-            maxDate: new Date(item.maxDate),
-            transactions,
-          }
-        })
-
-        setTotals(totals)
-        setTransactions(data)
-      } catch (error) {
-        console.log(error.message)
-      }
-    }
-
     getTransactions()
+      .then(({ transactions, totals }) => {
+        setTotals(totals)
+        setTransactions(transactions)
+      })
+      .catch((error) => {
+        console.log(error.message)
+      })
   }, [])
 
   const handlePressPlusButton = () => {

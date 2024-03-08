@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react"
-import { client } from "../helpers"
 import { Transaction } from "../../types"
-
-const getTransaction = async (id: string): Promise<Transaction | never> => {
-  const data = await client.get(`transactions/${id}`)
-
-  return { ...data, date: new Date(data.date) }
-}
+import { getTransaction } from "../services"
 
 export const useTransaction = (id: string) => {
   const [transaction, setTransaction] = useState<Transaction | null>()

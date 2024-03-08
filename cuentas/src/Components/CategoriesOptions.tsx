@@ -1,35 +1,13 @@
 import { FlatList, View } from "react-native"
-import { useEffect, useState } from "react"
 import { StyledText } from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 import { theme } from "../theme"
 import { Link } from "react-router-native"
-import config from "../config"
+import { useCategories } from "../hooks"
+import { CategoryIcon } from "./CategoryIcon"
 
 export const CategoriesOptions = () => {
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-
-  useEffect(() => {
-    const getCategories = async () => {
-      setLoading(true)
-
-      try {
-        const response = await fetch(`${config.apiUrl}/categories`)
-        const data = await response.json()
-
-        setCategories(data)
-      } catch (error) {
-        setError(error.message)
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getCategories()
-  }, [])
+  const { categories, loading, error } = useCategories()
 
   return error ? (
     <StyledText>{error}</StyledText>
