@@ -136,7 +136,7 @@ const Category = () => {
             categories={availableCategories}
             onSelect={handleSelectCategory}
             highlightCriteria={(category) =>
-              category.icon === categorySelected.icon
+              categorySelected && category.icon === categorySelected.icon
             }
           />
         ) : null}
