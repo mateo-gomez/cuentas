@@ -1,35 +1,73 @@
-import Transaction, { TransactionType } from "../models/Transaction.ts";
+import Transaction from "../models/Transaction.ts";
 
 import { Status } from "../deps.ts";
 import type { RouterContext } from "../deps.ts";
+import { MongoTransactionRepository } from "../repositories/mongo/MongoTransaction.repository.ts";
+import {
+	GroupBy,
+	TransactionAggregate,
+} from "../repositories/Transaction.repository.ts";
 
-export const getTransactions = async ({ response }: RouterContext<string>) => {
-	const transactions = await Transaction.find()
-		.populate("category", ["_id", "name", "icon"])
-		.sort({
-			date: "desc",
-		});
+const transactionRepository = new MongoTransactionRepository();
 
-	let totalIncome = 0;
-	let totalExpenses = 0;
+const getTransactionAggregateTotals = (
+	transactionAggregates: TransactionAggregate[]
+) =>
+	transactionAggregates.reduce(
+		(totals, transactionAggregate) => {
+			totals.incomes += transactionAggregate.balance.incomes;
+			totals.expenses += transactionAggregate.balance.expenses;
+			totals.balance += transactionAggregate.balance.balance;
 
-	transactions.forEach((transaction) => {
-		if (transaction.type === TransactionType.income) {
-			totalIncome += transaction.value;
+			return totals;
+		},
+		{
+			incomes: 0,
+			expenses: 0,
+			balance: 0,
 		}
+	);
 
-		if (transaction.type === TransactionType.expenses) {
-			totalExpenses += transaction.value;
-		}
-	});
+export const getAllTransactions = async ({
+	response,
+}: RouterContext<string>) => {
+	const transactionAggregates = await transactionRepository.getGroupedBy("day");
+	const totals = getTransactionAggregateTotals(transactionAggregates);
 
 	response.body = {
-		transactions,
-		totals: {
-			income: totalIncome,
-			expenses: totalExpenses,
-			balance: totalIncome - totalExpenses,
-		},
+		transactions: transactionAggregates,
+		totals,
+	};
+};
+
+export const getTransactionsBy = async ({
+	response,
+	params,
+}: RouterContext<string>) => {
+	const { year, month } = params;
+	const groupBy = (params[0] || "year") as GroupBy;
+	let transactionAggregates: TransactionAggregate[];
+
+	if (groupBy === "year" && year) {
+		transactionAggregates = await transactionRepository.getInYearBy(
+			groupBy,
+			year
+		);
+	} else if (groupBy === "month" && year && month) {
+		transactionAggregates = await transactionRepository.getInMonthBy(
+			groupBy,
+			year,
+			month
+		);
+	} else {
+		transactionAggregates = await transactionRepository.getGroupedBy(groupBy);
+	}
+
+	const totals = getTransactionAggregateTotals(transactionAggregates);
+
+	response.body = {
+		transactions: transactionAggregates,
+		totals,
 	};
 };
 
