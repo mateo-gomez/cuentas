@@ -1,6 +1,6 @@
 import Transaction from "../models/Transaction.ts";
 
-import { Status } from "../deps.ts";
+import { Status, Types } from "../deps.ts";
 import type { RouterContext } from "../deps.ts";
 import { MongoTransactionRepository } from "../repositories/mongo/MongoTransaction.repository.ts";
 import {
@@ -77,10 +77,19 @@ export const getTransaction = async ({
 }: RouterContext<string>) => {
 	const { id } = params;
 
-	const transaction = await Transaction.findById(id).populate("category", [
-		"_id",
-		"name",
-		"icon",
+	const transaction = await Transaction.aggregate([
+		{ $match: { _id: new Types.ObjectId(id) } },
+		{
+			$lookup: {
+				from: "categories",
+				localField: "categoryId",
+				foreignField: "_id",
+				as: "category",
+			},
+		},
+		{
+			$unwind: "$category",
+		},
 	]);
 
 	response.status = Status.OK;
