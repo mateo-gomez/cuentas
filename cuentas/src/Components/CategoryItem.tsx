@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { StyledText } from "./StyledText"
-import { Ionicons } from "@expo/vector-icons"
+import { CategoryIcon } from "./CategoryIcon"
 
 export const CategoryItem = ({
   name,
@@ -41,7 +41,7 @@ export const CategoryItem = ({
         }}
       >
         <View style={{ justifyContent: "center", flex: 1 }}>
-          <Ionicons
+          <CategoryIcon
             name={icon}
             color={color || theme.colors.primary}
             size={70}

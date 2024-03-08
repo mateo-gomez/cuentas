@@ -29,7 +29,7 @@ export const CategoriesOptions = () => {
             }}
           >
             <StyledText fontSize={"subheading"} color={"white"}>
-              {"Categoría"}
+              Categoría
             </StyledText>
             <Ionicons
               name={"add"}
@@ -58,12 +58,7 @@ export const CategoriesOptions = () => {
               backgroundColor: theme.colors.primary,
             }}
           >
-            <Ionicons
-              name={category.icon}
-              size={25}
-              style={{ marginRight: 10 }}
-              color={theme.colors.white}
-            />
+            <CategoryIcon name={category.icon} style={{ marginRight: 10 }} />
             <StyledText fontSize={"subheading"} color={"white"}>
               {category.name}
             </StyledText>
