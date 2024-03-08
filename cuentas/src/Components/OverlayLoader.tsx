@@ -1,11 +1,11 @@
 import { ActivityIndicator, Modal, StyleSheet, View } from "react-native"
-import StyledText from "./StyledText"
+import { StyledText } from "./StyledText"
 
 interface OverlayLoaderProps {
   message?: string
 }
 
-const OverlayLoader = ({ message }: OverlayLoaderProps) => {
+export const OverlayLoader = ({ message }: OverlayLoaderProps) => {
   return (
     <Modal transparent={true}>
       <View style={styles.indicatorContainer}>
@@ -30,5 +30,3 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 })
-
-export default OverlayLoader

@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react"
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import AppBar from "../Components/AppBar"
-import DatePicker from "../Components/DatePicker"
 import { theme } from "../theme"
 import { formatNumber } from "../utils"
 import { Outlet, useNavigate, useParams } from "react-router-native"
-import StyledText from "../Components/StyledText"
-import BackButton from "../Components/BackButton"
-import { Category } from "./category/types"
-import { useTransaction } from "../hooks/useTransaction"
-import OverlayLoader from "../Components/OverlayLoader"
-import { client } from "../helpers/client"
-import { TransactionDTO } from "../../types/transaction"
+import { client } from "../helpers"
+import { Category, TransactionDTO } from "../../types"
+import {
+  AppBar,
+  BackButton,
+  StyledText,
+  OverlayLoader,
+  DatePicker,
+} from "../Components"
+import { useTransaction } from "../hooks"
 
 const initialDate = new Date()
 

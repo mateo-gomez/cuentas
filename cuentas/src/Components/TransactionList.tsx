@@ -1,12 +1,14 @@
 import { ScrollView, StyleSheet, View } from "react-native"
 import { TransactionsAccordion } from "./TransactionsAccordion"
-import { TransactionAggregate } from "../../types/transaction"
+import { TransactionAggregate } from "../../types"
 
-export interface TransactionListProps {
+interface TransactionListProps {
   transactionsGrouped: TransactionAggregate[]
 }
 
-const TransactionList = ({ transactionsGrouped }: TransactionListProps) => {
+export const TransactionList = ({
+  transactionsGrouped,
+}: TransactionListProps) => {
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -28,5 +30,3 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 })
-
-export default TransactionList

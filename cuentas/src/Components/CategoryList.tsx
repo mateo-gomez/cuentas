@@ -1,8 +1,8 @@
 import { Dimensions, FlatList, View } from "react-native"
-import CategoryItem from "./CategoryItem"
-import StyledText from "./StyledText"
+import { CategoryItem } from "./CategoryItem"
+import { StyledText } from "./StyledText"
 import { theme } from "../theme"
-import { Category } from "../Pages/category/types"
+import { Category } from "../../types"
 
 interface CategoryListProps {
   categories: Category[]
@@ -10,7 +10,7 @@ interface CategoryListProps {
   highlightCriteria: (category: Category) => boolean
 }
 
-const CategoryList = ({
+export const CategoryList = ({
   categories,
   onSelect,
   highlightCriteria,
@@ -52,5 +52,3 @@ const CategoryList = ({
     />
   )
 }
-
-export default CategoryList

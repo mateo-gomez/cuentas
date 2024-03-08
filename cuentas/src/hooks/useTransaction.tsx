@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { client } from "../helpers/client"
-import { Transaction } from "../../types/transaction"
+import { client } from "../helpers"
+import { Transaction } from "../../types"
 
 const getTransaction = async (id: string): Promise<Transaction | never> => {
   const data = await client.get(`transactions/${id}`)

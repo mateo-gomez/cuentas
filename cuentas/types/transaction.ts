@@ -1,4 +1,4 @@
-import { Category } from "../src/Pages/category/types"
+import { Category } from "./category"
 
 export interface TransactionAggregate {
   _id: string

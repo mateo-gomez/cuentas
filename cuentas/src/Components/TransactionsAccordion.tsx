@@ -5,13 +5,12 @@ import {
 } from "accordion-collapse-react-native"
 import { useState } from "react"
 import { StyleSheet, View } from "react-native"
-import StyledText from "./StyledText"
-import TransactionItem from "./TransactionItem"
+import { StyledText } from "./StyledText"
+import { TransactionItem } from "./TransactionItem"
 import { NavArrowDown, NavArrowUp } from "iconoir-react-native"
 import { theme } from "../theme"
-import NumberFormat from "./NumberFormat"
-import { Transaction } from "../../types/transaction"
-import { Balance } from "../../types/balance"
+import { NumberFormat } from "./NumberFormat"
+import { Transaction, Balance } from "../../types"
 
 export interface TransactionsAccordionProps {
   title: string

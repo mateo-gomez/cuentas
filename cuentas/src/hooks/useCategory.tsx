@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { client } from "../helpers/client"
-import { Category } from "../Pages/category/types"
+import { client } from "../helpers"
+import { Category } from "../../types"
 
 const getCategory = async (id: string): Promise<Category | null | never> => {
   return await client.get(`categories/${id}`)

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-native"
 import { theme } from "../theme"
 import BackArrowIcon from "./svg/BackArrowIcon"
 
-export interface BackButtonProps {
+interface BackButtonProps {
   to?: number
   size?: number
   color?: string
@@ -11,7 +11,7 @@ export interface BackButtonProps {
   [x: string]: any
 }
 
-const BackButton = ({
+export const BackButton = ({
   to = -1,
   size = theme.fontSizes.subheading,
   color = theme.colors.white,
@@ -39,5 +39,3 @@ const styles = StyleSheet.create({
     marginRight: 30,
   },
 })
-
-export default BackButton

@@ -1,17 +1,13 @@
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import StyledText from "../../Components/StyledText"
-import AppBar from "../../Components/AppBar"
-import BackButton from "../../Components/BackButton"
 import { theme } from "../../theme"
 import { useEffect, useState } from "react"
-import CategoryList from "../../Components/CategoryList"
-import { categoryIcons } from "../../constants/availableCategories"
+import { AppBar, BackButton, CategoryList, StyledText } from "../../Components"
+import { categoryIcons } from "../../constants/"
 import { useNavigate, useParams } from "react-router-native"
-import { useCategory } from "../../hooks/useCategory"
-import { client } from "../../helpers/client"
+import { client } from "../../helpers"
 import { Ionicons } from "@expo/vector-icons"
-import { useSelect } from "../../hooks/useSelect"
-import { Category as CategoryType } from "./types"
+import { Category as CategoryType } from "../../../types"
+import { useCategory, useSelect } from "../../hooks"
 
 const availableCategories = categoryIcons.map(
   (icon): CategoryType => ({

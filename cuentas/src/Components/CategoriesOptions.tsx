@@ -1,13 +1,12 @@
 import { FlatList, View } from "react-native"
 import { useEffect, useState } from "react"
-import Constants from "expo-constants"
-import StyledText from "./StyledText"
+import { StyledText } from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 import { theme } from "../theme"
 import { Link } from "react-router-native"
 import config from "../config"
 
-const CategoriesOptions = () => {
+export const CategoriesOptions = () => {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -52,7 +51,7 @@ const CategoriesOptions = () => {
             }}
           >
             <StyledText fontSize={"subheading"} color={"white"}>
-              {"Categoria"}
+              {"Categoría"}
             </StyledText>
             <Ionicons
               name={"add"}
@@ -96,5 +95,3 @@ const CategoriesOptions = () => {
     />
   )
 }
-
-export default CategoriesOptions

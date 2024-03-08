@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   textCenter: { textAlign: "center" },
 })
 
-export default function StyledText({
+export const StyledText = ({
   children,
   fontSize,
   fontWeight,
@@ -52,7 +52,7 @@ export default function StyledText({
   textCenter,
   style,
   ...restOfProps
-}: PropsWithChildren<StyledTextProps & TextProps>) {
+}: PropsWithChildren<StyledTextProps & TextProps>) => {
   const textStyles = [
     styles.text,
     fontWeight === "bold" && styles.bold,

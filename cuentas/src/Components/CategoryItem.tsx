@@ -1,9 +1,9 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
-import StyledText from "./StyledText"
+import { StyledText } from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 
-const CategoryItem = ({
+export const CategoryItem = ({
   name,
   icon,
   size,
@@ -70,5 +70,3 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 })
-
-export default CategoryItem

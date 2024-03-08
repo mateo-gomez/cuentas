@@ -2,10 +2,10 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { formatDate } from "../utils"
-import StyledText from "./StyledText"
+import { StyledText } from "./StyledText"
 import { Calendar } from "iconoir-react-native"
 
-const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
+export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
   const dateFormatted = formatDate(date ?? new Date())
 
   const handleChangeDate = (ev, date) => {
@@ -47,5 +47,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 })
-
-export default DatePicker

@@ -1,8 +1,7 @@
-import { theme } from "../theme"
 import { formatNumber } from "../utils"
-import StyledText, { StyledTextProps } from "./StyledText"
+import { StyledText, StyledTextProps } from "./StyledText"
 
-const NumberFormat = ({
+export const NumberFormat = ({
   value = 0,
   fontSize = "body",
   fontWeight = "bold",
@@ -10,7 +9,7 @@ const NumberFormat = ({
   ...restOfProps
 }: StyledTextProps & { value: number }) => {
   const absoluteValue = Math.abs(value)
-  const formated = formatNumber(absoluteValue)
+  const formatted = formatNumber(absoluteValue)
 
   return (
     <StyledText
@@ -19,9 +18,7 @@ const NumberFormat = ({
       color={color}
       {...restOfProps}
     >
-      {formated}
+      {formatted}
     </StyledText>
   )
 }
-
-export default NumberFormat

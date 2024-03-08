@@ -6,12 +6,12 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, View } from "react-native"
 import { theme } from "../theme"
-import CategoriesOptions from "./CategoriesOptions"
-import StyledText from "./StyledText"
+import { CategoriesOptions } from "./CategoriesOptions"
+import { StyledText } from "./StyledText"
 
 const options = [
   {
-    title: "Categorias",
+    title: "Categorías",
     icon: "grid-outline",
     options: <CategoriesOptions />,
   },
@@ -27,7 +27,7 @@ const options = [
   // },
 ] as const
 
-const OptionsSideBar = () => (
+export const OptionsSideBar = () => (
   <View style={styles.container}>
     {options.map((option) => (
       <Collapse key={option.title}>
@@ -50,8 +50,6 @@ const OptionsSideBar = () => (
     ))}
   </View>
 )
-
-export default OptionsSideBar
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

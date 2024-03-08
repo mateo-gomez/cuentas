@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
-import config from "../config"
-import { client } from "../helpers/client"
-import { Category } from "../Pages/category/types"
+import { client } from "../helpers"
+import { Category } from "../../types"
 
 const getCategories = async (): Promise<Category[]> => {
   return await client.get("categories")

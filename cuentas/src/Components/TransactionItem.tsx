@@ -1,10 +1,10 @@
 import { ArrowDownCircle, ArrowUpCircle } from "iconoir-react-native"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
-import NumberFormat from "./NumberFormat"
-import StyledText from "./StyledText"
+import { StyledText } from "./StyledText"
+import { NumberFormat } from "./NumberFormat"
 import { Link } from "react-router-native"
-import { TransactionType } from "../../types/transaction"
+import { TransactionType } from "../../types"
 
 interface TransactionItemProps {
   id: string
@@ -14,7 +14,7 @@ interface TransactionItemProps {
   categoryName: string
 }
 
-const TransactionItem = ({
+export const TransactionItem = ({
   id,
   type,
   description,
@@ -70,5 +70,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 })
-
-export default TransactionItem

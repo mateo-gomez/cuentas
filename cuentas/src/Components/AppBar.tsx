@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native"
 import Constants from "expo-constants"
 import { theme } from "../theme"
 
-const AppBar = ({ children, style = {} }) => {
+export const AppBar = ({ children, style = {} }) => {
   return <View style={[styles.container, [style]]}>{children}</View>
 }
 
@@ -16,5 +16,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 })
-
-export default AppBar

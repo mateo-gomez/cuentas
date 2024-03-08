@@ -4,18 +4,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import StyledText from "../Components/StyledText"
-import NumberFormat from "../Components/NumberFormat"
-import TransactionList from "../Components/TransactionList"
 import { useNavigate } from "react-router-native"
 import { PlusCircle, MinusCircle } from "iconoir-react-native"
 import { theme } from "../theme"
-import AppBar from "../Components/AppBar"
 import { useEffect, useRef, useState } from "react"
-import OptionsSideBar from "../Components/OptionsSideBar"
 import config from "../config"
-import { TransactionAggregate } from "../../types/transaction"
-import { Balance } from "../../types/balance"
+import { Balance, TransactionAggregate } from "../../types"
+import {
+  AppBar,
+  StyledText,
+  OptionsSideBar,
+  NumberFormat,
+  TransactionList,
+} from "../Components"
 
 interface TransactionResponse {
   transactions: TransactionAggregate[]

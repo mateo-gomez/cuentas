@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-native"
-import CategoryList from "../Components/CategoryList"
+import { CategoryList } from "../Components"
 import { useCategories } from "../hooks/useCategories"
-import { Category } from "./category/types"
+import { Category } from "../../types"
 
 interface UseOutletContext {
   handleSelectCategory: (category: Category) => void
