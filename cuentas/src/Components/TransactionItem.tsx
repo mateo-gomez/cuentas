@@ -1,10 +1,10 @@
-import { ArrowDownCircle, ArrowUpCircle } from "iconoir-react-native"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { theme } from "../theme"
 import { StyledText } from "./StyledText"
 import { NumberFormat } from "./NumberFormat"
 import { Link } from "react-router-native"
 import { TransactionType } from "../../types"
+import { Ionicons } from "@expo/vector-icons"
 
 interface TransactionItemProps {
   id: string
@@ -29,13 +29,17 @@ export const TransactionItem = ({
       <View style={styles.container}>
         <View>
           {type ? (
-            <ArrowUpCircle
+            <Ionicons
+              name="arrow-up-circle-outline"
               color={theme.colors.greenLight}
-              height={20}
-              width={20}
+              size={20}
             />
           ) : (
-            <ArrowDownCircle color={theme.colors.red} height={20} width={20} />
+            <Ionicons
+              name="arrow-down-circle-outline"
+              color={theme.colors.greenLight}
+              size={20}
+            />
           )}
         </View>
         <View style={styles.box}>

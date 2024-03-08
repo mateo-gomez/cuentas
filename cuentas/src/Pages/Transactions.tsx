@@ -5,9 +5,9 @@ import {
   View,
 } from "react-native"
 import { useNavigate } from "react-router-native"
-import { PlusCircle, MinusCircle } from "iconoir-react-native"
 import { theme } from "../theme"
 import { useEffect, useRef, useState } from "react"
+import { Ionicons } from "@expo/vector-icons"
 
 import {
   AppBar,
@@ -82,13 +82,17 @@ const Transactions = () => {
         </View>
         <View style={styles.buttons}>
           <TouchableOpacity onPress={handlePressMinusButton}>
-            <MinusCircle color={theme.colors.red} width={120} height={120} />
+            <Ionicons
+              name="remove-circle-outline"
+              color={theme.colors.red}
+              size={120}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePressPlusButton}>
-            <PlusCircle
+            <Ionicons
+              name="add-circle-outline"
               color={theme.colors.greenLight}
-              width={120}
-              height={120}
+              size={120}
             />
           </TouchableOpacity>
         </View>

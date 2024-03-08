@@ -7,10 +7,10 @@ import { useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { StyledText } from "./StyledText"
 import { TransactionItem } from "./TransactionItem"
-import { NavArrowDown, NavArrowUp } from "iconoir-react-native"
 import { theme } from "../theme"
 import { NumberFormat } from "./NumberFormat"
 import { Transaction, Balance } from "../../types"
+import { Ionicons } from "@expo/vector-icons"
 
 export interface TransactionsAccordionProps {
   title: string
@@ -33,9 +33,17 @@ export const TransactionsAccordion = ({
       <CollapseHeader style={styles.headerContainer}>
         <View style={styles.headerPrice}>
           {expanded ? (
-            <NavArrowUp color={theme.colors.grey} height={20} width={20} />
+            <Ionicons
+              name="chevron-up-outline"
+              color={theme.colors.grey}
+              size={20}
+            />
           ) : (
-            <NavArrowDown color={theme.colors.grey} height={20} width={20} />
+            <Ionicons
+              name="chevron-down-outline"
+              color={theme.colors.grey}
+              size={20}
+            />
           )}
           <StyledText fontWeight={"bold"}>{title}</StyledText>
         </View>

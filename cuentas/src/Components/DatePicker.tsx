@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { formatDate } from "../utils"
 import { StyledText } from "./StyledText"
-import { Calendar } from "iconoir-react-native"
+import { Ionicons } from "@expo/vector-icons"
 
 export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
   const dateFormatted = formatDate(date ?? new Date())
@@ -25,9 +25,9 @@ export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
   return (
     <TouchableOpacity onPress={handlePress}>
       <View {...restOfProps} style={datePickerStyles}>
-        <Calendar
-          width={theme.fontSizes.subheading}
-          height={theme.fontSizes.subheading}
+        <Ionicons
+          name="calendar-clear-outline"
+          size={theme.fontSizes.subheading}
           color={theme.colors.textPrimary}
           style={{ marginRight: 5 }}
         />
