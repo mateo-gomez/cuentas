@@ -1,7 +1,7 @@
-import { loadConfig } from "../config/config.ts";
+import config from "../config/config.ts";
 import { mongoose } from "../deps.ts";
 
-const uri = loadConfig.MONGO_URI as unknown as string;
+const uri = config.MONGO_URI;
 
 await mongoose.connect(uri);
 

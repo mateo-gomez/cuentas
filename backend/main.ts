@@ -9,6 +9,7 @@ import "./database/db.ts";
 
 import categoriesRouter from "./Routes/categories.routes.ts";
 import transactionsRouter from "./Routes/transactions.routes.ts";
+import config from "./config/config.ts";
 
 const app = new Application();
 
@@ -66,6 +67,6 @@ app.use(async (ctx, next) => {
   }
 });
 
-const options: ListenOptionsBase = { port: 8000 };
+const options: ListenOptionsBase = { port: config.PORT };
 
 await app.listen(options);
