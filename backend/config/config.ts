@@ -1,9 +1,6 @@
-import { load } from "../deps.ts";
-
-const loadConfig = await load();
+const envvars = Deno.env.toObject();
 
 export default {
-  MONGO_URI: (loadConfig.MONGO_URI ||
-    "") as unknown as string,
-  PORT: (loadConfig.MONGO_URI || 8000) as unknown as number,
+  MONGO_URI: envvars.MONGO_URI,
+  PORT: (envvars.PORT || 8000) as unknown as number,
 };

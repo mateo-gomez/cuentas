@@ -1,6 +1,6 @@
 import mongoose from "npm:mongoose@6.8";
 
-export { load } from "https://deno.land/std@0.173.0/dotenv/mod.ts";
+import "https://deno.land/std@0.173.0/dotenv/load.ts";
 
 export {
   Application,

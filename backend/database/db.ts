@@ -1,10 +1,16 @@
-import config from "../config/config.ts";
 import { mongoose } from "../deps.ts";
 
-const uri = config.MONGO_URI;
+const uri = Deno.env.get("MONGO_URI");
 
-await mongoose.connect(uri);
+if (!uri) {
+  throw new Error(`MONGO_URI not provided`);
+}
 
-console.log("database connected!");
+try {
+  await mongoose.connect(uri);
+  console.log("database connected!");
+} catch (error) {
+  console.error("Error connecting db: ", error);
+}
 
 export default mongoose;
