@@ -6,11 +6,7 @@ if (!uri) {
   throw new Error(`MONGO_URI not provided`);
 }
 
-try {
-  await mongoose.connect(uri);
-  console.log("database connected!");
-} catch (error) {
-  console.error("Error connecting db: ", error);
-}
+await mongoose.connect(uri);
+console.log("database connected!");
 
 export default mongoose;
