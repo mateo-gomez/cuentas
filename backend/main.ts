@@ -1,3 +1,4 @@
+import config from "./config/config.ts";
 import {
   Application,
   isHttpError,
@@ -9,7 +10,6 @@ import "./database/db.ts";
 
 import categoriesRouter from "./Routes/categories.routes.ts";
 import transactionsRouter from "./Routes/transactions.routes.ts";
-import config from "./config/config.ts";
 
 const app = new Application();
 
