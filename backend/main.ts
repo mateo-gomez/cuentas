@@ -1,3 +1,5 @@
+import "https://deno.land/std@0.173.0/dotenv/load.ts";
+
 import config from "./config/config.ts";
 import {
   Application,
@@ -67,6 +69,8 @@ app.use(async (ctx, next) => {
   }
 });
 
-const options: ListenOptionsBase = { port: config.PORT };
+const PORT = config.PORT;
 
+const options: ListenOptionsBase = { port: PORT };
+console.log({ options });
 await app.listen(options);

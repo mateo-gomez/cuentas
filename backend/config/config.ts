@@ -1,6 +1,4 @@
-const envvars = Deno.env.toObject();
-
 export default {
-  MONGO_URI: envvars.MONGO_URI,
-  PORT: envvars.PORT as unknown as number,
+  MONGO_URI: Deno.env.get("MONGO_URI"),
+  PORT: Number(Deno.env.get("PORT")),
 };

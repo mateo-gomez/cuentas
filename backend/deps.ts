@@ -1,8 +1,6 @@
 import mongoose from "npm:mongoose@6.8";
 
-import "https://deno.land/std@0.173.0/dotenv/load.ts";
-
-export { resolveMongoDNS } from 'https://deno.land/x/resolve_mongo_dns/mod.ts';
+export { resolveMongoDNS } from "https://deno.land/x/resolve_mongo_dns@v1.0.0/mod.ts";
 
 export {
   Application,
