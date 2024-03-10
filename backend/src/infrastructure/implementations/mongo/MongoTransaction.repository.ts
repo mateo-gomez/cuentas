@@ -23,7 +23,7 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   sumAll = async (): Promise<Balance> => {
-    const balance = await TransactionModel.aggregate<Balance>([
+    const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
         $group: {
           _id: null,
@@ -46,11 +46,18 @@ export class MongoTransactionRepository implements TransactionRepository {
       },
     ]);
 
-    return balance[0];
+    return {
+      incomes: balance?.incomes || 0,
+      expenses: balance?.expenses || 0,
+      balance: balance?.balance || 0,
+    };
   };
 
-  sumBetweenDates = async (from: Date, to: Date): Promise<Balance> => {
-    const balance = await TransactionModel.aggregate<Balance>([
+  sumBetweenDates = async (
+    from: Date,
+    to: Date,
+  ): Promise<Balance> => {
+    const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
         $match: {
           date: { $gte: from, $lte: to },
@@ -78,6 +85,10 @@ export class MongoTransactionRepository implements TransactionRepository {
       },
     ]);
 
-    return balance[0];
+    return {
+      incomes: balance?.incomes || 0,
+      expenses: balance?.expenses || 0,
+      balance: balance?.balance || 0,
+    };
   };
 }
