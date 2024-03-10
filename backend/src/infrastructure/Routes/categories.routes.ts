@@ -1,4 +1,4 @@
-import { Router } from "../deps.ts";
+import { Router } from "../../../deps.ts";
 import {
   deleteCategory,
   getCategories,

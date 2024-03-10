@@ -1,4 +1,4 @@
-import { RouterContext, Status } from "../deps.ts";
+import { RouterContext, Status } from "../../../deps.ts";
 import Category from "../models/Category.ts";
 import { capitalize } from "../utils/capitalize.ts";
 import { isIdValid } from "../utils/isIdValid.ts";
