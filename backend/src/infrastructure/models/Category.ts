@@ -1,4 +1,12 @@
-import { model, Schema } from "../deps.ts";
+import { model, Schema } from "../../../deps.ts";
+
+export interface Category {
+  _id: string;
+  name: string;
+  icon: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const categorySchema = new Schema({
   name: { type: String, unique: [true, "La categoría ya existe"] },
@@ -7,4 +15,4 @@ const categorySchema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default model("Category", categorySchema);
+export default model<Category>("Category", categorySchema);

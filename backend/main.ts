@@ -8,10 +8,10 @@ import {
   Status,
 } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-import "./database/db.ts";
+import "./src/infrastructure/database/db.ts";
 
-import categoriesRouter from "./Routes/categories.routes.ts";
-import transactionsRouter from "./Routes/transactions.routes.ts";
+import categoriesRouter from "./src/infrastructure/Routes/categories.routes.ts";
+import transactionsRouter from "./src/infrastructure/Routes/transactions.routes.ts";
 
 const app = new Application();
 
@@ -72,5 +72,5 @@ app.use(async (ctx, next) => {
 const PORT = config.PORT;
 
 const options: ListenOptionsBase = { port: PORT };
-console.log({ options });
+
 await app.listen(options);
