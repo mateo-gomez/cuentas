@@ -20,9 +20,10 @@ export class MongoCategoryRepository implements CategoryRepository {
 
   updateCategory = async (
     id: string,
-    categoryData: Omit<Category, "_id" | "createdAt" | "updatedAt">,
+    name: string,
+    icon: string,
   ): Promise<Category> => {
-    const category = await CategoryModel.findByIdAndUpdate(id, categoryData, {
+    const category = await CategoryModel.findByIdAndUpdate(id, { name, icon }, {
       returnDocument: "after",
       lean: true,
     });

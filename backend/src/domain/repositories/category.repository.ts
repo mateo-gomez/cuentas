@@ -12,6 +12,7 @@ export interface CategoryRepository {
 
   updateCategory: (
     id: string,
-    categoryData: Omit<Category, "_id" | "updatedAt" | "createdAt">,
+    name: string,
+    icon: string,
   ) => Promise<Category>;
 }

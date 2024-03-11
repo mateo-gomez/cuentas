@@ -5,12 +5,14 @@ import { isIdValid } from "../../application/utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
 import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
 import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
+import { CategoryUpdater } from "../../application/useCases/category/categoryUpdater.ts";
 
 export class CategoryController {
   constructor(
     private readonly categoryByIdGetter: CategoryByIdGetter,
     private readonly categoryGetter: CategoryGetter,
     private readonly categoryCreator: CategoryCreator,
+    private readonly categoryUpdater: CategoryUpdater,
   ) {}
 
   getCategory = async ({
@@ -52,53 +54,27 @@ export class CategoryController {
       throw error;
     }
   };
-}
 
-export const updateCategory = async (
-  { request, response, params }: RouterContext<string>,
-) => {
-  const { id } = params;
-  const { name, icon } = await request.body({ type: "json" }).value;
+  updateCategory = async (
+    { request, response, params }: RouterContext<string>,
+  ) => {
+    const { id } = params;
+    const { name, icon } = await request.body({ type: "json" }).value;
 
-  if (!isIdValid(id)) {
-    response.status = Status.BadRequest;
-
-    return response.body = {
-      message: `El id ${id} es inválido.`,
-    };
-  }
-
-  const category = await Category.findOne({ _id: id });
-
-  if (!category) {
-    response.status = Status.NotFound;
-
-    return response.body = {
-      message: "Error 404: Recurso no encontrado",
-    };
-  }
-
-  category.name = name ? capitalize(name) : category.name;
-  category.icon = icon || category.icon;
-
-  console.log("updated", category);
-
-  try {
-    await category.save();
-
-    response.body = category;
-  } catch (error) {
-    if (error.name === "MongoServerError" && error.code === 11000) {
+    if (!isIdValid(id)) {
       response.status = Status.BadRequest;
 
       return response.body = {
-        errors: `La categoría "${name}" ya existe`,
+        message: `El id ${id} es inválido.`,
       };
     }
 
-    throw error;
-  }
-};
+    const category = await this.categoryUpdater.execute(id, name, icon);
+
+    response.status = Status.OK;
+    response.body = category;
+  };
+}
 
 export const deleteCategory = async (
   { response, params }: RouterContext<string>,
