@@ -6,7 +6,8 @@ export interface CategoryRepository {
   getAll: () => Promise<Category[]>;
 
   createCategory: (
-    categoryData: Omit<Category, "_id" | "updatedAt" | "createdAt">,
+    name: string,
+    icon: string,
   ) => Promise<Category>;
 
   updateCategory: (

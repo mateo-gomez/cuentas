@@ -4,11 +4,13 @@ import { capitalize } from "../utils/capitalize.ts";
 import { isIdValid } from "../../application/utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
 import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
+import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
 
 export class CategoryController {
   constructor(
     private readonly categoryByIdGetter: CategoryByIdGetter,
     private readonly categoryGetter: CategoryGetter,
+    private readonly categoryCreator: CategoryCreator,
   ) {}
 
   getCategory = async ({
@@ -28,31 +30,29 @@ export class CategoryController {
     response.status = Status.OK;
     response.body = categories;
   };
-}
 
-export const saveCategory = async (
-  { request, response }: RouterContext<string>,
-) => {
-  const { name, icon } = await request.body({ type: "json" }).value;
+  saveCategory = async (
+    { request, response }: RouterContext<string>,
+  ) => {
+    const { name, icon } = await request.body({ type: "json" }).value;
 
-  try {
-    const category = await Category.create({
-      name: capitalize(name),
-      icon,
-    });
+    try {
+      const category = await this.categoryCreator.execute(name, icon);
 
-    response.body = category;
-  } catch (error) {
-    if (error.name === "MongoServerError" && error.code === 11000) {
-      response.status = Status.BadRequest;
-      return response.body = {
-        errors: { name: `La categoría "${name}" ya existe` },
-      };
+      response.body = category;
+    } catch (error) {
+      if (error.name === "MongoServerError") {
+        response.status = Status.BadRequest;
+
+        return response.body = {
+          errors: { name: `La categoría "${name}" ya existe` },
+        };
+      }
+
+      throw error;
     }
-
-    throw error;
-  }
-};
+  };
+}
 
 export const updateCategory = async (
   { request, response, params }: RouterContext<string>,

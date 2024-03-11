@@ -12,9 +12,10 @@ export class MongoCategoryRepository implements CategoryRepository {
   };
 
   createCategory = async (
-    categoryData: Omit<Category, "_id" | "createdAt" | "updatedAt">,
+    name: string,
+    icon: string,
   ): Promise<Category> => {
-    return await CategoryModel.create(categoryData);
+    return await CategoryModel.create({ name, icon });
   };
 
   updateCategory = async (
