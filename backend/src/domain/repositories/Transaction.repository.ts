@@ -7,4 +7,8 @@ export interface TransactionRepository {
   getBetweenDates: (from: Date, to: Date) => Promise<Transaction[]>;
   sumAll: () => Promise<Balance>;
   sumBetweenDates: (from: Date, to: Date) => Promise<Balance>;
+  updateTransaction: (
+    id: string,
+    newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
+  ) => Promise<Transaction>;
 }
