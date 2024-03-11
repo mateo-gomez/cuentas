@@ -1,12 +1,13 @@
-import Transaction from "../models/Transaction.ts";
 import { Status } from "../../../deps.ts";
 import type { RouterContext } from "../../../deps.ts";
 import { TransactionFinder } from "../../application/useCases/transaction/transactionFinder.ts";
+import { TransactionCreator } from "../../application/useCases/transaction/transactionCreator.ts";
 import { TransactionUpdater } from "../../application/useCases/transaction/transactionUpdater.ts";
 
 export class TransactionController {
   constructor(
     private readonly transactionFinder: TransactionFinder,
+    private readonly transactionCreator: TransactionCreator,
     private readonly transactionUpdater: TransactionUpdater,
   ) {
   }
@@ -31,7 +32,15 @@ export class TransactionController {
     request,
   }: RouterContext<string>) => {
     const body = await request.body({ type: "json" }).value;
-    const transaction = await Transaction.create(body);
+
+    const transaction = await this.transactionCreator.execute({
+      category: body.category,
+      date: body.date,
+      description: body.description,
+      type: body.type,
+      account: "",
+      value: body.value,
+    });
 
     response.status = Status.Created;
     response.body = transaction;

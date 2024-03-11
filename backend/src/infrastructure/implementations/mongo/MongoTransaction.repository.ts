@@ -7,19 +7,23 @@ import TransactionModel from "../../models/Transaction.ts";
 
 export class MongoTransactionRepository implements TransactionRepository {
   findOne = async (id: string): Promise<Transaction | null> => {
-    return await TransactionModel.findOne({ _id: id }).populate("category");
+    return await TransactionModel
+      .findOne({ _id: id })
+      .populate("category")
+      .lean();
   };
 
   getAll = async (): Promise<Transaction[]> => {
     return await TransactionModel.find().sort({ date: "desc" }).populate(
       "category",
-    );
+    ).lean();
   };
 
   getBetweenDates = async (from: Date, to: Date): Promise<Transaction[]> => {
-    return await TransactionModel.find({
-      date: { $gte: from, $lte: to },
-    }).sort({ date: "desc" });
+    return await TransactionModel
+      .find({ date: { $gte: from, $lte: to } })
+      .sort({ date: "desc" })
+      .lean();
   };
 
   sumAll = async (): Promise<Balance> => {
@@ -90,6 +94,12 @@ export class MongoTransactionRepository implements TransactionRepository {
       expenses: balance?.expenses || 0,
       balance: balance?.balance || 0,
     };
+  };
+
+  createTransaction = async (
+    newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
+  ): Promise<Transaction> => {
+    return await TransactionModel.create(newTransaction);
   };
 
   updateTransaction = async (
