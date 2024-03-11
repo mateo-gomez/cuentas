@@ -6,7 +6,7 @@ if (!uri) {
 }
 
 const resolvedURI = await resolveMongoDNS(uri);
-console.log(resolvedURI);
+
 await mongoose.connect(resolvedURI);
 
 console.log("database connected!");
