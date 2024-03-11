@@ -1,7 +1,6 @@
 import { RouterContext, Status } from "../../../deps.ts";
 import Category from "../models/Category.ts";
-import { capitalize } from "../utils/capitalize.ts";
-import { isIdValid } from "../../application/utils/isIdValid.ts";
+import { isIdValid } from "../utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
 import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
 import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
@@ -21,6 +20,14 @@ export class CategoryController {
   }: RouterContext<string>) => {
     const { id } = params;
     const category = await this.categoryByIdGetter.execute(id);
+
+    if (!isIdValid(id)) {
+      response.status = Status.BadRequest;
+
+      return response.body = {
+        message: `El id ${id} es inválido.`,
+      };
+    }
 
     response.status = Status.OK;
     response.body = category;
