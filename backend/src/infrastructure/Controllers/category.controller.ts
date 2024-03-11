@@ -3,9 +3,13 @@ import Category from "../models/Category.ts";
 import { capitalize } from "../utils/capitalize.ts";
 import { isIdValid } from "../../application/utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
+import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
 
 export class CategoryController {
-  constructor(private readonly categoryByIdGetter: CategoryByIdGetter) {}
+  constructor(
+    private readonly categoryByIdGetter: CategoryByIdGetter,
+    private readonly categoryGetter: CategoryGetter,
+  ) {}
 
   getCategory = async ({
     response,
@@ -17,29 +21,14 @@ export class CategoryController {
     response.status = Status.OK;
     response.body = category;
   };
+
+  getCategories = async ({ response }: RouterContext<string>) => {
+    const categories = await this.categoryGetter.execute();
+
+    response.status = Status.OK;
+    response.body = categories;
+  };
 }
-
-export const getCategories = async ({ response }: RouterContext<string>) => {
-  response.body = await Category.find();
-};
-
-export const getCategory = async (
-  { response, params }: RouterContext<string>,
-) => {
-  const { id } = params;
-
-  const category = await Category.findOne({ _id: id });
-
-  if (!category) {
-    response.status = Status.NotFound;
-
-    return response.body = {
-      message: "Error 404: Recurso no encontrado",
-    };
-  }
-
-  response.body = category;
-};
 
 export const saveCategory = async (
   { request, response }: RouterContext<string>,
