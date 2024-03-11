@@ -1,6 +1,6 @@
 import { Status } from "../../../deps.ts";
 import type { RouterContext } from "../../../deps.ts";
-import { TransactionFinder } from "../../application/useCases/transaction/transactionFinder.ts";
+import { TransactionByIdGetter } from "../../application/useCases/transaction/TransactionByIdGetter.ts";
 import { TransactionCreator } from "../../application/useCases/transaction/transactionCreator.ts";
 import { TransactionUpdater } from "../../application/useCases/transaction/transactionUpdater.ts";
 import { TransactionRemover } from "../../application/useCases/transaction/transactionRemover.ts";
@@ -8,7 +8,7 @@ import { isIdValid } from "../utils/isIdValid.ts";
 
 export class TransactionController {
   constructor(
-    private readonly transactionFinder: TransactionFinder,
+    private readonly transactionByIdGetter: TransactionByIdGetter,
     private readonly transactionCreator: TransactionCreator,
     private readonly transactionUpdater: TransactionUpdater,
     private readonly transactionRemover: TransactionRemover,
@@ -20,7 +20,7 @@ export class TransactionController {
     params,
   }: RouterContext<string>) => {
     const { id } = params;
-    const transaction = await this.transactionFinder.execute(id);
+    const transaction = await this.transactionByIdGetter.execute(id);
 
     if (!transaction) {
       response.status = Status.NotFound;
