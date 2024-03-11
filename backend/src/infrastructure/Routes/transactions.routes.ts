@@ -3,6 +3,7 @@ import { BalanceGetter } from "../../application/useCases/transaction/balanceGet
 import { BalanceInRangeGetter } from "../../application/useCases/transaction/balanceInRangeGetter.ts";
 import { GroupedTransactionByDayGetter } from "../../application/useCases/transaction/groupedTransactionByDayGetter.ts";
 import { GroupedTransactionByDayInRangeGetter } from "../../application/useCases/transaction/groupedTransactionByDayInRangeGetter.ts";
+import { TransactionCreator } from "../../application/useCases/transaction/transactionCreator.ts";
 import { TransactionFinder } from "../../application/useCases/transaction/transactionFinder.ts";
 import { TransactionUpdater } from "../../application/useCases/transaction/transactionUpdater.ts";
 import {
@@ -15,6 +16,7 @@ const transactionRepository = new MongoTransactionRepository();
 
 const transactionController = new TransactionController(
   new TransactionFinder(transactionRepository),
+  new TransactionCreator(transactionRepository),
   new TransactionUpdater(transactionRepository),
 );
 

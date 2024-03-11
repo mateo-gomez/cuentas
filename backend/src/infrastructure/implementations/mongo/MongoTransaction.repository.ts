@@ -92,6 +92,12 @@ export class MongoTransactionRepository implements TransactionRepository {
     };
   };
 
+  createTransaction = async (
+    newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
+  ): Promise<Transaction> => {
+    return await TransactionModel.create(newTransaction);
+  };
+
   updateTransaction = async (
     id: string,
     transactionData: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
