@@ -34,4 +34,12 @@ export class MongoCategoryRepository implements CategoryRepository {
 
     return category;
   };
+
+  delete = async (id: string): Promise<void> => {
+    const { deletedCount } = await CategoryModel.remove({ _id: id });
+
+    if (deletedCount === 0) {
+      throw new Error(`Category ${id} not deleted`);
+    }
+  };
 }

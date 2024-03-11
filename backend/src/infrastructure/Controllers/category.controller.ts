@@ -1,10 +1,10 @@
 import { RouterContext, Status } from "../../../deps.ts";
-import Category from "../models/Category.ts";
 import { isIdValid } from "../utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
 import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
 import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
 import { CategoryUpdater } from "../../application/useCases/category/categoryUpdater.ts";
+import { CategoryRemover } from "../../application/useCases/category/categoryRemover.ts";
 
 export class CategoryController {
   constructor(
@@ -12,6 +12,7 @@ export class CategoryController {
     private readonly categoryGetter: CategoryGetter,
     private readonly categoryCreator: CategoryCreator,
     private readonly categoryUpdater: CategoryUpdater,
+    private readonly categoryRemover: CategoryRemover,
   ) {}
 
   getCategory = async ({
@@ -81,24 +82,23 @@ export class CategoryController {
     response.status = Status.OK;
     response.body = category;
   };
+
+  deleteCategory = async (
+    { response, params }: RouterContext<string>,
+  ) => {
+    const { id } = params;
+
+    if (!isIdValid(id)) {
+      response.status = Status.BadRequest;
+
+      return response.body = {
+        message: `El id ${id} es inválido.`,
+      };
+    }
+
+    await this.categoryRemover.execute(id);
+
+    response.status = Status.OK;
+    response.body = { message: "Category deleted" };
+  };
 }
-
-export const deleteCategory = async (
-  { response, params }: RouterContext<string>,
-) => {
-  const { id } = params;
-
-  if (!isIdValid(id)) {
-    response.status = Status.BadRequest;
-
-    return response.body = {
-      message: `El id ${id} es inválido.`,
-    };
-  }
-
-  const category = await Category.remove({ _id: id });
-
-  console.log("deleted?", category);
-
-  response.body = { message: "Category deleted" };
-};
