@@ -10,9 +10,9 @@ export class CategoryUpdater {
     name: string,
     icon: string,
   ): Promise<Category> => {
-    const categoryRecord = await this.categoryRepository.getById(id);
+    const exists = await this.categoryRepository.exists(id);
 
-    if (!categoryRecord) {
+    if (!exists) {
       throw new Error("Transacción no encontrada");
     }
 

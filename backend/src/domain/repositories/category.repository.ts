@@ -1,6 +1,8 @@
 import { Category } from "../entities/category.entity.ts";
 
 export interface CategoryRepository {
+  exists: (id: string) => Promise<boolean>;
+
   getById: (id: string) => Promise<Category | null>;
 
   getAll: () => Promise<Category[]>;

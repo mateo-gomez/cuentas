@@ -6,6 +6,12 @@ import {
 import TransactionModel from "../../models/Transaction.ts";
 
 export class MongoTransactionRepository implements TransactionRepository {
+  exists = async (id: string): Promise<boolean> => {
+    const exists = await TransactionModel.exists({ _id: id });
+
+    return exists !== null;
+  };
+
   findOne = async (id: string): Promise<Transaction | null> => {
     return await TransactionModel
       .findOne({ _id: id })

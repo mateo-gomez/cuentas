@@ -3,6 +3,12 @@ import { CategoryRepository } from "../../../domain/repositories/category.reposi
 import CategoryModel from "../../models/Category.ts";
 
 export class MongoCategoryRepository implements CategoryRepository {
+  exists = async (id: string): Promise<boolean> => {
+    const exists = await CategoryModel.exists({ _id: id });
+
+    return exists !== null;
+  };
+
   getById = async (id: string): Promise<Category | null> => {
     return await CategoryModel.findById(id).lean();
   };

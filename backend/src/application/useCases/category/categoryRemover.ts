@@ -6,9 +6,9 @@ export class CategoryRemover {
   execute = async (
     id: string,
   ): Promise<void> => {
-    const categoryRecord = await this.categoryRepository.getById(id);
+    const exists = await this.categoryRepository.exists(id);
 
-    if (!categoryRecord) {
+    if (!exists) {
       throw new Error(`Category ${id} no encontrada`);
     }
 
