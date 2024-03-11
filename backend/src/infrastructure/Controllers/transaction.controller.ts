@@ -2,10 +2,12 @@ import Transaction from "../models/Transaction.ts";
 import { Status } from "../../../deps.ts";
 import type { RouterContext } from "../../../deps.ts";
 import { TransactionFinder } from "../../application/useCases/transaction/transactionFinder.ts";
+import { TransactionUpdater } from "../../application/useCases/transaction/transactionUpdater.ts";
 
 export class TransactionController {
   constructor(
     private readonly transactionFinder: TransactionFinder,
+    private readonly transactionUpdater: TransactionUpdater,
   ) {
   }
 
@@ -42,20 +44,23 @@ export class TransactionController {
   }: RouterContext<string>) => {
     const { id } = params;
     const body = await request.body({ type: "json" }).value;
-    const transaction = await Transaction.findById(id);
 
-    if (!transaction) {
+    try {
+      const transaction = await this.transactionUpdater.execute(id, {
+        category: body.category,
+        date: body.date,
+        description: body.description,
+        type: body.type,
+        account: body.account,
+        value: body.value,
+      });
+
+      response.status = Status.OK;
+      response.body = transaction;
+    } catch (error) {
       response.status = Status.NotFound;
       response.body = { message: "Error 404: Recurso no encontrado" };
-      return;
+      throw error;
     }
-
-    transaction.value = body.value || transaction.value;
-    transaction.date = body.date || transaction.date;
-    transaction.description = body.description || transaction.description;
-    await transaction.save();
-
-    response.status = Status.OK;
-    response.body = transaction;
   };
 }

@@ -91,4 +91,23 @@ export class MongoTransactionRepository implements TransactionRepository {
       balance: balance?.balance || 0,
     };
   };
+
+  updateTransaction = async (
+    id: string,
+    transactionData: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
+  ): Promise<Transaction> => {
+    const transaction = await TransactionModel
+      .findByIdAndUpdate(
+        { _id: id },
+        transactionData,
+        { returnDocument: "after", lean: true },
+      )
+      .lean();
+
+    if (!transaction) {
+      throw new Error("Transaction not found");
+    }
+
+    return transaction;
+  };
 }
