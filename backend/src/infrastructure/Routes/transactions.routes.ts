@@ -5,6 +5,7 @@ import { GroupedTransactionByDayGetter } from "../../application/useCases/transa
 import { GroupedTransactionByDayInRangeGetter } from "../../application/useCases/transaction/groupedTransactionByDayInRangeGetter.ts";
 import { TransactionCreator } from "../../application/useCases/transaction/transactionCreator.ts";
 import { TransactionFinder } from "../../application/useCases/transaction/transactionFinder.ts";
+import { TransactionRemover } from "../../application/useCases/transaction/transactionRemover.ts";
 import { TransactionUpdater } from "../../application/useCases/transaction/transactionUpdater.ts";
 import {
   TransactionController,
@@ -18,6 +19,7 @@ const transactionController = new TransactionController(
   new TransactionFinder(transactionRepository),
   new TransactionCreator(transactionRepository),
   new TransactionUpdater(transactionRepository),
+  new TransactionRemover(transactionRepository),
 );
 
 const transactionAggregateController = new TransactionAggregateController(
@@ -33,6 +35,7 @@ router
   .get("/transactions", transactionAggregateController.getAllTransactions)
   .get("/transactions/:id", transactionController.getTransaction)
   .post("/transactions", transactionController.saveTransaction)
-  .put("/transactions/:id", transactionController.updateTransaction);
+  .put("/transactions/:id", transactionController.updateTransaction)
+  .delete("/transactions/:id", transactionController.deleteTransaction);
 
 export default router;

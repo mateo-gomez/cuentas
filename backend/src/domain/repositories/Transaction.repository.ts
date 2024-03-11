@@ -22,4 +22,6 @@ export interface TransactionRepository {
     id: string,
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ) => Promise<Transaction>;
+
+  delete: (id: string) => Promise<void>;
 }
