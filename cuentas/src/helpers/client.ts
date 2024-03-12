@@ -47,7 +47,7 @@ export const fetcher = async <T>(method: Method, endpoint = "", data = {}) => {
   try {
     result = await response.json()
   } catch (error) {
-    console.log({ status: response.status })
+    console.log({ status: response.status, response })
     throw new Error("Error parsing server response")
   }
 
