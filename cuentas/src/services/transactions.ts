@@ -8,11 +8,11 @@ import { client } from "../helpers"
 
 interface TransactionResponse {
   transactions: TransactionAggregate[]
-  totals: Balance
+  balance: Balance
 }
 
 export const getTransactions = async (): Promise<TransactionResponse> => {
-  const { transactions, totals } = await client.get<TransactionResponse>(
+  const { transactions, balance } = await client.get<TransactionResponse>(
     "/transactions",
   )
 
@@ -30,7 +30,7 @@ export const getTransactions = async (): Promise<TransactionResponse> => {
     }
   })
 
-  return { transactions: data, totals }
+  return { transactions: data, balance }
 }
 
 export const getTransaction = async (

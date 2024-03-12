@@ -16,7 +16,7 @@ export const TransactionList = ({
           <TransactionsAccordion
             key={group._id}
             title={group._id}
-            totals={group.balance}
+            balance={group.balance}
             transactions={group.transactions}
           />
         ))}

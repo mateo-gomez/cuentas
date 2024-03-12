@@ -15,13 +15,13 @@ import { Ionicons } from "@expo/vector-icons"
 export interface TransactionsAccordionProps {
   title: string
   transactions: Transaction[]
-  totals: Balance
+  balance: Balance
 }
 
 export const TransactionsAccordion = ({
   title,
   transactions,
-  totals,
+  balance,
 }: TransactionsAccordionProps) => {
   const [expanded, setExpanded] = useState(true)
   const toggleCollapse = () => {
@@ -48,8 +48,8 @@ export const TransactionsAccordion = ({
           <StyledText fontWeight={"bold"}>{title}</StyledText>
         </View>
         <NumberFormat
-          value={totals.balance}
-          color={totals.balance > 0 ? "green" : "red"}
+          value={balance.balance}
+          color={balance.balance > 0 ? "green" : "red"}
         />
       </CollapseHeader>
       <CollapseBody style={styles.accordionBody}>

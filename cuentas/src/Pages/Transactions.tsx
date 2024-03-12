@@ -30,8 +30,8 @@ const Transactions = () => {
 
   useEffect(() => {
     getTransactions()
-      .then(({ transactions, totals }) => {
-        setTotals(totals)
+      .then(({ transactions, balance }) => {
+        setTotals(balance)
         setTransactions(transactions)
       })
       .catch((error) => {
