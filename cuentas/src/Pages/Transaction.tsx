@@ -173,7 +173,7 @@ const Transaction = () => {
               handlePressNumpad,
               handleSelectCategory,
               isValidTransactionValue,
-              categoryId: transaction?.category._id,
+              categoryId: transaction?.category?._id,
             }}
           />
         </View>

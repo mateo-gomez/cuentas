@@ -58,7 +58,7 @@ export const TransactionsAccordion = ({
             key={transaction._id}
             id={transaction._id}
             type={transaction.type}
-            categoryName={transaction.category.name}
+            categoryName={transaction.category?.name || "No category"}
             description={transaction.description}
             value={transaction.value}
           />
