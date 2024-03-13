@@ -37,7 +37,7 @@ export const TransactionItem = ({
           ) : (
             <Ionicons
               name="arrow-down-circle-outline"
-              color={theme.colors.greenLight}
+              color={theme.colors.red}
               size={20}
             />
           )}
