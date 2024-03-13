@@ -17,6 +17,7 @@ import {
   TransactionList,
 } from "../Components"
 import { getTransactions } from "../services"
+import { Logo } from "../Components/Logo"
 
 const Transactions = () => {
   const navigate = useNavigate()
@@ -50,9 +51,7 @@ const Transactions = () => {
   return (
     <View style={{ flex: 1 }}>
       <AppBar>
-        <StyledText color={"white"} fontWeight="bold">
-          Cuentas App
-        </StyledText>
+        <Logo />
       </AppBar>
       <DrawerLayoutAndroid
         ref={drawerRef}

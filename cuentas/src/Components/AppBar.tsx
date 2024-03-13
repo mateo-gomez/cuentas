@@ -3,7 +3,11 @@ import Constants from "expo-constants"
 import { theme } from "../theme"
 
 export const AppBar = ({ children, style = {} }) => {
-  return <View style={[styles.container, [style]]}>{children}</View>
+  return (
+    <View style={[styles.container, [style]]}>
+      <View style={{ marginTop: Constants.statusBarHeight }}>{children}</View>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -11,8 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: theme.appBar.primary,
-    marginTop: Constants.statusBarHeight,
-    minHeight: 70,
+    minHeight: 100,
     paddingHorizontal: 20,
   },
 })
