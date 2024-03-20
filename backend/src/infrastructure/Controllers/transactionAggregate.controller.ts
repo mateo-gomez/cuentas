@@ -1,4 +1,3 @@
-import { Status } from "../../../deps.ts";
 import type { RouterContext } from "../../../deps.ts";
 import {
   GroupedTransactionByDayGetter,
@@ -8,6 +7,7 @@ import { GroupedTransactionByDayInRangeGetter } from "../../application/useCases
 import { BalanceInRangeGetter } from "../../application/useCases/transaction/balanceInRangeGetter.ts";
 import { TransactionAggregate } from "../../domain/aggregates/transaction.aggregate.ts";
 import { Balance } from "../../domain/entities/balance.entity.ts";
+import { HttpResponse } from "../httpResponse.ts";
 
 export class TransactionAggregateController {
   constructor(
@@ -25,26 +25,30 @@ export class TransactionAggregateController {
     request,
   }: RouterContext<string>) => {
     const { searchParams } = request.url;
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
+    const start = searchParams.get("start");
+    const end = searchParams.get("end");
 
     let transactionAggregates!: TransactionAggregate[];
     let balance!: Balance;
 
-    if (from && to) {
+    if (start && end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
       transactionAggregates = await this.groupedTransactionByDayInRangeGetter
-        .execute(from, to);
-      balance = await this.balanceInRangeGetter.execute(from, to);
+        .execute(startDate, endDate);
+      balance = await this.balanceInRangeGetter.execute(startDate, endDate);
     } else {
       transactionAggregates = await this.groupedTransactionByDayGetter
         .execute();
       balance = await this.balanceGetter.execute();
     }
 
-    response.status = Status.OK;
-    response.body = {
+    const responseBody = HttpResponse.success({
       transactions: transactionAggregates,
       balance,
-    };
+    });
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 }

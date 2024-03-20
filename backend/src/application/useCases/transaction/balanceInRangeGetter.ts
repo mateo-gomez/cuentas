@@ -6,12 +6,9 @@ import {
 export class BalanceInRangeGetter {
   constructor(private readonly transactionRepository: TransactionRepository) {}
 
-  execute = async (from: string, to: string): Promise<Balance> => {
-    const dateFrom = new Date(from);
-    const dateTo = new Date(to);
-
+  execute = async (startDate: Date, endDate: Date): Promise<Balance> => {
     const { balance, expenses, incomes } = await this.transactionRepository
-      .sumBetweenDates(dateFrom, dateTo);
+      .sumBetweenDates(startDate, endDate);
 
     return {
       incomes,

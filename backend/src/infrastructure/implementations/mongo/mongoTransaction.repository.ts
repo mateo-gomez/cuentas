@@ -3,6 +3,7 @@ import { Transaction } from "../../../domain/entities/transaction.entity.ts";
 import {
   TransactionRepository,
 } from "../../../domain/repositories/Transaction.repository.ts";
+import { DatabaseError } from "../../errors/databaseError.ts";
 import TransactionModel from "../../models/Transaction.ts";
 
 export class MongoTransactionRepository implements TransactionRepository {
@@ -25,9 +26,12 @@ export class MongoTransactionRepository implements TransactionRepository {
     ).lean();
   };
 
-  getBetweenDates = async (from: Date, to: Date): Promise<Transaction[]> => {
+  getBetweenDates = async (
+    startDate: Date,
+    endDate: Date,
+  ): Promise<Transaction[]> => {
     return await TransactionModel
-      .find({ date: { $gte: from, $lte: to } })
+      .find({ date: { $gte: startDate, $lte: endDate } })
       .sort({ date: "desc" })
       .lean();
   };
@@ -64,13 +68,13 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   sumBetweenDates = async (
-    from: Date,
-    to: Date,
+    startDate: Date,
+    endDate: Date,
   ): Promise<Balance> => {
     const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
         $match: {
-          date: { $gte: from, $lte: to },
+          date: { $gte: startDate, $lte: endDate },
         },
       },
       {
@@ -111,7 +115,7 @@ export class MongoTransactionRepository implements TransactionRepository {
   updateTransaction = async (
     id: string,
     transactionData: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
-  ): Promise<Transaction> => {
+  ): Promise<Transaction | null> => {
     const transaction = await TransactionModel
       .findByIdAndUpdate(
         { _id: id },
@@ -120,10 +124,6 @@ export class MongoTransactionRepository implements TransactionRepository {
       )
       .lean();
 
-    if (!transaction) {
-      throw new Error("Transaction not found");
-    }
-
     return transaction;
   };
 
@@ -131,7 +131,7 @@ export class MongoTransactionRepository implements TransactionRepository {
     const { deletedCount } = await TransactionModel.remove({ _id: id });
 
     if (deletedCount === 0) {
-      throw new Error(`Transaction ${id} not deleted`);
+      throw new DatabaseError(`Error eliminando transacción ${id}`);
     }
   };
 }

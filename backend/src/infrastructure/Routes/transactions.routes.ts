@@ -11,7 +11,7 @@ import {
   TransactionController,
 } from "../Controllers/transaction.controller.ts";
 import { TransactionAggregateController } from "../Controllers/transactionAggregate.controller.ts";
-import { MongoTransactionRepository } from "../implementations/mongo/MongoTransaction.repository.ts";
+import { MongoTransactionRepository } from "../implementations/mongo/mongoTransaction.repository.ts";
 
 const transactionRepository = new MongoTransactionRepository();
 

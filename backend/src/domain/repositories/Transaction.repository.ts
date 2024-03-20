@@ -8,11 +8,11 @@ export interface TransactionRepository {
 
   getAll: () => Promise<Transaction[]>;
 
-  getBetweenDates: (from: Date, to: Date) => Promise<Transaction[]>;
+  getBetweenDates: (startDate: Date, endDate: Date) => Promise<Transaction[]>;
 
   sumAll: () => Promise<Balance>;
 
-  sumBetweenDates: (from: Date, to: Date) => Promise<Balance>;
+  sumBetweenDates: (startDate: Date, endDate: Date) => Promise<Balance>;
 
   createTransaction: (
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
@@ -21,7 +21,7 @@ export interface TransactionRepository {
   updateTransaction: (
     id: string,
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
-  ) => Promise<Transaction>;
+  ) => Promise<Transaction | null>;
 
   delete: (id: string) => Promise<void>;
 }
