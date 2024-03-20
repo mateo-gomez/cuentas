@@ -1,10 +1,12 @@
-import { RouterContext, Status } from "../../../deps.ts";
+import { RouterContext } from "../../../deps.ts";
 import { isIdValid } from "../utils/isIdValid.ts";
 import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
 import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
 import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
 import { CategoryUpdater } from "../../application/useCases/category/categoryUpdater.ts";
 import { CategoryRemover } from "../../application/useCases/category/categoryRemover.ts";
+import { ValidationError } from "../errors/validationError.ts";
+import { HttpResponse } from "../httpResponse.ts";
 
 export class CategoryController {
   constructor(
@@ -20,25 +22,24 @@ export class CategoryController {
     params,
   }: RouterContext<string>) => {
     const { id } = params;
-    const category = await this.categoryByIdGetter.execute(id);
 
     if (!isIdValid(id)) {
-      response.status = Status.BadRequest;
-
-      return response.body = {
-        message: `El id ${id} es inválido.`,
-      };
+      throw new ValidationError().addError("id", `El id ${id} is inválido`);
     }
 
-    response.status = Status.OK;
-    response.body = category;
+    const category = await this.categoryByIdGetter.execute(id);
+
+    const responseBody = HttpResponse.success(category);
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 
   getCategories = async ({ response }: RouterContext<string>) => {
     const categories = await this.categoryGetter.execute();
 
-    response.status = Status.OK;
-    response.body = categories;
+    const responseBody = HttpResponse.success(categories);
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 
   saveCategory = async (
@@ -46,21 +47,11 @@ export class CategoryController {
   ) => {
     const { name, icon } = await request.body({ type: "json" }).value;
 
-    try {
-      const category = await this.categoryCreator.execute(name, icon);
+    const category = await this.categoryCreator.execute(name, icon);
 
-      response.body = category;
-    } catch (error) {
-      if (error.name === "MongoServerError") {
-        response.status = Status.BadRequest;
-
-        return response.body = {
-          errors: { name: `La categoría "${name}" ya existe` },
-        };
-      }
-
-      throw error;
-    }
+    const responseBody = HttpResponse.success(category);
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 
   updateCategory = async (
@@ -70,17 +61,14 @@ export class CategoryController {
     const { name, icon } = await request.body({ type: "json" }).value;
 
     if (!isIdValid(id)) {
-      response.status = Status.BadRequest;
-
-      return response.body = {
-        message: `El id ${id} es inválido.`,
-      };
+      throw new ValidationError().addError("id", `El id ${id} is inválido`);
     }
 
     const category = await this.categoryUpdater.execute(id, name, icon);
 
-    response.status = Status.OK;
-    response.body = category;
+    const responseBody = HttpResponse.success(category);
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 
   deleteCategory = async (
@@ -89,16 +77,13 @@ export class CategoryController {
     const { id } = params;
 
     if (!isIdValid(id)) {
-      response.status = Status.BadRequest;
-
-      return response.body = {
-        message: `El id ${id} es inválido.`,
-      };
+      throw new ValidationError().addError("id", `El id ${id} is inválido`);
     }
 
     await this.categoryRemover.execute(id);
 
-    response.status = Status.OK;
-    response.body = { message: "Category deleted" };
+    const responseBody = HttpResponse.success();
+    response.status = responseBody.statusCode;
+    response.body = responseBody;
   };
 }

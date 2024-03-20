@@ -16,7 +16,7 @@ export interface CategoryRepository {
     id: string,
     name: string,
     icon: string,
-  ) => Promise<Category>;
+  ) => Promise<Category | null>;
 
   delete: (id: string) => Promise<void>;
 }

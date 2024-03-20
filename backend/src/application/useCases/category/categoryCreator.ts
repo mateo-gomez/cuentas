@@ -1,5 +1,7 @@
 import { Category } from "../../../domain/entities/category.entity.ts";
 import { CategoryRepository } from "../../../domain/repositories/category.repository.ts";
+import { DuplicateError } from "../../../infrastructure/errors/duplicateError.ts";
+import { ApplicationError } from "../../errors/applicationError.ts";
 import { capitalize } from "../../utils/capitalize.ts";
 
 export class CategoryCreator {
@@ -12,11 +14,11 @@ export class CategoryCreator {
         icon,
       );
     } catch (error) {
-      if (error.name === "MongoServerError" && error.code === 11000) {
-        throw new Error(`La categoría "${name}" ya existe`);
+      if (error instanceof DuplicateError) {
+        throw new ApplicationError(`La categoría "${name}" ya existe`, error);
       }
 
-      throw error;
+      throw new ApplicationError("Error creando categoría", error);
     }
   };
 }

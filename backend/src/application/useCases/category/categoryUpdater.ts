@@ -1,5 +1,9 @@
 import { Category } from "../../../domain/entities/category.entity.ts";
 import { CategoryRepository } from "../../../domain/repositories/category.repository.ts";
+import { DuplicateError } from "../../../infrastructure/errors/duplicateError.ts";
+import { DatabaseError } from "../../../infrastructure/errors/databaseError.ts";
+import { ApplicationError } from "../../errors/applicationError.ts";
+import { NotFoundError } from "../../errors/notFoundError.ts";
 import { capitalize } from "../../utils/capitalize.ts";
 
 export class CategoryUpdater {
@@ -13,21 +17,33 @@ export class CategoryUpdater {
     const exists = await this.categoryRepository.exists(id);
 
     if (!exists) {
-      throw new Error("Transacción no encontrada");
+      throw new NotFoundError("Categoría no encontrada", id);
     }
 
+    let categoryUpdated: Category | null;
+
     try {
-      return await this.categoryRepository.updateCategory(
+      categoryUpdated = await this.categoryRepository.updateCategory(
         id,
         capitalize(name),
         icon,
       );
     } catch (error) {
-      if (error.name === "MongoServerError" && error.code === 11000) {
-        throw new Error(`La categoría "${name}" ya existe`);
+      if (error instanceof DuplicateError) {
+        throw new ApplicationError(`La categoría "${name}" ya existe`, error);
+      }
+
+      if (error instanceof DatabaseError) {
+        throw new ApplicationError("Error al guardar categoría", error);
       }
 
       throw error;
     }
+
+    if (!categoryUpdated) {
+      throw new NotFoundError("Categoría no encontrada", id);
+    }
+
+    return categoryUpdated;
   };
 }

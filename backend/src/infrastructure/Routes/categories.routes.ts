@@ -5,7 +5,7 @@ import { CategoryGetter } from "../../application/useCases/category/categoryGett
 import { CategoryRemover } from "../../application/useCases/category/categoryRemover.ts";
 import { CategoryUpdater } from "../../application/useCases/category/categoryUpdater.ts";
 import { CategoryController } from "../Controllers/category.controller.ts";
-import { MongoCategoryRepository } from "../implementations/mongo/MongoCategory.repository.ts";
+import { MongoCategoryRepository } from "../implementations/mongo/mongoCategory.repository.ts";
 
 const categoryRepository = new MongoCategoryRepository();
 const categoryController = new CategoryController(
