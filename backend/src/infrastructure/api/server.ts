@@ -5,7 +5,7 @@ import { App } from "../interfaces/app.ts";
 
 interface Options {
   middlewares: Middleware[];
-  routers: Router;
+  routes: Router;
   listenOptions: ListenOptionsBase;
 }
 
@@ -17,7 +17,7 @@ export class Api implements App {
     this.app = new Application();
     this.listenOptions = options.listenOptions;
     this.configMiddlewares(options.middlewares);
-    this.configRoutes(options.routers);
+    this.configRoutes(options.routes);
     this.configListen();
     this.configErrorListener();
   }
