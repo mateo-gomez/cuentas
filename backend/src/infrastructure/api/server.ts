@@ -1,10 +1,7 @@
 import { middlewareCompose } from "./middlewares/middlewareCompose.ts";
 import { Middleware } from "./middlewares/BaseMiddleware.ts";
 import { Application, ListenOptionsBase, Router } from "../../../deps.ts";
-
-export interface App {
-  run(): Promise<void>;
-}
+import { App } from "../interfaces/app.ts";
 
 interface Options {
   middlewares: Middleware[];
