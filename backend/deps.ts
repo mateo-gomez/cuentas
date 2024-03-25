@@ -4,6 +4,8 @@ export { resolveMongoDNS } from "https://deno.land/x/resolve_mongo_dns@v1.0.0/mo
 
 export {
   Application,
+  composeMiddleware,
+  Context,
   isHttpError,
   Router,
   Status,
