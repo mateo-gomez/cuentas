@@ -1,48 +1,50 @@
 import { ValidationErrors } from "./errors/validationError.ts";
 import { Status } from "./status.ts";
 
-export interface SuccessResponseBody<T> {
-  data: T;
+export interface Response {
   statusCode: Status;
 }
 
-export interface ErrorResponseBody {
-  message: string;
-  errors: ValidationErrors;
-  statusCode: Status;
+export interface SuccessResponseBody<T> extends Response {
+  data?: T;
 }
 
-class HttpResponseSuccess<T = Record<string, unknown>> {
+class HttpResponseSuccess<T> implements SuccessResponseBody<T> {
   constructor(
-    public readonly data: T | undefined,
     public readonly statusCode: number,
+    public readonly data?: T,
   ) {
   }
 }
 
-class HttpResponseFailed<T = Record<string, unknown>> {
+export interface ErrorResponseBody extends Response {
+  message: string;
+  errors?: ValidationErrors;
+}
+
+class HttpResponseFailed implements ErrorResponseBody {
   constructor(
-    public readonly message: string,
-    public readonly errors: T,
     public readonly statusCode: number,
+    public readonly message: string,
+    public readonly errors?: ValidationErrors,
   ) {
   }
 }
 
 export class HttpResponse {
   static success<T = Record<string, unknown>>(data?: T, statusCode = 200) {
-    return new HttpResponseSuccess<T>(data, statusCode);
+    return new HttpResponseSuccess(statusCode, data);
   }
 
-  static validationFailed(error: ValidationErrors | string, statusCode = 400) {
+  static validationFailed(errors: ValidationErrors, statusCode = 400) {
     return new HttpResponseFailed(
-      "Los datos ingresado no son válidos",
-      error,
       statusCode,
+      "Los datos ingresado no son válidos",
+      errors,
     );
   }
 
   static failed(message: string, statusCode = 400) {
-    return new HttpResponseFailed(message, null, statusCode);
+    return new HttpResponseFailed(statusCode, message);
   }
 }
