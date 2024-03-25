@@ -1,9 +1,9 @@
-import { Status } from "../../../deps.ts";
-import { ApplicationError } from "../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../application/errors/notFoundError.ts";
+import { ApplicationError } from "../../../application/errors/applicationError.ts";
+import { NotFoundError } from "../../../application/errors/notFoundError.ts";
 import { HttpNotFoundError } from "../errors/httpNotFoundError.ts";
 import { ValidationError } from "../errors/validationError.ts";
 import { HttpResponse } from "../httpResponse.ts";
+import { Status } from "../status.ts";
 import {
   Middleware,
   NextFunction,

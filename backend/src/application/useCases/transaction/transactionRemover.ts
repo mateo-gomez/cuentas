@@ -1,5 +1,5 @@
 import { TransactionRepository } from "../../../domain/repositories/Transaction.repository.ts";
-import { DatabaseError } from "../../../infrastructure/errors/databaseError.ts";
+import { DatabaseError } from "../../../infrastructure/api/errors/databaseError.ts";
 import { ApplicationError } from "../../errors/applicationError.ts";
 import { NotFoundError } from "../../errors/notFoundError.ts";
 

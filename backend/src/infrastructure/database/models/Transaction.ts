@@ -1,4 +1,4 @@
-import { model, Schema, Types } from "../../../deps.ts";
+import { model, Schema, Types } from "../../../../deps.ts";
 import { Category } from "./Category.ts";
 
 export enum TransactionType {

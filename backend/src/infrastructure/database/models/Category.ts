@@ -1,4 +1,4 @@
-import { model, Schema } from "../../../deps.ts";
+import { model, Schema } from "../../../../deps.ts";
 
 export interface Category {
   _id: string;

@@ -1,12 +1,12 @@
-import { RouterContext } from "../../../deps.ts";
 import { isIdValid } from "../utils/isIdValid.ts";
-import { CategoryByIdGetter } from "../../application/useCases/category/categoryByIdGetter.ts";
-import { CategoryGetter } from "../../application/useCases/category/categoryGetter.ts";
-import { CategoryCreator } from "../../application/useCases/category/categoryCreator.ts";
-import { CategoryUpdater } from "../../application/useCases/category/categoryUpdater.ts";
-import { CategoryRemover } from "../../application/useCases/category/categoryRemover.ts";
 import { ValidationError } from "../errors/validationError.ts";
 import { HttpResponse } from "../httpResponse.ts";
+import { RouterContext } from "../../../../deps.ts";
+import { CategoryByIdGetter } from "../../../application/useCases/category/categoryByIdGetter.ts";
+import { CategoryCreator } from "../../../application/useCases/category/categoryCreator.ts";
+import { CategoryGetter } from "../../../application/useCases/category/categoryGetter.ts";
+import { CategoryRemover } from "../../../application/useCases/category/categoryRemover.ts";
+import { CategoryUpdater } from "../../../application/useCases/category/categoryUpdater.ts";
 
 export class CategoryController {
   constructor(

@@ -1,6 +1,6 @@
 import { Category } from "../../../domain/entities/category.entity.ts";
 import { CategoryRepository } from "../../../domain/repositories/category.repository.ts";
-import { DuplicateError } from "../../../infrastructure/errors/duplicateError.ts";
+import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError.ts";
 import { ApplicationError } from "../../errors/applicationError.ts";
 import { capitalize } from "../../utils/capitalize.ts";
 

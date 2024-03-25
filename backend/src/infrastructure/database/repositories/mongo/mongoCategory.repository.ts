@@ -1,8 +1,8 @@
-import { Category } from "../../../domain/entities/category.entity.ts";
-import { DatabaseError } from "../../errors/databaseError.ts";
-import { CategoryRepository } from "../../../domain/repositories/category.repository.ts";
+import { Category } from "../../../../domain/entities/category.entity.ts";
+import { DatabaseError } from "../../../api/errors/databaseError.ts";
+import { CategoryRepository } from "../../../../domain/repositories/category.repository.ts";
 import CategoryModel from "../../models/Category.ts";
-import { DuplicateError } from "../../errors/duplicateError.ts";
+import { DuplicateError } from "../../../api/errors/duplicateError.ts";
 
 export class MongoCategoryRepository implements CategoryRepository {
   exists = async (id: string): Promise<boolean> => {

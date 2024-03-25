@@ -1,4 +1,4 @@
-import { composeMiddleware, Context } from "../../../deps.ts";
+import { composeMiddleware, Context } from "../../../../deps.ts";
 import { Middleware } from "./BaseMiddleware.ts";
 
 export function middlewareCompose(middlewareChain: Middleware[]) {

@@ -1,9 +1,9 @@
-import { Balance } from "../../../domain/entities/balance.entity.ts";
-import { Transaction } from "../../../domain/entities/transaction.entity.ts";
+import { Balance } from "../../../../domain/entities/balance.entity.ts";
+import { Transaction } from "../../../../domain/entities/transaction.entity.ts";
 import {
   TransactionRepository,
-} from "../../../domain/repositories/Transaction.repository.ts";
-import { DatabaseError } from "../../errors/databaseError.ts";
+} from "../../../../domain/repositories/Transaction.repository.ts";
+import { DatabaseError } from "../../../api/errors/databaseError.ts";
 import TransactionModel from "../../models/Transaction.ts";
 
 export class MongoTransactionRepository implements TransactionRepository {

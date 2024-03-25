@@ -7,13 +7,12 @@ import {
 } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 import "./src/infrastructure/database/db.ts";
-
-import categoriesRouter from "./src/infrastructure/Routes/categories.routes.ts";
-import transactionsRouter from "./src/infrastructure/Routes/transactions.routes.ts";
-import { ErrorHandler } from "./src/infrastructure/middlewares/errorHandler.ts";
-import { middlewareCompose } from "./src/infrastructure/middlewares/middlewareCompose.ts";
-import { TimeMiddleware } from "./src/infrastructure/middlewares/TimeMiddleware.ts";
-import { RequestLogger } from "./src/infrastructure/middlewares/RequestLogger.ts";
+import { RequestLogger } from "./src/infrastructure/api/middlewares/RequestLogger.ts";
+import { TimeMiddleware } from "./src/infrastructure/api/middlewares/TimeMiddleware.ts";
+import { ErrorHandler } from "./src/infrastructure/api/middlewares/errorHandler.ts";
+import { middlewareCompose } from "./src/infrastructure/api/middlewares/middlewareCompose.ts";
+import categoriesRouter from "./src/infrastructure/api/Routes/categories.routes.ts";
+import transactionsRouter from "./src/infrastructure/api/Routes/transactions.routes.ts";
 
 const app = new Application();
 

@@ -1,7 +1,7 @@
 import { Category } from "../../../domain/entities/category.entity.ts";
 import { CategoryRepository } from "../../../domain/repositories/category.repository.ts";
-import { DuplicateError } from "../../../infrastructure/errors/duplicateError.ts";
-import { DatabaseError } from "../../../infrastructure/errors/databaseError.ts";
+import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError.ts";
+import { DatabaseError } from "../../../infrastructure/api/errors/databaseError.ts";
 import { ApplicationError } from "../../errors/applicationError.ts";
 import { NotFoundError } from "../../errors/notFoundError.ts";
 import { capitalize } from "../../utils/capitalize.ts";
