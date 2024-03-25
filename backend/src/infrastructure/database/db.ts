@@ -1,14 +1,23 @@
 import { mongoose, resolveMongoDNS } from "../../../deps.ts";
 
-const uri = Deno.env.get("MONGO_URI");
-if (!uri) {
-  throw new Error(`MONGO_URI not provided`);
+export interface DB {
+  connect: Promise<DB>;
 }
 
-const resolvedURI = await resolveMongoDNS(uri);
+export class DBMongo {
+  constructor(private readonly uri: string) {}
 
-await mongoose.connect(resolvedURI);
+  async connect() {
+    if (!this.uri) {
+      throw new Error(`MONGO_URI not provided`);
+    }
 
-console.log("database connected!");
+    const resolvedURI = await resolveMongoDNS(this.uri);
 
-export default mongoose;
+    await mongoose.connect(resolvedURI);
+
+    console.log("database connected!");
+
+    return this;
+  }
+}
