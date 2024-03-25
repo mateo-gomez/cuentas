@@ -1,19 +1,13 @@
 import { Router } from "../../../../deps.ts";
-import { CategoryByIdGetter } from "../../../application/useCases/category/categoryByIdGetter.ts";
-import { CategoryCreator } from "../../../application/useCases/category/categoryCreator.ts";
-import { CategoryGetter } from "../../../application/useCases/category/categoryGetter.ts";
-import { CategoryRemover } from "../../../application/useCases/category/categoryRemover.ts";
-import { CategoryUpdater } from "../../../application/useCases/category/categoryUpdater.ts";
-import { MongoCategoryRepository } from "../../database/repositories/mongo/mongoCategory.repository.ts";
 import { CategoryController } from "../Controllers/category.controller.ts";
+import { container } from "../../container.ts";
 
-const categoryRepository = new MongoCategoryRepository();
 const categoryController = new CategoryController(
-  new CategoryByIdGetter(categoryRepository),
-  new CategoryGetter(categoryRepository),
-  new CategoryCreator(categoryRepository),
-  new CategoryUpdater(categoryRepository),
-  new CategoryRemover(categoryRepository),
+  container.categoryByIdGetter,
+  container.categoryGetter,
+  container.categoryCreator,
+  container.categoryUpdater,
+  container.categoryRemover,
 );
 
 const router = new Router();
