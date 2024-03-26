@@ -1,6 +1,6 @@
 import config from "../../../config/config.ts";
 import { ListenOptionsBase } from "../../../deps.ts";
-import { middlewares } from "./middlewares/middlewares.ts";
+import { middlewares } from "./middlewares/index.ts";
 import { Api } from "./server.ts";
 import { getIPAddress } from "./utils/getIPAddress.ts";
 import { DBMongo } from "../database/db.ts";
