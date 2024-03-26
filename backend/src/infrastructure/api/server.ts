@@ -5,7 +5,7 @@ import { App } from "../interfaces/app.ts";
 
 interface Options {
   middlewares: Middleware[];
-  routes: Router;
+  routes: Router[];
   listenOptions: ListenOptionsBase;
 }
 
@@ -43,9 +43,11 @@ export class Api implements App {
     this.app.use(middlewareCompose(middlewares));
   }
 
-  configRoutes(routers: Router) {
-    this.app.use(routers.routes());
-    this.app.use(routers.allowedMethods());
+  configRoutes(routes: Router[]) {
+    routes.forEach((route) => {
+      this.app.use(route.routes());
+      this.app.use(route.allowedMethods());
+    });
   }
 
   async run(): Promise<void> {

@@ -4,7 +4,7 @@ import { middlewares } from "./middlewares/middlewares.ts";
 import { Api } from "./server.ts";
 import { getIPAddress } from "./utils/getIPAddress.ts";
 import { DBMongo } from "../database/db.ts";
-import routes from "./Routes/index.ts";
+import { routes } from "./Routes/index.ts";
 
 (async () => {
   const hostname = getIPAddress();
