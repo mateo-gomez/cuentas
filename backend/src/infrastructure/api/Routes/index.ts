@@ -6,6 +6,7 @@ const router = new Router();
 for await (const dirEntry of Deno.readDir(dirPath)) {
   if (dirEntry.name !== "index.ts") {
     const filePath = `${dirPath}/${dirEntry.name}`;
+    console.log("filepath", filePath);
     const routerFile = await import(filePath);
     const routes: Router = routerFile.default;
 
