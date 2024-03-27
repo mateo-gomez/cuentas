@@ -1,4 +1,4 @@
-import { TransactionType } from "../objectValues/transactionType.objectValue.ts";
+import { TransactionType } from "../valueObjects/transactionType.valueObject.ts";
 import { Category } from "./category.entity.ts";
 
 export interface Transaction {

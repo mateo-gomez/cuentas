@@ -1,6 +1,6 @@
 import { TransactionAggregate } from "../../domain/aggregates/transaction.aggregate.ts";
 import { Transaction } from "../../domain/entities/transaction.entity.ts";
-import { TransactionType } from "../../domain/objectValues/transactionType.objectValue.ts";
+import { TransactionType } from "../../domain/valueObjects/transactionType.valueObject.ts";
 import { formatDate } from "../utils/formatDate.ts";
 import { groupDataBy } from "../utils/groupBy.ts";
 
