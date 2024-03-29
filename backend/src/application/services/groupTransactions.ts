@@ -1,21 +1,15 @@
 import { TransactionAggregate } from "../../domain/aggregates/transaction.aggregate.ts";
 import { Transaction } from "../../domain/entities/transaction.entity.ts";
 import { TransactionType } from "../../domain/valueObjects/transactionType.valueObject.ts";
-import { formatDate } from "../utils/formatDate.ts";
 import { groupDataBy } from "../utils/groupBy.ts";
 
 export const groupTransactions = (
   transactions: Transaction[],
 ): TransactionAggregate[] => {
-  const groupedTransactions = groupDataBy(transactions, (item) => {
-    const formattedDate = formatDate(item.date, {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-
-    return formattedDate;
-  });
+  const groupedTransactions = groupDataBy(
+    transactions,
+    (item) => item.date.toJSON(),
+  );
 
   const transactionAggregates = groupedTransactions.map(
     (group): TransactionAggregate => {
