@@ -11,12 +11,12 @@ export class CategoryUpdater {
 
   execute = async (
     id: string,
-    name: string,
-    icon: string,
+    name?: string,
+    icon?: string,
   ): Promise<Category> => {
-    const exists = await this.categoryRepository.exists(id);
+    const category = await this.categoryRepository.getById(id);
 
-    if (!exists) {
+    if (!category) {
       throw new NotFoundError("Categoría no encontrada", id);
     }
 
@@ -25,8 +25,8 @@ export class CategoryUpdater {
     try {
       categoryUpdated = await this.categoryRepository.updateCategory(
         id,
-        capitalize(name),
-        icon,
+        capitalize(name || category.name),
+        icon || category.icon,
       );
     } catch (error) {
       if (error instanceof DuplicateError) {
