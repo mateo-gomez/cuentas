@@ -34,7 +34,7 @@ export const groupTransactions = (
         balance.expenses += transaction.type === TransactionType.expenses
           ? transaction.value
           : 0;
-        balance.balance += balance.incomes - balance.expenses;
+        balance.balance = balance.incomes - balance.expenses;
 
         minDate = minDate && minDate.getTime() < transaction.date.getTime()
           ? minDate
