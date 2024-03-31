@@ -89,26 +89,36 @@ const Category = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppBar style={{ justifyContent: "space-between" }}>
-        <View style={{ flexDirection: "row" }}>
-          <BackButton />
+      <AppBar>
+        <View
+          style={{
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <BackButton />
 
-          <StyledText color={"white"} fontWeight="bold">
-            {category ? "Editar categoría" : "Nueva categoría"}
-          </StyledText>
-        </View>
+            <StyledText color={"white"} fontWeight="bold">
+              {category ? "Editar categoría" : "Nueva categoría"}
+            </StyledText>
+          </View>
 
-        <View style={{ flexDirection: "row", gap: 10 }}>
-          <TouchableOpacity onPress={handleDeleteCategory}>
-            <Ionicons
-              name={"trash-outline"}
-              color={theme.colors.white}
-              size={theme.fontSizes.subheading}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSubmit}>
-            <StyledText color={"white"}>{id ? "GUARDAR" : "AÑADIR"}</StyledText>
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <TouchableOpacity onPress={handleDeleteCategory}>
+              <Ionicons
+                name={"trash-outline"}
+                color={theme.colors.white}
+                size={theme.fontSizes.subheading}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSubmit}>
+              <StyledText color={"white"}>
+                {id ? "GUARDAR" : "AÑADIR"}
+              </StyledText>
+            </TouchableOpacity>
+          </View>
         </View>
       </AppBar>
       <View style={styles.container}>
