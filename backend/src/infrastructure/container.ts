@@ -13,9 +13,11 @@ import { TransactionRemover } from "../application/useCases/transaction/transact
 import { TransactionUpdater } from "../application/useCases/transaction/transactionUpdater.ts";
 import { MongoCategoryRepository } from "./database/repositories/mongo/mongoCategory.repository.ts";
 import { MongoTransactionRepository } from "./database/repositories/mongo/mongoTransaction.repository.ts";
+import { TransactionAggregateService } from "../application/services/TransactionAggregateService.ts";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
+const transactionAggregateService = new TransactionAggregateService();
 
 export const container = {
   // category
@@ -34,9 +36,13 @@ export const container = {
   transactionRemover: new TransactionRemover(transactionRepository),
   groupedTransactionByDayGetter: new GroupedTransactionByDayGetter(
     transactionRepository,
+    transactionAggregateService,
   ),
   groupedTransactionByDayInRangeGetter:
-    new GroupedTransactionByDayInRangeGetter(transactionRepository),
+    new GroupedTransactionByDayInRangeGetter(
+      transactionRepository,
+      transactionAggregateService,
+    ),
   balanceInRangeGetter: new BalanceInRangeGetter(transactionRepository),
   balanceGetter: new BalanceGetter(transactionRepository),
 };
