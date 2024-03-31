@@ -1,7 +1,8 @@
 import { useOutletContext } from "react-router-native"
-import { CategoryList } from "../Components"
+import { CategoryList, StyledText } from "../Components"
 import { useCategories } from "../hooks/useCategories"
 import { Category } from "../../types"
+import { View } from "react-native"
 
 interface UseOutletContext {
   handleSelectCategory: (category: Category) => void
@@ -11,20 +12,26 @@ interface UseOutletContext {
 const Categories = () => {
   const { handleSelectCategory, categoryId } =
     useOutletContext<UseOutletContext>()
-  const { categories } = useCategories()
+  const { categories, loading } = useCategories()
 
   const currentCategory = categories.find(
     (category) => category._id === categoryId,
   )
 
   return (
-    <CategoryList
-      highlightCriteria={(category) =>
-        currentCategory && category._id === currentCategory._id
-      }
-      categories={categories}
-      onSelect={handleSelectCategory}
-    />
+    <View style={{ alignItems: "center" }}>
+      {loading ? (
+        <StyledText>Cargando...</StyledText>
+      ) : (
+        <CategoryList
+          highlightCriteria={(category) =>
+            currentCategory && category._id === currentCategory._id
+          }
+          categories={categories}
+          onSelect={handleSelectCategory}
+        />
+      )}
+    </View>
   )
 }
 
