@@ -6,6 +6,7 @@ import { Transaction } from "../../../domain/entities/transaction.entity.ts";
 import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject.ts";
 import { GroupedTransactionByDayGetter } from "./groupedTransactionByDayGetter.ts";
 import { TransactionAggregate } from "../../../domain/aggregates/transaction.aggregate.ts";
+import { TransactionAggregateService } from "../../services/TransactionAggregateService.ts";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {
@@ -145,8 +146,11 @@ Deno.test("GroupedTransactionByDayGetter - Returns grouped transactions by day s
     },
   ];
   const transactionRepository = new PartialMockTransactionRepository();
+  const transactionAggregateService = new TransactionAggregateService();
+
   const groupedTransactionByDayGetter = new GroupedTransactionByDayGetter(
     transactionRepository as TransactionRepository,
+    transactionAggregateService,
   );
 
   // Act

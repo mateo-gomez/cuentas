@@ -6,6 +6,7 @@ import { Transaction } from "../../../domain/entities/transaction.entity.ts";
 import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject.ts";
 import { TransactionAggregate } from "../../../domain/aggregates/transaction.aggregate.ts";
 import { GroupedTransactionByDayInRangeGetter } from "./groupedTransactionByDayInRangeGetter.ts";
+import { TransactionAggregateService } from "../../services/TransactionAggregateService.ts";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {
@@ -65,7 +66,7 @@ class PartialMockTransactionRepository
     ]);
 }
 
-Deno.test("GroupedTransactionByDayInRangeGetter - Return grouped transactions by day ina range of dates successfully", async () => {
+Deno.test("GroupedTransactionByDayInRangeGetter - Return grouped transactions by day in a range of dates successfully", async () => {
   // Arrange
   const expectedTransactionAggregates: TransactionAggregate[] = [
     {
@@ -147,9 +148,11 @@ Deno.test("GroupedTransactionByDayInRangeGetter - Return grouped transactions by
   const startDate = new Date("2024-01-01");
   const endDate = new Date("2024-01-02");
   const transactionRepository = new PartialMockTransactionRepository();
+  const transactionAggregateService = new TransactionAggregateService();
   const groupedTransactionByDayInRangeGetter =
     new GroupedTransactionByDayInRangeGetter(
       transactionRepository as unknown as TransactionRepository,
+      transactionAggregateService,
     );
 
   // Act

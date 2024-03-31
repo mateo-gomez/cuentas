@@ -1,9 +1,12 @@
 import { TransactionAggregate } from "../../../domain/aggregates/transaction.aggregate.ts";
 import { TransactionRepository } from "../../../domain/repositories/Transaction.repository.ts";
-import { groupTransactions } from "../../services/groupTransactions.ts";
+import { TransactionAggregateService } from "../../services/TransactionAggregateService.ts";
 
 export class GroupedTransactionByDayInRangeGetter {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+    private readonly transactionAggregateService: TransactionAggregateService,
+  ) {}
 
   execute = async (
     startDate: Date,
@@ -13,7 +16,9 @@ export class GroupedTransactionByDayInRangeGetter {
       startDate,
       endDate,
     );
-    const transactionAggregates = groupTransactions(transactions);
+    const transactionAggregates = this.transactionAggregateService.execute(
+      transactions,
+    );
 
     return transactionAggregates;
   };

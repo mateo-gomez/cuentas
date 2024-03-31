@@ -2,14 +2,19 @@ import { TransactionAggregate } from "../../../domain/aggregates/transaction.agg
 import {
   TransactionRepository,
 } from "../../../domain/repositories/Transaction.repository.ts";
-import { groupTransactions } from "../../services/groupTransactions.ts";
+import { TransactionAggregateService } from "../../services/TransactionAggregateService.ts";
 
 export class GroupedTransactionByDayGetter {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+    private readonly transactionAggregateService: TransactionAggregateService,
+  ) {}
 
   execute = async (): Promise<TransactionAggregate[]> => {
     const transactions = await this.transactionRepository.getAll();
-    const transactionAggregates = groupTransactions(transactions);
+    const transactionAggregates = this.transactionAggregateService.execute(
+      transactions,
+    );
 
     return transactionAggregates;
   };

@@ -1,3 +1,4 @@
+import { Balance } from "../entities/balance.entity.ts";
 import { Transaction } from "../entities/transaction.entity.ts";
 
 export interface TransactionAggregate {
@@ -5,9 +6,5 @@ export interface TransactionAggregate {
   transactions: Transaction[];
   minDate: Date;
   maxDate: Date;
-  balance: {
-    incomes: number;
-    expenses: number;
-    balance: number;
-  };
+  balance: Balance;
 }
