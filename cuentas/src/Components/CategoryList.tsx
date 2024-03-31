@@ -16,7 +16,7 @@ export const CategoryList = ({
   highlightCriteria,
 }: CategoryListProps) => {
   const gap = 10
-  const categoryBoxSize = 100 + gap
+  const categoryBoxSize = 90 + gap
   const numColumns = Math.floor(
     Dimensions.get("window").width / categoryBoxSize,
   )
