@@ -134,12 +134,12 @@ const Category = () => {
         />
 
         {error ? (
-          <StyledText>
+          <StyledText textCenter>
             "Ha ocurrido un error al cargar las categorías"
           </StyledText>
         ) : null}
 
-        {loading ? <StyledText>Cargando...</StyledText> : null}
+        {loading ? <StyledText textCenter>Cargando...</StyledText> : null}
 
         {!loading && !error ? (
           <CategoryList
