@@ -13,6 +13,7 @@ export const AppBar = ({ children, style = {} }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    width: "100%",
     alignItems: "center",
     backgroundColor: theme.appBar.primary,
     minHeight: 100,

@@ -118,27 +118,36 @@ const Transaction = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppBar style={{ justifyContent: "space-between", borderWidth: 1 }}>
-        <View style={{ flexDirection: "row" }}>
-          <BackButton onPress={handleBackPress} />
-
-          <StyledText color={"white"} fontWeight="bold">
-            {id ? "Editando " : " Nuevo "}
-            {type === "income" ? "ingreso" : "gasto"}
-          </StyledText>
-        </View>
-
-        <TouchableOpacity
+      <AppBar style={{ borderWidth: 1 }}>
+        <View
           style={{
-            padding: 8,
-            borderRadius: 4,
-            borderWidth: 1,
-            borderColor: theme.colors.grey,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
           }}
-          onPress={handleSave}
         >
-          <StyledText color="white">Guardar</StyledText>
-        </TouchableOpacity>
+          <View style={{ flexDirection: "row" }}>
+            <BackButton onPress={handleBackPress} />
+
+            <StyledText color={"white"} fontWeight="bold">
+              {id ? "Editando " : " Nuevo "}
+              {type === "income" ? "ingreso" : "gasto"}
+            </StyledText>
+          </View>
+
+          <TouchableOpacity
+            style={{
+              padding: 8,
+              borderRadius: 4,
+              borderWidth: 1,
+              borderColor: theme.colors.grey,
+            }}
+            onPress={handleSave}
+          >
+            <StyledText color="white">Guardar</StyledText>
+          </TouchableOpacity>
+        </View>
       </AppBar>
       {loading ? <OverlayLoader message="Cargando registro..." /> : null}
       <View style={styles.wrapper}>
