@@ -2,23 +2,39 @@ import { Category, CategoryDTO } from "../../types"
 import { client } from "../helpers"
 
 export const getCategories = async (): Promise<Category[]> => {
-  return client.get("/categories")
+  const { data } = await client.get<{ data: Category[] }>("/categories")
+
+  return data
 }
 
 export const getCategory = async (
   id: string,
 ): Promise<Category | null | never> => {
-  return await client.get(`categories/${id}`)
+  const { data } = await client.get<{ data: Category | null | never }>(
+    `categories/${id}`,
+  )
+
+  return data
 }
 
 export const updateCategory = async (id: string, category: CategoryDTO) => {
-  return await client.put<Category>(`categories/${id}`, category)
+  const { data } = await client.put<{ data: Category }>(
+    `categories/${id}`,
+    category,
+  )
+  return data
 }
 
 export const createCategory = async (newCategory: CategoryDTO) => {
-  return await client.post<Category[]>("/categories", newCategory)
+  const { data } = await client.post<{ data: Category[] }>(
+    "/categories",
+    newCategory,
+  )
+
+  return data
 }
 
 export const deleteCategory = async (id: string) => {
-  return await client.delete<Category>(`/categories/${id}`)
+  const { data } = await client.delete<{ data: Category }>(`/categories/${id}`)
+  return data
 }

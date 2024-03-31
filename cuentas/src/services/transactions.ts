@@ -12,9 +12,9 @@ interface TransactionResponse {
 }
 
 export const getTransactions = async (): Promise<TransactionResponse> => {
-  const { transactions, balance } = await client.get<TransactionResponse>(
-    "/transactions",
-  )
+  const {
+    data: { transactions, balance },
+  } = await client.get<{ data: TransactionResponse }>("/transactions")
 
   const data = transactions.map((item) => {
     const transactions = item.transactions.map((transaction) => ({
@@ -24,6 +24,7 @@ export const getTransactions = async (): Promise<TransactionResponse> => {
 
     return {
       ...item,
+      _id: item._id,
       minDate: new Date(item.minDate),
       maxDate: new Date(item.maxDate),
       transactions,
@@ -36,7 +37,7 @@ export const getTransactions = async (): Promise<TransactionResponse> => {
 export const getTransaction = async (
   id: string,
 ): Promise<Transaction | never> => {
-  const data = await client.get<Transaction>(`transactions/${id}`)
+  const { data } = await client.get<{ data: Transaction }>(`transactions/${id}`)
 
   return { ...data, date: new Date(data.date) }
 }
