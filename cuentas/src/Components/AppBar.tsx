@@ -1,11 +1,17 @@
-import { StyleSheet, View } from "react-native"
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 import Constants from "expo-constants"
 import { theme } from "../theme"
+import { PropsWithChildren } from "react"
 
-export const AppBar = ({ children, style = {} }) => {
+export const AppBar = ({
+  children,
+  style = {},
+}: PropsWithChildren<{ style?: StyleProp<ViewStyle> }>) => {
   return (
-    <View style={[styles.container, [style]]}>
-      <View style={{ marginTop: Constants.statusBarHeight }}>{children}</View>
+    <View style={styles.container}>
+      <View style={[{ marginTop: Constants.statusBarHeight }, [style]]}>
+        {children}
+      </View>
     </View>
   )
 }
