@@ -118,7 +118,7 @@ const Transaction = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppBar style={{ borderWidth: 1 }}>
+      <AppBar>
         <View
           style={{
             flexDirection: "row",
