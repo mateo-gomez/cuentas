@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.body,
     marginTop: 10,
   },
-  datePicker: { padding: 10, marginTop: 10 },
+  datePicker: { padding: 10 },
   wrapper: { flex: 1, margin: 20 },
   error: {
     borderColor: theme.colors.red,

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   numPadCell: {
-    paddingVertical: 20,
+    paddingVertical: 16,
   },
 })
 
