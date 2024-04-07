@@ -1,10 +1,10 @@
 import { StyleSheet, View } from "react-native"
 import { Route, Routes as Router } from "react-router-native"
-import Transaction from "./Pages/transaction"
-import Categories from "./Pages/transaction/Categories"
-import NumPad from "./Pages/transaction/NumPad"
-import Home from "./Pages/home"
-import Category from "./Pages/category"
+import Transaction from "./screens/transaction"
+import Categories from "./screens/transaction/Categories"
+import NumPad from "./screens/transaction/NumPad"
+import Home from "./screens/home"
+import Category from "./screens/category"
 
 const Routes = () => {
   return (
