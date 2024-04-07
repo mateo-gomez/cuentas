@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-native"
-import { CategoryList, StyledText } from "../Components"
-import { useCategories } from "../hooks/useCategories"
-import { Category } from "../../types"
+import { CategoryList, StyledText } from "../../Components"
+import { useCategories } from "../../hooks/useCategories"
+import { Category } from "../../../types"
 import { View } from "react-native"
 
 interface UseOutletContext {

@@ -1,8 +1,8 @@
 import { StyleSheet, View } from "react-native"
 import { Route, Routes as Router } from "react-router-native"
-import Transaction from "./Pages/Transaction"
-import Categories from "./Pages/Categories"
-import NumPad from "./Pages/NumPad"
+import Transaction from "./Pages/transaction"
+import Categories from "./Pages/transaction/Categories"
+import NumPad from "./Pages/transaction/NumPad"
 import Home from "./Pages/home"
 import Category from "./Pages/category"
 

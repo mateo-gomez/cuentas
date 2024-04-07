@@ -1,8 +1,8 @@
 import { StyleSheet, TouchableOpacity } from "react-native"
 import VirtualKeyboard from "react-native-virtual-keyboard"
 import { useNavigate, useOutletContext } from "react-router-native"
-import { StyledText } from "../Components"
-import { theme } from "../theme"
+import { StyledText } from "../../Components"
+import { theme } from "../../theme"
 
 interface NumpadOutletContext {
   handlePressNumpad: (num: number) => void
