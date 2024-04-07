@@ -13,3 +13,11 @@ export const formatDate = (
 ) => {
   return date.toLocaleDateString(deviceLanguage, options)
 }
+
+export const monthYearFormatter = (date: Date) => {
+  return formatDate(date, {
+    day: "2-digit",
+    year: "numeric",
+    month: "short",
+  })
+}
