@@ -132,4 +132,15 @@ export class MongoTransactionRepository implements TransactionRepository {
       throw new DatabaseError(`Error eliminando transacción ${id}`);
     }
   };
+
+  firstDateRecord = async (): Promise<{ firstDate: Date } | null> => {
+    const transaction = await TransactionModel.findOne()
+      .sort({ date: "asc" })
+      .select("date")
+      .lean();
+
+    const firstDate = transaction?.date;
+
+    return firstDate ? { firstDate } : null;
+  };
 }

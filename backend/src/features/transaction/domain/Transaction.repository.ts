@@ -24,4 +24,6 @@ export interface TransactionRepository {
   ) => Promise<Transaction | null>;
 
   delete: (id: string) => Promise<void>;
+
+  firstDateRecord: () => Promise<{ firstDate: Date } | null>;
 }

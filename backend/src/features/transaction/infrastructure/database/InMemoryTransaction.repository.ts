@@ -103,4 +103,18 @@ export class InMemoryTransactionRepository implements TransactionRepository {
       this.transactions.filter((transaction) => transaction._id !== id),
     );
   }
+
+  firstDateRecord(): Promise<{ firstDate: Date } | null> {
+    if (!this.transactions || this.transactions.length === 0) {
+      return Promise.resolve(null); // No hay registros, devuelve null
+    } else {
+      let oldestDate: Date = this.transactions[0].date;
+      for (let i = 1; i < this.transactions.length; i++) {
+        if (this.transactions[i].date < oldestDate) {
+          oldestDate = this.transactions[i].date;
+        }
+      }
+      return Promise.resolve({ firstDate: oldestDate });
+    }
+  }
 }
