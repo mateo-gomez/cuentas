@@ -3,14 +3,14 @@ import { Route, Routes as Router } from "react-router-native"
 import Transaction from "./Pages/Transaction"
 import Categories from "./Pages/Categories"
 import NumPad from "./Pages/NumPad"
-import Transactions from "./Pages/Transactions"
+import Home from "./Pages/home"
 import Category from "./Pages/category"
 
 const Routes = () => {
   return (
     <View style={styles.container}>
       <Router>
-        <Route path="/" element={<Transactions />} />
+        <Route path="/" element={<Home />} />
         {["/transactions/:type", "/transactions/:type/:id"].map((path) => (
           <Route key={path} path={path} element={<Transaction />}>
             <Route index element={<NumPad />} />
