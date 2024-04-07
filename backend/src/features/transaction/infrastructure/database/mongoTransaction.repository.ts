@@ -12,16 +12,16 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   findOne = async (id: string): Promise<Transaction | null> => {
-    return await TransactionModel
-      .findOne({ _id: id })
+    return await TransactionModel.findOne({ _id: id })
       .populate("category")
       .lean();
   };
 
   getAll = async (): Promise<Transaction[]> => {
-    return await TransactionModel.find().sort({ date: "desc" }).populate(
-      "category",
-    ).lean();
+    return await TransactionModel.find()
+      .sort({ date: "desc" })
+      .populate("category")
+      .lean();
   };
 
   getBetweenDates = async (
@@ -114,13 +114,11 @@ export class MongoTransactionRepository implements TransactionRepository {
     id: string,
     transactionData: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ): Promise<Transaction | null> => {
-    const transaction = await TransactionModel
-      .findByIdAndUpdate(
-        { _id: id },
-        transactionData,
-        { returnDocument: "after", lean: true },
-      )
-      .lean();
+    const transaction = await TransactionModel.findByIdAndUpdate(
+      { _id: id },
+      transactionData,
+      { returnDocument: "after", lean: true },
+    ).lean();
 
     return transaction;
   };
