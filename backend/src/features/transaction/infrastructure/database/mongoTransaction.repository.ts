@@ -28,9 +28,11 @@ export class MongoTransactionRepository implements TransactionRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<Transaction[]> => {
-    return await TransactionModel
-      .find({ date: { $gte: startDate, $lte: endDate } })
+    return await TransactionModel.find({
+      date: { $gte: startDate, $lte: endDate },
+    })
       .sort({ date: "desc" })
+      .populate("category")
       .lean();
   };
 
