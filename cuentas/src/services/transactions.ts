@@ -11,10 +11,18 @@ interface TransactionResponse {
   balance: Balance
 }
 
-export const getTransactions = async (): Promise<TransactionResponse> => {
+export const getTransactions = async ({
+  start,
+  end,
+}: {
+  start: Date
+  end: Date
+}): Promise<TransactionResponse> => {
   const {
     data: { transactions, balance },
-  } = await client.get<{ data: TransactionResponse }>("/transactions")
+  } = await client.get<{ data: TransactionResponse }>(
+    `/transactions/?start=${start.toJSON()}&end=${end.toJSON()}`,
+  )
 
   const data = transactions.map((item) => {
     const transactions = item.transactions.map((transaction) => ({
