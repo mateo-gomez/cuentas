@@ -28,3 +28,11 @@ export type {
 } from "npm:mongoose@6.8";
 
 export { mongoose };
+
+export {
+  type JWTPayload,
+  jwtVerify,
+  SignJWT,
+} from "https://deno.land/x/jose@v5.9.4/index.ts";
+
+export * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";

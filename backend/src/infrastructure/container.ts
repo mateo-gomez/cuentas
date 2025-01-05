@@ -15,10 +15,14 @@ import { MongoCategoryRepository } from "../features/category/infrastructure/dat
 import { MongoTransactionRepository } from "../features/transaction/infrastructure/database/mongoTransaction.repository.ts";
 import { TransactionAggregateService } from "../features/transaction/application/TransactionAggregateService.ts";
 import { DateRangeGetter } from "../features/transaction/application/dateRangeGetter.ts";
+import { AuthSignin } from "../features/auth/application/authSignin.ts";
+import { MongoAuthRepository } from "../features/auth/infrastructure/database/mongoAuth.repository.ts";
+import { AuthSignup } from "../features/auth/application/authSignup.ts";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
 const transactionAggregateService = new TransactionAggregateService();
+const AuthRepository = new MongoAuthRepository();
 
 export const container = {
   // category
@@ -50,4 +54,8 @@ export const container = {
   balanceGetter: new BalanceGetter(transactionRepository),
 
   dateRangeGetter: new DateRangeGetter(transactionRepository),
+
+  // auth
+  authSignin: new AuthSignin(AuthRepository),
+  authSignup: new AuthSignup(AuthRepository),
 };
