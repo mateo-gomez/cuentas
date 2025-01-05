@@ -13,8 +13,7 @@
     "ts": "tsc"
   },
   "dependencies": {
-    "@react-native-community/datetimepicker": "7.6.1",
-    "@types/react": "~18.2.45",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "accordion-collapse-react-native": "^1.1.1",
     "expo": "~50.0.14",
     "expo-constants": "~15.4.5",
