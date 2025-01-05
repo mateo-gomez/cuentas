@@ -7,10 +7,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eslint": "eslint . --fix",
+    "lint": "eslint . --fix",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "tsc": "tsc"
+    "ts": "tsc"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "7.6.1",
