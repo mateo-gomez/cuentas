@@ -8,6 +8,7 @@ import { StyleSheet, View } from "react-native"
 import { theme } from "../theme"
 import { CategoriesOptions } from "./CategoriesOptions"
 import { StyledText } from "./StyledText"
+import { LogoutOption } from "./LogoutOption"
 
 const options = [
   {
@@ -48,6 +49,8 @@ export const OptionsSideBar = () => (
         <CollapseBody>{option.options}</CollapseBody>
       </Collapse>
     ))}
+
+    <LogoutOption />
   </View>
 )
 
