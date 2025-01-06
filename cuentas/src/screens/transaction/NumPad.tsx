@@ -3,6 +3,7 @@ import VirtualKeyboard from "react-native-virtual-keyboard"
 import { useNavigate, useOutletContext } from "react-router-native"
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
+import { Fragment } from "react"
 
 interface NumpadOutletContext {
   handlePressNumpad: (num: number) => void
@@ -22,7 +23,7 @@ const NumPad = () => {
   }
 
   return (
-    <>
+    <Fragment>
       <VirtualKeyboard
         decimal
         clearOnLongPress
@@ -45,7 +46,7 @@ const NumPad = () => {
           Seleccionar categoría
         </StyledText>
       </TouchableOpacity>
-    </>
+    </Fragment>
   )
 }
 
