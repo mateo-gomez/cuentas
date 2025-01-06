@@ -126,7 +126,6 @@ const Category = () => {
           textAlign="center"
           numberOfLines={1}
           maxLength={20}
-          showSoftInputOnFocus={false}
           placeholder="Nombre"
           style={[styles.nameInput, errors.name && styles.error]}
           onChangeText={handleChangeName}
