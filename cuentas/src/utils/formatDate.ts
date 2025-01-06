@@ -1,6 +1,6 @@
-import { locale } from "./locale"
+import { getLocales } from "expo-localization";
 
-const deviceLanguage = locale().replace("_", "-").toLowerCase()
+const deviceLanguage = getLocales().at(0).languageTag;
 
 export const formatDate = (
   date: Date,
@@ -11,13 +11,13 @@ export const formatDate = (
     month: "short",
   },
 ) => {
-  return date.toLocaleDateString(deviceLanguage, options)
-}
+  return date.toLocaleDateString(deviceLanguage, options);
+};
 
 export const monthYearFormatter = (date: Date) => {
   return formatDate(date, {
     day: "2-digit",
     year: "numeric",
     month: "short",
-  })
-}
+  });
+};
