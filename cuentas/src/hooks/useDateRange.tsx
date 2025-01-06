@@ -3,7 +3,7 @@ import { getDateRange } from "../services/dateRange"
 import { DateRange } from "../../types/dateRange"
 
 export const useDateRange = () => {
-  const [dateRange, setDateRange] = useState<DateRange>()
+  const [dateRange, setDateRange] = useState<DateRange | null>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
