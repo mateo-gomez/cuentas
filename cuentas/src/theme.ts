@@ -17,6 +17,7 @@ export const theme = {
     main: "System",
   },
   colors: {
+    background: "#F5F5F5",
     textPrimary: "#747E7E",
     textSecondary: "#00CCBF",
     secondary: "#00CCBF",
@@ -35,4 +36,4 @@ export const theme = {
     between: "flex-between",
     around: "flex-around",
   },
-}
+};
