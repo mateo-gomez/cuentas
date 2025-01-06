@@ -67,6 +67,25 @@ const Home = () => {
     }
   }
 
+  const onStartReached = () => {
+    const currentStep = steps.at(0)
+
+    if (totalDateRange?.end > currentStep.end) {
+      const { start, end } = monthRange(
+        currentStep.start.getFullYear(),
+        currentStep.start.getMonth() + 1,
+      )
+
+      const newPage = {
+        id: Date.now().toString(),
+        start,
+        end,
+      }
+
+      setSteps((prevStates) => [...prevStates, newPage])
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <AppBar>
@@ -90,6 +109,7 @@ const Home = () => {
             initialNumToRender={5}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id}
+            onStartReached={onStartReached}
             onEndReached={onEndReached}
             onEndReachedThreshold={1}
             onStartReachedThreshold={1}
