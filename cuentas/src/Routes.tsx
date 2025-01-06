@@ -1,5 +1,10 @@
-import { StyleSheet, View } from "react-native"
-import { Route, Routes as Router } from "react-router-native"
+import { Alert, BackHandler, StyleSheet, View } from "react-native"
+import {
+  Route,
+  Routes as Router,
+  useLocation,
+  useNavigate,
+} from "react-router-native"
 import Transaction from "./screens/transaction"
 import Categories from "./screens/transaction/Categories"
 import NumPad from "./screens/transaction/NumPad"
@@ -8,8 +13,44 @@ import Category from "./screens/category"
 import Login from "./screens/auth/Login"
 import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
+import { useEffect } from "react"
 
 const Routes = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (location.pathname === "/") {
+        Alert.alert(
+          "Salir",
+          "¿Desea salir de la app?",
+          [
+            {
+              text: "Cancelar",
+              style: "cancel",
+            },
+            {
+              text: "Salir",
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        )
+      } else {
+        navigate(-1)
+      }
+
+      return true
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackPress)
+
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", handleBackPress)
+    }
+  }, [navigate, location])
+
   return (
     <View style={styles.container}>
       <Router>
