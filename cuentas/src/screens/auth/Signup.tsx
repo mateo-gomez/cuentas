@@ -1,19 +1,17 @@
-// crea una pantalla de inicio de sesión de usuario en inglés
 import {
   View,
-  Text,
   TextInput,
-  Button,
   KeyboardAvoidingView,
-  Pressable,
-  GestureResponderEvent,
-  TouchableOpacity,
+  StyleSheet,
+  Platform,
 } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
-import { useNavigate } from "react-router-native"
+import { Link } from "react-router-native"
+import { StatusBar } from "expo-status-bar"
+import { Button } from "../../Components/Button"
 
 const Signup = () => {
   const { register, error } = useAuth()
@@ -22,7 +20,6 @@ const Signup = () => {
   const [name, setName] = useState("")
   const [surename, setSurename] = useState("")
   const [lastname, setLastname] = useState("")
-  const navigate = useNavigate()
 
   const handleRegister = async () => {
     try {
@@ -32,15 +29,12 @@ const Signup = () => {
     }
   }
 
-  const handleLogin = async () => {
-    navigate("/login")
-  }
-
   return (
     <KeyboardAvoidingView
-      behavior="padding"
-      style={{ justifyContent: "center", margin: 20, flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
     >
+      <StatusBar style="dark" />
       <View>
         <View style={{ marginBottom: 20 }}>
           <StyledText fontSize="heading">Crea tu cuenta</StyledText>
@@ -48,59 +42,79 @@ const Signup = () => {
 
         <View style={{ gap: 20 }}>
           <TextInput
-            style={[{ borderBottomWidth: 1 }]}
+            style={styles.input}
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-            style={{ borderBottomWidth: 1 }}
+            style={styles.input}
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
           <TextInput
-            style={{ borderBottomWidth: 1 }}
+            style={styles.input}
             placeholder="Name"
             value={name}
             onChangeText={setName}
           />
           <TextInput
-            style={{ borderBottomWidth: 1 }}
+            style={styles.input}
             placeholder="Surename"
             value={surename}
             onChangeText={setSurename}
           />
           <TextInput
-            style={{ borderBottomWidth: 1 }}
+            style={styles.input}
             placeholder="Lastname"
             value={lastname}
             onChangeText={setLastname}
           />
         </View>
         <View style={{ marginTop: 20, gap: 10 }}>
-          <Button
-            title="Crear cuenta"
-            onPress={handleRegister}
-            color={theme.colors.primary}
-          />
-
-          <StyledText textCenter>
-            ¿Ya tienes una cuenta?{" "}
-            <StyledText
-              fontWeight="bold"
-              style={{ textDecorationLine: "underline" }}
-              onPress={handleLogin}
-              color={"primary"}
-            >
-              Inicia sesión
+          <Button onPress={handleRegister}>
+            <StyledText textCenter color="white" fontWeight="bold">
+              Registrarme
             </StyledText>
-          </StyledText>
+          </Button>
+
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            <StyledText>¿Ya tienes una cuenta? </StyledText>
+            <Link to="/register" underlayColor={theme.colors.highlight}>
+              <StyledText
+                color={"primary"}
+                fontWeight="bold"
+                style={{ textDecorationLine: "underline" }}
+              >
+                Inicia sesión
+              </StyledText>
+            </Link>
+          </View>
         </View>
       </View>
     </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    padding: 40,
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  input: {
+    padding: 10,
+    backgroundColor: theme.colors.white,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+})
 
 export default Signup
