@@ -4,13 +4,13 @@ import {
   returnsNext,
   spy,
   stub,
-} from "https://deno.land/std@0.221.0/testing/mock.ts";
+} from "https://deno.land/std@0.221.0/testing/mock";
 import {
   assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { CategoryRepository } from "../../../../src/features/category/domain/category.repository.ts";
-import { CategoryRemover } from "../../../../src/features/category/application/categoryRemover.ts";
-import { NotFoundError } from "../../../../src/application/errors/notFoundError.ts";
+} from "https://deno.land/std@0.152.0/testing/asserts";
+import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
+import { CategoryRemover } from "../../../../src/features/category/application/categoryRemover";
+import { NotFoundError } from "../../../../src/application/errors/notFoundError";
 
 const repositoryMock: Partial<CategoryRepository> = {
   delete: () => Promise.resolve(),

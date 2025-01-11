@@ -1,6 +1,6 @@
-import { Category } from "../domain/category.entity.ts";
-import { CategoryRepository } from "../domain/category.repository.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
+import { Category } from "../domain/category.entity";
+import { CategoryRepository } from "../domain/category.repository";
+import { NotFoundError } from "../../../application/errors/notFoundError";
 
 export class CategoryByIdGetter {
   constructor(private readonly categoryRepository: CategoryRepository) {}

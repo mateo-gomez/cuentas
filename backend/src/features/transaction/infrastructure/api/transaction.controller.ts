@@ -1,12 +1,12 @@
-import { isIdValid } from "../../../../infrastructure/api/utils/isIdValid.ts";
-import { ValidationError } from "../../../../infrastructure/api/errors/validationError.ts";
-import { HttpResponse } from "../../../../infrastructure/api/httpResponse.ts";
-import { HttpNotFoundError } from "../../../../infrastructure/api/errors/httpNotFoundError.ts";
-import { RouterContext } from "../../../../../deps.ts";
-import { TransactionByIdGetter } from "../../application/TransactionByIdGetter.ts";
-import { TransactionCreator } from "../../application/transactionCreator.ts";
-import { TransactionRemover } from "../../application/transactionRemover.ts";
-import { TransactionUpdater } from "../../application/transactionUpdater.ts";
+import { isIdValid } from "../../../../infrastructure/api/utils/isIdValid";
+import { ValidationError } from "../../../../infrastructure/api/errors/validationError";
+import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
+import { HttpNotFoundError } from "../../../../infrastructure/api/errors/httpNotFoundError";
+import { TransactionByIdGetter } from "../../application/TransactionByIdGetter";
+import { TransactionCreator } from "../../application/transactionCreator";
+import { TransactionRemover } from "../../application/transactionRemover";
+import { TransactionUpdater } from "../../application/transactionUpdater";
+import { Request, Response } from "express";
 
 export class TransactionController {
   constructor(
@@ -17,11 +17,8 @@ export class TransactionController {
   ) {
   }
 
-  getTransaction = async ({
-    response,
-    params,
-  }: RouterContext<string>) => {
-    const { id } = params;
+  getTransaction = async (req:Request, res:Response) => {
+    const { id } = req.params;
     const transaction = await this.transactionByIdGetter.execute(id);
 
     if (!transaction) {
@@ -29,15 +26,12 @@ export class TransactionController {
     }
 
     const responseBody = HttpResponse.success(transaction);
-    response.status = responseBody.statusCode;
-    response.body = responseBody;
+    res.status(responseBody.statusCode)
+		.json(responseBody);
   };
 
-  saveTransaction = async ({
-    response,
-    request,
-  }: RouterContext<string>) => {
-    const body = await request.body({ type: "json" }).value;
+  saveTransaction = async (req:Request, res:Response) => {
+    const body = await req.body({ type: "json" }).value;
 
     const transaction = await this.transactionCreator.execute({
       category: body.category,
@@ -49,17 +43,13 @@ export class TransactionController {
     });
 
     const responseBody = HttpResponse.success(transaction);
-    response.status = responseBody.statusCode;
-    response.body = responseBody;
+    res.status(responseBody.statusCode)
+		.json(responseBody);
   };
 
-  updateTransaction = async ({
-    response,
-    request,
-    params,
-  }: RouterContext<string>) => {
-    const { id } = params;
-    const body = await request.body({ type: "json" }).value;
+  updateTransaction = async (req:Request, res:Response) => {
+    const { id } = req.params;
+    const body = await req.body({ type: "json" }).value;
 
     if (!isIdValid(id)) {
       throw new ValidationError().addError("id", `El id ${id} is inválido`);
@@ -75,14 +65,12 @@ export class TransactionController {
     });
 
     const responseBody = HttpResponse.success(transaction);
-    response.status = responseBody.statusCode;
-    response.body = responseBody;
+    res.status(responseBody.statusCode)
+		.json(responseBody);
   };
 
-  deleteTransaction = async (
-    { response, params }: RouterContext<string>,
-  ) => {
-    const { id } = params;
+  deleteTransaction = async (req:Request, res:Response) => {
+    const { id } = req.params;
 
     if (!isIdValid(id)) {
       throw new ValidationError().addError("id", `El id ${id} is inválido`);
@@ -91,7 +79,7 @@ export class TransactionController {
     await this.transactionRemover.execute(id);
 
     const responseBody = HttpResponse.success();
-    response.status = responseBody.statusCode;
-    response.body = responseBody;
+    res.status(responseBody.statusCode)
+		.json(responseBody);
   };
 }

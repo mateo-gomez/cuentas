@@ -1,52 +1,49 @@
-import { middlewareCompose } from "./middlewares/middlewareCompose.ts";
-import { Middleware } from "./middlewares/BaseMiddleware.ts";
-import { Application, ListenOptionsBase, Router } from "../../../deps.ts";
-import { App } from "../interfaces/app.ts";
+import { middlewareCompose } from "./middlewares/middlewareCompose";
+import { Middleware } from "./middlewares/BaseMiddleware";
+import { App } from "../interfaces/app";
+import  express, { Router } from "express";
+import bodyParser from "body-parser";
 
 interface Options {
   middlewares: Middleware[];
   routes: Router[];
-  listenOptions: ListenOptionsBase;
+  listenOptions: {
+	port:number,
+	hostname:string
+  };
 }
 
 export class Api implements App {
-  private readonly app: Application;
-  private readonly listenOptions: ListenOptionsBase;
+  private readonly app;
+  private readonly listenOptions;
 
   constructor(private readonly options: Options) {
-    this.app = new Application();
+    this.app = express();
     this.listenOptions = options.listenOptions;
     this.configMiddlewares(options.middlewares);
     this.configRoutes(options.routes);
     this.configListen();
-    this.configErrorListener();
-  }
-
-  configErrorListener() {
-    this.app.addEventListener("error", (evt) => {
-      // Will log the thrown error to the console.
-      console.error(evt.error);
-    });
   }
 
   configListen() {
-    this.app.addEventListener("listen", ({ hostname, port, secure }) => {
+    this.app.listen (this.listenOptions.port, () => {
       console.log(
-        `Server listening on ${secure ? "https" : "http"}://${
-          hostname ?? "localhost"
-        }:${port}...`,
+        `Server listening on http://${
+			this.listenOptions.hostname ?? "localhost"
+        }:${this.listenOptions.port}...`,
       );
     });
   }
 
   configMiddlewares(middlewares: Middleware[]) {
     this.app.use(middlewareCompose(middlewares));
+	this.app.use(bodyParser.json());
+	this.app.use(bodyParser.urlencoded({ extended: true }))
   }
 
   configRoutes(routes: Router[]) {
     routes.forEach((route) => {
-      this.app.use(route.routes());
-      this.app.use(route.allowedMethods());
+      this.app.use(route);
     });
   }
 

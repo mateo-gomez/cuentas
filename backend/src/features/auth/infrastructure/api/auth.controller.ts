@@ -1,7 +1,7 @@
-import { RouterContext } from "../../../../../deps.ts";
-import { HttpResponse } from "../../../../infrastructure/api/httpResponse.ts";
-import { AuthSignin } from "../../application/authSignin.ts";
-import { AuthSignup } from "../../application/authSignup.ts";
+import { RouterContext } from "../../../../../deps";
+import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
+import { AuthSignin } from "../../application/authSignin";
+import { AuthSignup } from "../../application/authSignup";
 
 export class AuthController {
   constructor(

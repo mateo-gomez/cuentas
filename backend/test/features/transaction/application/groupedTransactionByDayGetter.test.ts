@@ -1,10 +1,10 @@
-import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository.ts";
-import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity.ts";
-import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject.ts";
-import { GroupedTransactionByDayGetter } from "../../../../src/features/transaction/application/groupedTransactionByDayGetter.ts";
-import { TransactionAggregate } from "../../../../src/features/transaction/domain/transaction.aggregate.ts";
-import { TransactionAggregateService } from "../../../../src/features/transaction/application/TransactionAggregateService.ts";
+import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts";
+import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
+import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity";
+import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject";
+import { GroupedTransactionByDayGetter } from "../../../../src/features/transaction/application/groupedTransactionByDayGetter";
+import { TransactionAggregate } from "../../../../src/features/transaction/domain/transaction.aggregate";
+import { TransactionAggregateService } from "../../../../src/features/transaction/application/TransactionAggregateService";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {

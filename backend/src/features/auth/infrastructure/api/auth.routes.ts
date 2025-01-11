@@ -1,6 +1,6 @@
-import { Router } from "../../../../../deps.ts";
-import { container } from "../../../../infrastructure/container.ts";
-import { AuthController } from "./auth.controller.ts";
+import { Router } from "../../../../../deps";
+import { container } from "../../../../infrastructure/container";
+import { AuthController } from "./auth.controller";
 
 const authController = new AuthController(
   container.authSignin,

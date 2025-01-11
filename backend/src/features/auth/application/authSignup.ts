@@ -1,6 +1,6 @@
-import { bcrypt } from "../../../../deps.ts";
-import { AuthRepository } from "../domain/auth.repository.ts";
-import { User } from "../domain/user.entity.ts";
+import { bcrypt } from "../../../../deps";
+import { AuthRepository } from "../domain/auth.repository";
+import { User } from "../domain/user.entity";
 
 export class AuthSignup {
   constructor(

@@ -1,7 +1,7 @@
-import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { Balance } from "../../../../src/features/transaction/domain/balance.entity.ts";
-import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository.ts";
-import { BalanceInRangeGetter } from "../../../../src/features/transaction/application/balanceInRangeGetter.ts";
+import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts";
+import { Balance } from "../../../../src/features/transaction/domain/balance.entity";
+import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
+import { BalanceInRangeGetter } from "../../../../src/features/transaction/application/balanceInRangeGetter";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {

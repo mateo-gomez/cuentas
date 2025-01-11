@@ -1,10 +1,10 @@
 import {
   assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository.ts";
-import { NotFoundError } from "../../../../src/application/errors/notFoundError.ts";
-import { TransactionRemover } from "../../../../src/features/transaction/application/transactionRemover.ts";
-import { ApplicationError } from "../../../../src/application/errors/applicationError.ts";
+} from "https://deno.land/std@0.152.0/testing/asserts";
+import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
+import { NotFoundError } from "../../../../src/application/errors/notFoundError";
+import { TransactionRemover } from "../../../../src/features/transaction/application/transactionRemover";
+import { ApplicationError } from "../../../../src/application/errors/applicationError";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {

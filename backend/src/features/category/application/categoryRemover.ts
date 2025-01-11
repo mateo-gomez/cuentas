@@ -1,7 +1,7 @@
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
-import { CategoryRepository } from "../../../features/category/domain/category.repository.ts";
-import { DatabaseError } from "../../../infrastructure/api/errors/databaseError.ts";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { NotFoundError } from "../../../application/errors/notFoundError";
+import { CategoryRepository } from "../../../features/category/domain/category.repository";
+import { DatabaseError } from "../../../infrastructure/api/errors/databaseError";
 
 export class CategoryRemover {
   constructor(private readonly categoryRepository: CategoryRepository) {}

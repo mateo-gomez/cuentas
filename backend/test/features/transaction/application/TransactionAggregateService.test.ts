@@ -1,7 +1,7 @@
-import { assertEquals } from "https://deno.land/std@0.221.0/assert/assert_equals.ts";
-import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity.ts";
-import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject.ts";
-import { TransactionAggregateService } from "../../../../src/features/transaction/application/TransactionAggregateService.ts";
+import { assertEquals } from "https://deno.land/std@0.221.0/assert/assert_equals";
+import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity";
+import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject";
+import { TransactionAggregateService } from "../../../../src/features/transaction/application/TransactionAggregateService";
 
 Deno.test("TransactionAggregateService - Aggregates transactions correctly", () => {
   // Arrange

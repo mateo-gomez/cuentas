@@ -1,7 +1,7 @@
-import { TransactionAggregate } from "../domain/transaction.aggregate.ts";
-import { Transaction } from "../domain/transaction.entity.ts";
-import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject.ts";
-import { groupDataBy } from "../../../application/utils/groupBy.ts";
+import { TransactionAggregate } from "../domain/transaction.aggregate";
+import { Transaction } from "../domain/transaction.entity";
+import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject";
+import { groupDataBy } from "../../../application/utils/groupBy";
 
 export class TransactionAggregateService {
   execute = (transactions: Transaction[]): TransactionAggregate[] => {

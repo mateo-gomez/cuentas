@@ -1,4 +1,4 @@
-import { Category } from "./category.entity.ts";
+import { Category } from "./category.entity";
 
 export interface CategoryRepository {
   exists: (id: string) => Promise<boolean>;
