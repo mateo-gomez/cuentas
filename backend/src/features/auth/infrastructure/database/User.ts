@@ -1,4 +1,4 @@
-import { model, Schema } from "../../../../../deps.ts";
+import { model, Schema } from "../../../../../deps";
 
 interface User {
   _id: string;

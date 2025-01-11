@@ -1,10 +1,10 @@
 import {
   assertObjectMatch,
   assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { CategoryRepository } from "../../../../src/features/category/domain/category.repository.ts";
-import { CategoryByIdGetter } from "../../../../src/features/category/application/categoryByIdGetter.ts";
-import { NotFoundError } from "../../../../src/application/errors/notFoundError.ts";
+} from "https://deno.land/std@0.152.0/testing/asserts";
+import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
+import { CategoryByIdGetter } from "../../../../src/features/category/application/categoryByIdGetter";
+import { NotFoundError } from "../../../../src/application/errors/notFoundError";
 
 Deno.test(
   "CategoryByIdGetter - get successfully",

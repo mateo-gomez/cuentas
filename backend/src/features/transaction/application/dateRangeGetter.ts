@@ -1,5 +1,5 @@
-import { DateRange } from "../domain/dateRange.entity.ts";
-import { TransactionRepository } from "../domain/Transaction.repository.ts";
+import { DateRange } from "../domain/dateRange.entity";
+import { TransactionRepository } from "../domain/Transaction.repository";
 
 export class DateRangeGetter {
   constructor(private readonly transactionRepository: TransactionRepository) {}

@@ -1,5 +1,5 @@
-import { ValidationErrors } from "./errors/validationError.ts";
-import { Status } from "./status.ts";
+import { ValidationErrors } from "./errors/validationError";
+import { Status } from "./status";
 
 export interface Response {
   statusCode: Status;

@@ -1,5 +1,5 @@
 export default {
-  MONGO_URI: Deno.env.get("MONGO_URI"),
-  PORT: Number(Deno.env.get("PORT")),
-  JWT_SECRET: Deno.env.get("JWT_SECRET"),
+  MONGO_URI: process.env.MONGO_URI,
+  PORT: Number(process.env.PORT),
+  JWT_SECRET: process.env.JWT_SECRET,
 };

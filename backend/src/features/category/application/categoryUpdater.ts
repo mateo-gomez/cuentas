@@ -1,10 +1,10 @@
-import { Category } from "../../../features/category/domain/category.entity.ts";
-import { CategoryRepository } from "../../../features/category/domain/category.repository.ts";
-import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError.ts";
-import { DatabaseError } from "../../../infrastructure/api/errors/databaseError.ts";
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
-import { capitalize } from "../../../application/utils/capitalize.ts";
+import { Category } from "../../../features/category/domain/category.entity";
+import { CategoryRepository } from "../../../features/category/domain/category.repository";
+import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError";
+import { DatabaseError } from "../../../infrastructure/api/errors/databaseError";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { NotFoundError } from "../../../application/errors/notFoundError";
+import { capitalize } from "../../../application/utils/capitalize";
 
 export class CategoryUpdater {
   constructor(private readonly categoryRepository: CategoryRepository) {}

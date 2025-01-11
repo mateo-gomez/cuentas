@@ -1,7 +1,7 @@
-import { Transaction } from "../domain/transaction.entity.ts";
-import { TransactionRepository } from "../domain/Transaction.repository.ts";
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
+import { Transaction } from "../domain/transaction.entity";
+import { TransactionRepository } from "../domain/Transaction.repository";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { NotFoundError } from "../../../application/errors/notFoundError";
 
 export class TransactionUpdater {
   constructor(private readonly transactionRepository: TransactionRepository) {}

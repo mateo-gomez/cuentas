@@ -1,6 +1,6 @@
-import { TransactionAggregate } from "../domain/transaction.aggregate.ts";
-import { TransactionRepository } from "../domain/Transaction.repository.ts";
-import { TransactionAggregateService } from "./TransactionAggregateService.ts";
+import { TransactionAggregate } from "../domain/transaction.aggregate";
+import { TransactionRepository } from "../domain/Transaction.repository";
+import { TransactionAggregateService } from "./TransactionAggregateService";
 
 export class GroupedTransactionByDayGetter {
   constructor(

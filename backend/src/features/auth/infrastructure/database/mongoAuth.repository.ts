@@ -1,6 +1,6 @@
-import { AuthRepository } from "../../domain/auth.repository.ts";
-import { User } from "../../domain/user.entity.ts";
-import { UserModel } from "./User.ts";
+import { AuthRepository } from "../../domain/auth.repository";
+import { User } from "../../domain/user.entity";
+import { UserModel } from "./User";
 
 export class MongoAuthRepository implements AuthRepository {
   async login(email: string): Promise<User> {

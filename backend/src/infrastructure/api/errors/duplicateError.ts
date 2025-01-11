@@ -1,4 +1,4 @@
-import { DatabaseError } from "./databaseError.ts";
+import { DatabaseError } from "./databaseError";
 
 export class DuplicateError extends DatabaseError {
   constructor(message: string, cause?: Error) {

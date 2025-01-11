@@ -1,8 +1,8 @@
-import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository.ts";
-import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity.ts";
-import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject.ts";
-import { TransactionByIdGetter } from "../../../../src/features/transaction/application/TransactionByIdGetter.ts";
+import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts";
+import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
+import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity";
+import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject";
+import { TransactionByIdGetter } from "../../../../src/features/transaction/application/TransactionByIdGetter";
 
 class MockTransactionRepository implements Partial<TransactionRepository> {
   findOne = (id: string): Promise<Transaction | null> => {

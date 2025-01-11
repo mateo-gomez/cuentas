@@ -1,5 +1,5 @@
-import { Transaction } from "../domain/transaction.entity.ts";
-import { TransactionRepository } from "../domain/Transaction.repository.ts";
+import { Transaction } from "../domain/transaction.entity";
+import { TransactionRepository } from "../domain/Transaction.repository";
 
 export class TransactionByIdGetter {
   constructor(private readonly transactionRepository: TransactionRepository) {}

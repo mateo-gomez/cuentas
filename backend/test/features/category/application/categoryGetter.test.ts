@@ -1,7 +1,7 @@
-import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts.ts";
-import { CategoryRepository } from "../../../../src/features/category/domain/category.repository.ts";
-import { CategoryGetter } from "../../../../src/features/category/application/categoryGetter.ts";
-import { Category } from "../../../../src/features/category/domain/category.entity.ts";
+import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts";
+import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
+import { CategoryGetter } from "../../../../src/features/category/application/categoryGetter";
+import { Category } from "../../../../src/features/category/domain/category.entity";
 
 Deno.test(
   "CategoryGetter - getAll successfully",

@@ -1,8 +1,8 @@
-import { Router } from "../../../../../deps.ts";
-import { container } from "../../../../infrastructure/container.ts";
-import { DatesController } from "./dates.controller.ts";
-import { TransactionController } from "./transaction.controller.ts";
-import { TransactionAggregateController } from "./transactionAggregate.controller.ts";
+import { container } from "../../../../infrastructure/container";
+import { DatesController } from "./dates.controller";
+import { TransactionController } from "./transaction.controller";
+import { TransactionAggregateController } from "./transactionAggregate.controller";
+import { Router } from "express";
 
 const transactionController = new TransactionController(
   container.transactionByIdGetter,
@@ -22,7 +22,7 @@ const datesController = new DatesController(
   container.dateRangeGetter,
 );
 
-const router = new Router();
+const router = Router();
 
 router
   .get("/transactions/dates", datesController.dateRange)

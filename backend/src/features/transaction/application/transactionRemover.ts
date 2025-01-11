@@ -1,7 +1,7 @@
-import { TransactionRepository } from "../domain/Transaction.repository.ts";
-import { DatabaseError } from "../../../infrastructure/api/errors/databaseError.ts";
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
+import { TransactionRepository } from "../domain/Transaction.repository";
+import { DatabaseError } from "../../../infrastructure/api/errors/databaseError";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { NotFoundError } from "../../../application/errors/notFoundError";
 
 export class TransactionRemover {
   constructor(private readonly transactionRepository: TransactionRepository) {}
