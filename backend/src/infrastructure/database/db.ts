@@ -1,4 +1,4 @@
-import { mongoose, resolveMongoDNS } from "../../../deps.ts";
+import { mongoose, resolveMongoDNS } from "../../../deps";
 
 export interface DB {
   connect: Promise<DB>;

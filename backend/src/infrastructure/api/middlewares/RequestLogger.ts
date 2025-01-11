@@ -3,7 +3,7 @@ import {
   NextFunction,
   Request,
   Response,
-} from "./BaseMiddleware.ts";
+} from "./BaseMiddleware";
 
 export class RequestLogger implements Middleware {
   async execute(

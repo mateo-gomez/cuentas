@@ -1,11 +1,11 @@
-import { assertEquals } from "https://deno.land/std@0.221.0/assert/assert_equals.ts";
-import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity.ts";
-import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository.ts";
-import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject.ts";
-import { ApplicationError } from "../../../../src/application/errors/applicationError.ts";
-import { NotFoundError } from "../../../../src/application/errors/notFoundError.ts";
-import { TransactionUpdater } from "../../../../src/features/transaction/application/transactionUpdater.ts";
-import { assertRejects } from "https://deno.land/std@0.221.0/assert/assert_rejects.ts";
+import { assertEquals } from "https://deno.land/std@0.221.0/assert/assert_equals";
+import { Transaction } from "../../../../src/features/transaction/domain/transaction.entity";
+import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
+import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject";
+import { ApplicationError } from "../../../../src/application/errors/applicationError";
+import { NotFoundError } from "../../../../src/application/errors/notFoundError";
+import { TransactionUpdater } from "../../../../src/features/transaction/application/transactionUpdater";
+import { assertRejects } from "https://deno.land/std@0.221.0/assert/assert_rejects";
 
 class PartialMockTransactionRepository
   implements Partial<TransactionRepository> {

@@ -1,5 +1,5 @@
-import { model, Schema, Types } from "../../../../../deps.ts";
-import { Category } from "../../../category/infrastructure/database/Category.ts";
+import { model, Schema, Types } from "../../../../../deps";
+import { Category } from "../../../category/infrastructure/database/Category";
 
 export enum TransactionType {
   expenses,

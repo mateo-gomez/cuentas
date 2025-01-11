@@ -1,6 +1,6 @@
-import { Router } from "../../../../../deps.ts";
-import { CategoryController } from "./category.controller.ts";
-import { container } from "../../../../infrastructure/container.ts";
+import { Router } from "../../../../../deps";
+import { CategoryController } from "./category.controller";
+import { container } from "../../../../infrastructure/container";
 
 const categoryController = new CategoryController(
   container.categoryByIdGetter,

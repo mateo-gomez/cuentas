@@ -1,5 +1,5 @@
-import { Balance } from "./balance.entity.ts";
-import { Transaction } from "./transaction.entity.ts";
+import { Balance } from "./balance.entity";
+import { Transaction } from "./transaction.entity";
 
 export interface TransactionAggregate {
   _id: string;

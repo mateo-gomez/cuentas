@@ -1,7 +1,7 @@
-import { Balance } from "../../domain/balance.entity.ts";
-import { Transaction } from "../../domain/transaction.entity.ts";
-import { TransactionRepository } from "../../domain/Transaction.repository.ts";
-import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject.ts";
+import { Balance } from "../../domain/balance.entity";
+import { Transaction } from "../../domain/transaction.entity";
+import { TransactionRepository } from "../../domain/Transaction.repository";
+import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
   private transactions: Transaction[];

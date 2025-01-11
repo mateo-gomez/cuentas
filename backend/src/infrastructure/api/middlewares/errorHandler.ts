@@ -1,15 +1,15 @@
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { NotFoundError } from "../../../application/errors/notFoundError.ts";
-import { HttpNotFoundError } from "../errors/httpNotFoundError.ts";
-import { ValidationError } from "../errors/validationError.ts";
-import { HttpResponse } from "../httpResponse.ts";
-import { Status } from "../status.ts";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { NotFoundError } from "../../../application/errors/notFoundError";
+import { HttpNotFoundError } from "../errors/httpNotFoundError";
+import { ValidationError } from "../errors/validationError";
+import { HttpResponse } from "../httpResponse";
+import { Status } from "../status";
 import {
   Middleware,
   NextFunction,
   Request,
   Response,
-} from "./BaseMiddleware.ts";
+} from "./BaseMiddleware";
 
 export class ErrorHandler implements Middleware {
   async execute(_request: Request, _response: Response, next: NextFunction) {

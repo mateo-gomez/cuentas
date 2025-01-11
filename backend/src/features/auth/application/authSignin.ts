@@ -1,8 +1,8 @@
-import config from "../../../../config/config.ts";
-import { bcrypt } from "../../../../deps.ts";
-import { jwtVerify } from "../../../../deps.ts";
-import { JWTPayload, SignJWT } from "../../../../deps.ts";
-import { AuthRepository } from "../domain/auth.repository.ts";
+import config from "../../../../config/config";
+import { bcrypt } from "../../../../deps";
+import { jwtVerify } from "../../../../deps";
+import { JWTPayload, SignJWT } from "../../../../deps";
+import { AuthRepository } from "../domain/auth.repository";
 
 export class AuthSignin {
   private secret: Uint8Array;

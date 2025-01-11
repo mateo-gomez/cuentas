@@ -1,5 +1,5 @@
-import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject.ts";
-import { Category } from "../../category/domain/category.entity.ts";
+import { TransactionType } from "../../../domain/valueObjects/transactionType.valueObject";
+import { Category } from "../../category/domain/category.entity";
 
 export interface Transaction {
   _id: string;

@@ -1,12 +1,12 @@
 import {
   assertObjectMatch,
   assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts.ts";
+} from "https://deno.land/std@0.152.0/testing/asserts";
 
-import { CategoryRepository } from "../../../../src/features/category/domain/category.repository.ts";
-import { CategoryCreator } from "../../../../src/features/category/application/categoryCreator.ts";
-import { DuplicateError } from "../../../../src/infrastructure/api/errors/duplicateError.ts";
-import { ApplicationError } from "../../../../src/application/errors/applicationError.ts";
+import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
+import { CategoryCreator } from "../../../../src/features/category/application/categoryCreator";
+import { DuplicateError } from "../../../../src/infrastructure/api/errors/duplicateError";
+import { ApplicationError } from "../../../../src/application/errors/applicationError";
 
 Deno.test(
   "CategoryCreator - create category successfully",

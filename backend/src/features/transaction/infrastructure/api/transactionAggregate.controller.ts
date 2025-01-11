@@ -1,11 +1,11 @@
-import { RouterContext } from "../../../../../deps.ts";
-import { BalanceGetter } from "../../application/balanceGetter.ts";
-import { BalanceInRangeGetter } from "../../application/balanceInRangeGetter.ts";
-import { GroupedTransactionByDayGetter } from "../../application/groupedTransactionByDayGetter.ts";
-import { GroupedTransactionByDayInRangeGetter } from "../../application/groupedTransactionByDayInRangeGetter.ts";
-import { TransactionAggregate } from "../../domain/transaction.aggregate.ts";
-import { Balance } from "../../domain/balance.entity.ts";
-import { HttpResponse } from "../../../../infrastructure/api/httpResponse.ts";
+import { BalanceGetter } from "../../application/balanceGetter";
+import { BalanceInRangeGetter } from "../../application/balanceInRangeGetter";
+import { GroupedTransactionByDayGetter } from "../../application/groupedTransactionByDayGetter";
+import { GroupedTransactionByDayInRangeGetter } from "../../application/groupedTransactionByDayInRangeGetter";
+import { TransactionAggregate } from "../../domain/transaction.aggregate";
+import { Balance } from "../../domain/balance.entity";
+import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
+import { Request, Response } from "express";
 
 export class TransactionAggregateController {
   constructor(
@@ -18,20 +18,16 @@ export class TransactionAggregateController {
   ) {
   }
 
-  getAllTransactions = async ({
-    response,
-    request,
-  }: RouterContext<string>) => {
-    const { searchParams } = request.url;
-    const start = searchParams.get("start");
-    const end = searchParams.get("end");
+  getAllTransactions = async (req:Request, res:Response) => {
+    const { start, end } = req.query;
+
 
     let transactionAggregates!: TransactionAggregate[];
     let balance!: Balance;
 
     if (start && end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
+      const startDate = new Date(start as string);
+      const endDate = new Date(end as string);
 
       transactionAggregates = await this.groupedTransactionByDayInRangeGetter
         .execute(startDate, endDate);
@@ -46,7 +42,7 @@ export class TransactionAggregateController {
       transactions: transactionAggregates,
       balance,
     });
-    response.status = responseBody.statusCode;
-    response.body = responseBody;
+    res.status(responseBody.statusCode)
+		.json(responseBody);
   };
 }

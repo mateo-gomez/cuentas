@@ -1,8 +1,8 @@
-import { Balance } from "../../domain/balance.entity.ts";
-import { Transaction } from "../../domain/transaction.entity.ts";
-import { TransactionRepository } from "../../domain/Transaction.repository.ts";
-import { DatabaseError } from "../../../../infrastructure/api/errors/databaseError.ts";
-import TransactionModel from "./Transaction.ts";
+import { Balance } from "../../domain/balance.entity";
+import { Transaction } from "../../domain/transaction.entity";
+import { TransactionRepository } from "../../domain/Transaction.repository";
+import { DatabaseError } from "../../../../infrastructure/api/errors/databaseError";
+import TransactionModel from "./Transaction";
 
 export class MongoTransactionRepository implements TransactionRepository {
   exists = async (id: string): Promise<boolean> => {

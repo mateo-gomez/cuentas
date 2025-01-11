@@ -1,5 +1,5 @@
-import { Category } from "../../domain/category.entity.ts";
-import { CategoryRepository } from "../../domain/category.repository.ts";
+import { Category } from "../../domain/category.entity";
+import { CategoryRepository } from "../../domain/category.repository";
 
 export class inMemoryCategoryRepository implements CategoryRepository {
   private collection: Category[] = [];

@@ -1,12 +1,12 @@
-import { isIdValid } from "../../../../infrastructure/api/utils/isIdValid.ts";
-import { ValidationError } from "../../../../infrastructure/api/errors/validationError.ts";
-import { HttpResponse } from "../../../../infrastructure/api/httpResponse.ts";
-import { RouterContext } from "../../../../../deps.ts";
-import { CategoryByIdGetter } from "../../application/categoryByIdGetter.ts";
-import { CategoryCreator } from "../../application/categoryCreator.ts";
-import { CategoryGetter } from "../../application/categoryGetter.ts";
-import { CategoryRemover } from "../../application/categoryRemover.ts";
-import { CategoryUpdater } from "../../application/categoryUpdater.ts";
+import { isIdValid } from "../../../../infrastructure/api/utils/isIdValid";
+import { ValidationError } from "../../../../infrastructure/api/errors/validationError";
+import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
+import { RouterContext } from "../../../../../deps";
+import { CategoryByIdGetter } from "../../application/categoryByIdGetter";
+import { CategoryCreator } from "../../application/categoryCreator";
+import { CategoryGetter } from "../../application/categoryGetter";
+import { CategoryRemover } from "../../application/categoryRemover";
+import { CategoryUpdater } from "../../application/categoryUpdater";
 
 export class CategoryController {
   constructor(

@@ -1,8 +1,8 @@
-import { ApplicationError } from "../../../application/errors/applicationError.ts";
-import { capitalize } from "../../../application/utils/capitalize.ts";
-import { Category } from "../../../features/category/domain/category.entity.ts";
-import { CategoryRepository } from "../../../features/category/domain/category.repository.ts";
-import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError.ts";
+import { ApplicationError } from "../../../application/errors/applicationError";
+import { capitalize } from "../../../application/utils/capitalize";
+import { Category } from "../../../features/category/domain/category.entity";
+import { CategoryRepository } from "../../../features/category/domain/category.repository";
+import { DuplicateError } from "../../../infrastructure/api/errors/duplicateError";
 
 export class CategoryCreator {
   constructor(private readonly categoryRepository: CategoryRepository) {}
