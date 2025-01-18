@@ -1,28 +1,18 @@
-export interface Request {
-  // deno-lint-ignore no-explicit-any
-  body: Record<string, any>;
-  method: "GET" | "OPTIONS" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
-  url: URL;
-}
+import {
+	Request as ExpressRequest,
+	Response as ExpressResponse,
+	NextFunction as ExpressNextFunction,
+} from "express";
 
-export interface Response {
-  status: number;
-  // deno-lint-ignore no-explicit-any
-  body: any;
-  headers: Headers;
-}
+export type Request = ExpressRequest;
 
-export interface Context {
-  response: Response;
-  request: Request;
-}
+export type Response = ExpressResponse;
 
-export type NextFunction = () => Promise<unknown>;
-
+export type NextFunction = ExpressNextFunction;
 export interface Middleware {
-  execute: (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ) => unknown;
+	execute: (
+		request: Request,
+		response: Response,
+		next: NextFunction
+	) => unknown;
 }

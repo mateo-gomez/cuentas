@@ -1,5 +1,5 @@
-import { mongoose } from "../../../../deps";
+import mongoose from "mongoose";
 
 export const isIdValid = (id: string) => {
-  return mongoose.Types.ObjectId.isValid(id);
+	return mongoose.Types.ObjectId.isValid(id);
 };

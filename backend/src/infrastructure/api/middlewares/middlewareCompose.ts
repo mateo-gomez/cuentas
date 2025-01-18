@@ -1,11 +1,14 @@
-import { composeMiddleware, Context } from "../../../../deps";
+import { NextFunction, Request, Response } from "express";
 import { Middleware } from "./BaseMiddleware";
+import { Api } from "../server";
 
-export function middlewareCompose(middlewareChain: Middleware[]) {
-  const chain = middlewareChain.map(
-    (middleware) => (ctx: Context, next: () => Promise<unknown>) =>
-      middleware.execute(ctx.request, ctx.response, next),
-  );
-
-  return composeMiddleware(chain);
+export function middlewareCompose(
+	app: Api["app"],
+	middlewareChain: Middleware[]
+) {
+	middlewareChain.forEach((middleware) => {
+		app.use((req: Request, res: Response, next: NextFunction) => {
+			middleware.execute(req, res, next);
+		});
+	});
 }

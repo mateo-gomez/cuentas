@@ -9,77 +9,72 @@ import { TransactionUpdater } from "../../application/transactionUpdater";
 import { Request, Response } from "express";
 
 export class TransactionController {
-  constructor(
-    private readonly transactionByIdGetter: TransactionByIdGetter,
-    private readonly transactionCreator: TransactionCreator,
-    private readonly transactionUpdater: TransactionUpdater,
-    private readonly transactionRemover: TransactionRemover,
-  ) {
-  }
+	constructor(
+		private readonly transactionByIdGetter: TransactionByIdGetter,
+		private readonly transactionCreator: TransactionCreator,
+		private readonly transactionUpdater: TransactionUpdater,
+		private readonly transactionRemover: TransactionRemover
+	) {}
 
-  getTransaction = async (req:Request, res:Response) => {
-    const { id } = req.params;
-    const transaction = await this.transactionByIdGetter.execute(id);
+	getTransaction = async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const transaction = await this.transactionByIdGetter.execute(id);
 
-    if (!transaction) {
-      throw new HttpNotFoundError("Transaction", id);
-    }
+		if (!transaction) {
+			throw new HttpNotFoundError("Transaction", id);
+		}
 
-    const responseBody = HttpResponse.success(transaction);
-    res.status(responseBody.statusCode)
-		.json(responseBody);
-  };
+		const responseBody = HttpResponse.success(transaction);
+		res.status(responseBody.statusCode).json(responseBody);
+	};
 
-  saveTransaction = async (req:Request, res:Response) => {
-    const body = await req.body({ type: "json" }).value;
+	saveTransaction = async (req: Request, res: Response) => {
+		const body = await req.body;
 
-    const transaction = await this.transactionCreator.execute({
-      category: body.category,
-      date: body.date,
-      description: body.description,
-      type: body.type,
-      account: "",
-      value: body.value,
-    });
+		const transaction = await this.transactionCreator.execute({
+			category: body.category,
+			date: body.date,
+			description: body.description,
+			type: body.type,
+			account: "",
+			value: body.value,
+		});
 
-    const responseBody = HttpResponse.success(transaction);
-    res.status(responseBody.statusCode)
-		.json(responseBody);
-  };
+		const responseBody = HttpResponse.success(transaction);
+		res.status(responseBody.statusCode).json(responseBody);
+	};
 
-  updateTransaction = async (req:Request, res:Response) => {
-    const { id } = req.params;
-    const body = await req.body({ type: "json" }).value;
+	updateTransaction = async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const body = await req.body;
 
-    if (!isIdValid(id)) {
-      throw new ValidationError().addError("id", `El id ${id} is inválido`);
-    }
+		if (!isIdValid(id)) {
+			throw new ValidationError().addError("id", `El id ${id} is inválido`);
+		}
 
-    const transaction = await this.transactionUpdater.execute(id, {
-      category: body.category,
-      date: body.date,
-      description: body.description,
-      type: body.type,
-      account: body.account,
-      value: body.value,
-    });
+		const transaction = await this.transactionUpdater.execute(id, {
+			category: body.category,
+			date: body.date,
+			description: body.description,
+			type: body.type,
+			account: body.account,
+			value: body.value,
+		});
 
-    const responseBody = HttpResponse.success(transaction);
-    res.status(responseBody.statusCode)
-		.json(responseBody);
-  };
+		const responseBody = HttpResponse.success(transaction);
+		res.status(responseBody.statusCode).json(responseBody);
+	};
 
-  deleteTransaction = async (req:Request, res:Response) => {
-    const { id } = req.params;
+	deleteTransaction = async (req: Request, res: Response) => {
+		const { id } = req.params;
 
-    if (!isIdValid(id)) {
-      throw new ValidationError().addError("id", `El id ${id} is inválido`);
-    }
+		if (!isIdValid(id)) {
+			throw new ValidationError().addError("id", `El id ${id} is inválido`);
+		}
 
-    await this.transactionRemover.execute(id);
+		await this.transactionRemover.execute(id);
 
-    const responseBody = HttpResponse.success();
-    res.status(responseBody.statusCode)
-		.json(responseBody);
-  };
+		const responseBody = HttpResponse.success();
+		res.status(responseBody.statusCode).json(responseBody);
+	};
 }

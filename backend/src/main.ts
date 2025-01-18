@@ -1,3 +1,3 @@
-import "https://deno.land/std@0.173.0/dotenv/load";
+process.loadEnvFile(".env");
 
 import "./infrastructure/api/app";

@@ -1,53 +1,55 @@
-import { RouterContext } from "../../../../../deps";
+import { Request, Response } from "express";
 import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
 import { AuthSignin } from "../../application/authSignin";
 import { AuthSignup } from "../../application/authSignup";
 
 export class AuthController {
-  constructor(
-    private readonly authSignin: AuthSignin,
-    private readonly authSignup: AuthSignup,
-  ) {}
+	constructor(
+		private readonly authSignin: AuthSignin,
+		private readonly authSignup: AuthSignup
+	) {}
 
-  signin = async ({ request, response }: RouterContext<string>) => {
-    const body = await request.body({ type: "json" }).value;
-    const { email, password } = body;
+	signin = async (request: Request, response: Response) => {
+		const { email, password } = request.body;
 
-    try {
-      const auth = await this.authSignin.execute(email, password);
-      const responseBody = HttpResponse.success(auth);
-      response.status = responseBody.statusCode;
-      response.body = responseBody;
-    } catch (error) {
-      const responseBody = HttpResponse.failed(error.message);
-      response.status = responseBody.statusCode;
-      response.body = responseBody;
-    }
-  };
+		try {
+			const auth = await this.authSignin.execute(email, password);
+			const responseBody = HttpResponse.success(auth);
+			response.status(responseBody.statusCode).json(responseBody);
+		} catch (error) {
+			if (error instanceof Error) {
+				const responseBody = HttpResponse.failed(error.message);
+				response.status(responseBody.statusCode).json(responseBody);
+			}
 
-  signup = async ({ request, response }: RouterContext<string>) => {
-    const body = await request.body({ type: "json" }).value;
-    const { email, password, name, surename, lastname } = body;
+			throw error;
+		}
+	};
 
-    const newUser = {
-      email,
-      password,
-      name,
-      surename,
-      lastname,
-    };
+	signup = async (request: Request, response: Response) => {
+		const { email, password, name, surename, lastname } = request.body;
 
-    try {
-      await this.authSignup.execute(newUser, password);
-      const auth = await this.authSignin.execute(email, password);
-      const responseBody = HttpResponse.success(auth);
+		const newUser = {
+			email,
+			password,
+			name,
+			surename,
+			lastname,
+		};
 
-      response.status = responseBody.statusCode;
-      response.body = responseBody;
-    } catch (error) {
-      const responseBody = HttpResponse.failed(error.message);
-      response.status = responseBody.statusCode;
-      response.body = responseBody;
-    }
-  };
+		try {
+			await this.authSignup.execute(newUser, password);
+			const auth = await this.authSignin.execute(email, password);
+			const responseBody = HttpResponse.success(auth);
+
+			response.status(responseBody.statusCode).json(responseBody);
+		} catch (error) {
+			if (error instanceof Error) {
+				const responseBody = HttpResponse.failed(error.message);
+				response.status(responseBody.statusCode).json(responseBody);
+			}
+
+			throw error;
+		}
+	};
 }

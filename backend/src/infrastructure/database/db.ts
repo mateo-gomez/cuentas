@@ -1,23 +1,23 @@
-import { mongoose, resolveMongoDNS } from "../../../deps";
+import mongoose from "mongoose";
 
 export interface DB {
-  connect: Promise<DB>;
+	connect: Promise<DB>;
 }
 
 export class DBMongo {
-  constructor(private readonly uri: string) {}
+	constructor(private readonly uri: string) {}
 
-  async connect() {
-    if (!this.uri) {
-      throw new Error(`MONGO_URI not provided`);
-    }
+	async connect() {
+		if (!this.uri) {
+			throw new Error(`MONGO_URI not provided`);
+		}
 
-    const resolvedURI = await resolveMongoDNS(this.uri);
+		const resolvedURI = this.uri;
 
-    await mongoose.connect(resolvedURI);
+		await mongoose.connect(resolvedURI);
 
-    console.log("database connected!");
+		console.log("database connected!");
 
-    return this;
-  }
+		return this;
+	}
 }
