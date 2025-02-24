@@ -2,30 +2,16 @@ import config from "../../../../config/config";
 import { AuthRepository } from "../domain/auth.repository";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { AuthService } from "../../../application/services/auth.service";
 
 export class AuthSignin {
 	private secret: string;
 
-	constructor(private readonly authRepository: AuthRepository) {
+	constructor(
+		private readonly authRepository: AuthRepository,
+		private readonly authService: AuthService
+	) {
 		this.secret = config.JWT_SECRET || "";
-	}
-
-	async createJWT(payload: Record<string, any>) {
-		const jsonWebToken = jwt.sign({ payload }, this.secret, {
-			expiresIn: "24h",
-		});
-
-		return jsonWebToken;
-	}
-
-	async verifyJWT(token: string) {
-		try {
-			const payload = jwt.verify(token, this.secret);
-			return payload;
-		} catch (error) {
-			console.error("Invalid JWT", error);
-			return null;
-		}
 	}
 
 	private comparePassword(password: string, hash: string) {
@@ -54,17 +40,11 @@ export class AuthSignin {
 			id: user._id,
 		};
 
-		const token = await this.createJWT(payload);
+		const token = await this.authService.generateToken(payload);
 
 		return {
 			user,
 			token,
 		};
 	}
-}
-function jwtVerify(
-	token: string,
-	secret: Uint8Array<ArrayBufferLike>
-): { payload: any } | PromiseLike<{ payload: any }> {
-	throw new Error("Function not implemented.");
 }
