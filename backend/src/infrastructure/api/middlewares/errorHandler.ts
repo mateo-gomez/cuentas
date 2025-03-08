@@ -1,4 +1,5 @@
 import { ApplicationError } from "../../../application/errors/applicationError";
+import { ForbiddenError } from "../../../application/errors/forbiddenError";
 import { NotFoundError } from "../../../application/errors/notFoundError";
 import { HttpNotFoundError } from "../errors/httpNotFoundError";
 import { ValidationError } from "../errors/validationError";
@@ -8,43 +9,55 @@ import { Middleware, NextFunction, Request, Response } from "./BaseMiddleware";
 
 export class ErrorHandler {
 	async execute(
-		_error: Error,
+		error: Error,
 		_request: Request,
-		_response: Response,
+		response: Response,
 		next: NextFunction
 	) {
-		try {
-			next();
-		} catch (err) {
-			console.error(err);
+		console.error(error);
 
-			if (err instanceof ApplicationError) {
-				const response = HttpResponse.failed(err.message);
-				return _response.status(response.statusCode).json(response);
-			}
+		if (response.headersSent) {
+			next(error);
+			return;
+		}
 
-			if (err instanceof ValidationError) {
-				const response = HttpResponse.validationFailed(err.errors);
-				return _response.status(response.statusCode).json(response);
-			}
+		if (error instanceof ApplicationError) {
+			const res = HttpResponse.failed(error.message);
+			response.status(res.statusCode).json(res);
+			return;
+		}
 
-			if (err instanceof NotFoundError) {
-				const response = HttpResponse.failed(err.message, 404);
-				return _response.status(response.statusCode).json(response);
-			}
+		if (error instanceof ValidationError) {
+			const res = HttpResponse.validationFailed(error.errors);
+			response.status(res.statusCode).json(res);
+			return;
+		}
 
-			if (err instanceof HttpNotFoundError) {
-				const response = HttpResponse.failed(err.message, err.statusCode);
-				return _response.status(response.statusCode).json(response);
-			}
+		if (error instanceof NotFoundError) {
+			const res = HttpResponse.failed(error.message, 404);
+			response.status(res.statusCode).json(res);
+			return;
+		}
 
-			if (err instanceof Error) {
-				const response = HttpResponse.failed(
-					"Error interno del servidor",
-					Status.InternalServerError
-				);
-				return _response.status(response.statusCode).json(response);
-			}
+		if (error instanceof ForbiddenError) {
+			const res = HttpResponse.failed(error.message, 403);
+			response.status(res.statusCode).json(res);
+			return;
+		}
+
+		if (error instanceof HttpNotFoundError) {
+			const res = HttpResponse.failed(error.message, error.statusCode);
+			response.status(res.statusCode).json(res);
+			return;
+		}
+
+		if (error instanceof Error) {
+			const res = HttpResponse.failed(
+				"Error interno del servidor",
+				Status.InternalServerError
+			);
+			response.status(res.statusCode).json(res);
+			return;
 		}
 	}
 
