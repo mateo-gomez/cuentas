@@ -5,31 +5,29 @@ import { TransactionAggregateController } from "./transactionAggregate.controlle
 import { Router } from "express";
 
 const transactionController = new TransactionController(
-  container.transactionByIdGetter,
-  container.transactionCreator,
-  container.transactionUpdater,
-  container.transactionRemover,
+	container.transactionByIdGetter,
+	container.transactionCreator,
+	container.transactionUpdater,
+	container.transactionRemover
 );
 
 const transactionAggregateController = new TransactionAggregateController(
-  container.groupedTransactionByDayGetter,
-  container.groupedTransactionByDayInRangeGetter,
-  container.balanceInRangeGetter,
-  container.balanceGetter,
+	container.groupedTransactionByDayGetter,
+	container.groupedTransactionByDayInRangeGetter,
+	container.balanceInRangeGetter,
+	container.balanceGetter
 );
 
-const datesController = new DatesController(
-  container.dateRangeGetter,
-);
+const datesController = new DatesController(container.dateRangeGetter);
 
 const router = Router();
 
 router
-  .get("/transactions/dates", datesController.dateRange)
-  .get("/transactions", transactionAggregateController.getAllTransactions)
-  .get("/transactions/:id", transactionController.getTransaction)
-  .post("/transactions", transactionController.saveTransaction)
-  .put("/transactions/:id", transactionController.updateTransaction)
-  .delete("/transactions/:id", transactionController.deleteTransaction);
+	.get("/dates", datesController.dateRange)
+	.get("/", transactionAggregateController.getAllTransactions)
+	.get("/:id", transactionController.getTransaction)
+	.post("/", transactionController.saveTransaction)
+	.put("/:id", transactionController.updateTransaction)
+	.delete("/:id", transactionController.deleteTransaction);
 
 export default router;

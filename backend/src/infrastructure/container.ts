@@ -18,44 +18,47 @@ import { DateRangeGetter } from "../features/transaction/application/dateRangeGe
 import { AuthSignin } from "../features/auth/application/authSignin";
 import { MongoAuthRepository } from "../features/auth/infrastructure/database/mongoAuth.repository";
 import { AuthSignup } from "../features/auth/application/authSignup";
+import { AuthService } from "../application/services/auth.service";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
 const transactionAggregateService = new TransactionAggregateService();
-const AuthRepository = new MongoAuthRepository();
+const authRepository = new MongoAuthRepository();
+const authService = new AuthService();
 
 export const container = {
-  // category
-  categoryRepository,
-  categoryByIdGetter: new CategoryByIdGetter(categoryRepository),
-  categoryGetter: new CategoryGetter(categoryRepository),
-  categoryCreator: new CategoryCreator(categoryRepository),
-  categoryUpdater: new CategoryUpdater(categoryRepository),
-  categoryRemover: new CategoryRemover(categoryRepository),
+	// category
+	categoryRepository,
+	categoryByIdGetter: new CategoryByIdGetter(categoryRepository),
+	categoryGetter: new CategoryGetter(categoryRepository),
+	categoryCreator: new CategoryCreator(categoryRepository),
+	categoryUpdater: new CategoryUpdater(categoryRepository),
+	categoryRemover: new CategoryRemover(categoryRepository),
 
-  // transaction
-  transactionRepository,
-  transactionByIdGetter: new TransactionByIdGetter(transactionRepository),
-  transactionCreator: new TransactionCreator(transactionRepository),
-  transactionUpdater: new TransactionUpdater(transactionRepository),
-  transactionRemover: new TransactionRemover(transactionRepository),
+	// transaction
+	transactionRepository,
+	transactionByIdGetter: new TransactionByIdGetter(transactionRepository),
+	transactionCreator: new TransactionCreator(transactionRepository),
+	transactionUpdater: new TransactionUpdater(transactionRepository),
+	transactionRemover: new TransactionRemover(transactionRepository),
 
-  // grouped transactions
-  groupedTransactionByDayGetter: new GroupedTransactionByDayGetter(
-    transactionRepository,
-    transactionAggregateService,
-  ),
-  groupedTransactionByDayInRangeGetter:
-    new GroupedTransactionByDayInRangeGetter(
-      transactionRepository,
-      transactionAggregateService,
-    ),
-  balanceInRangeGetter: new BalanceInRangeGetter(transactionRepository),
-  balanceGetter: new BalanceGetter(transactionRepository),
+	// grouped transactions
+	groupedTransactionByDayGetter: new GroupedTransactionByDayGetter(
+		transactionRepository,
+		transactionAggregateService
+	),
+	groupedTransactionByDayInRangeGetter:
+		new GroupedTransactionByDayInRangeGetter(
+			transactionRepository,
+			transactionAggregateService
+		),
+	balanceInRangeGetter: new BalanceInRangeGetter(transactionRepository),
+	balanceGetter: new BalanceGetter(transactionRepository),
 
-  dateRangeGetter: new DateRangeGetter(transactionRepository),
+	dateRangeGetter: new DateRangeGetter(transactionRepository),
 
-  // auth
-  authSignin: new AuthSignin(AuthRepository),
-  authSignup: new AuthSignup(AuthRepository),
+	// auth
+	authService,
+	authSignin: new AuthSignin(authRepository, authService),
+	authSignup: new AuthSignup(authRepository),
 };

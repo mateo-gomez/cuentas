@@ -13,10 +13,10 @@ const categoryController = new CategoryController(
 const router = Router();
 
 router
-	.get("/categories", categoryController.getCategories)
-	.post("/categories", categoryController.saveCategory)
-	.get("/categories/:id", categoryController.getCategory)
-	.put("/categories/:id", categoryController.updateCategory)
-	.delete("/categories/:id", categoryController.deleteCategory);
+	.get("/", categoryController.getCategories)
+	.post("/", categoryController.saveCategory)
+	.get("/:id", categoryController.getCategory)
+	.put("/:id", categoryController.updateCategory)
+	.delete("/:id", categoryController.deleteCategory);
 
 export default router;

@@ -10,7 +10,7 @@ const authController = new AuthController(
 const router = Router();
 
 router
-	.post("/auth/signin", authController.signin)
-	.post("/auth/signup", authController.signup);
+	.post("/signin", authController.signin)
+	.post("/signup", authController.signup);
 
 export default router;
