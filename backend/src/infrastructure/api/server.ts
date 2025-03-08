@@ -1,14 +1,15 @@
 import { middlewareCompose } from "./middlewares/middlewareCompose";
 import { Middleware } from "./middlewares/BaseMiddleware";
 import { App } from "../interfaces/app";
-import express, { NextFunction, Request, Response, Router } from "express";
+import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { ErrorHandler } from "./middlewares/errorHandler";
+import { Route } from "../types/Route";
 
 interface Options {
 	middlewares: Middleware[];
-	routes: Router[];
+	routes: Route[];
 	listenOptions: {
 		port: number;
 		hostname?: string;
@@ -38,9 +39,13 @@ export class Api implements App {
 		this.app.use(ErrorHandler.handle());
 	}
 
-	configRoutes(routes: Router[]) {
-		routes.forEach((route) => {
-			this.app.use(route);
+	configRoutes(routes: Route[]) {
+		routes.forEach(({ path, middleware, router }) => {
+			if (middleware !== undefined) {
+				this.app.use(path, middleware, router);
+			} else {
+				this.app.use(path, router);
+			}
 		});
 	}
 
