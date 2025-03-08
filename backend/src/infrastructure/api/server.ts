@@ -24,6 +24,7 @@ export class Api implements App {
 		this.listenOptions = options.listenOptions;
 		this.configMiddlewares(options.middlewares);
 		this.configRoutes(options.routes);
+		this.configErrorHandler();
 	}
 
 	configMiddlewares(middlewares: Middleware[]) {
@@ -31,16 +32,10 @@ export class Api implements App {
 		this.app.use(express.json());
 		this.app.use(cors());
 		this.app.use(helmet());
-		this.app.use(
-			(
-				error: Error,
-				request: Request,
-				response: Response,
-				next: NextFunction
-			) => {
-				new ErrorHandler().execute(error, request, response, next);
-			}
-		);
+	}
+
+	configErrorHandler() {
+		this.app.use(ErrorHandler.handle());
 	}
 
 	configRoutes(routes: Router[]) {
