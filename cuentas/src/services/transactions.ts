@@ -61,3 +61,9 @@ export const updateTransaction = async (
 ): Promise<void> => {
   client.put(`transactions/${transaction.id}`, transaction)
 }
+
+export const importTransactions = async (formData: FormData) => {
+  const response = await client.upload("transactions/import", formData)
+
+  return response
+}

@@ -14,6 +14,7 @@ import Login from "./screens/auth/Login"
 import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
 import { useEffect } from "react"
+import Import from "./screens/import"
 
 const Routes = () => {
   const navigate = useNavigate()
@@ -66,6 +67,7 @@ const Routes = () => {
           ))}
           <Route path="/categories/create" element={<Category />} />
           <Route path="/categories/:id" element={<Category />} />
+          <Route path="/import" element={<Import />} />
         </Route>
       </Router>
     </View>

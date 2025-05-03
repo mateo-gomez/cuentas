@@ -1,7 +1,6 @@
-import { removeInitialSlash } from "../utils";
-import config from "../config";
-import { storage } from "./storage";
-
+import { removeInitialSlash } from "../utils"
+import config from "../config"
+import { storage } from "./storage"
 enum Method {
   POST = "POST",
   PUT = "PUT",
@@ -11,64 +10,75 @@ enum Method {
 
 const getToken = async (): Promise<string | null> => {
   try {
-    return await storage.getItem("token");
+    return await storage.getItem("token")
   } catch (error) {
-    console.error("Error retrieving token:", error);
-    return null;
+    console.error("Error retrieving token:", error)
+    return null
   }
-};
+}
 
 const createRequestInit = async (
   method: Method,
-  data?: Record<string, any>,
+  data?: Record<string, any> | FormData,
+  headers: Record<string, string> = {},
 ): Promise<RequestInit> => {
-  const token = await getToken();
-  const headers: Record<string, string> = {
+  const token = await getToken()
+  const isFormData = data instanceof FormData
+
+  const defaultHeaders: Record<string, string> = {
     Accept: "application/json",
-    "Content-Type": "application/json",
-  };
+    ...headers,
+  }
+
+  if (!isFormData) {
+    defaultHeaders["Content-Type"] = "application/json"
+  }
 
   if (token) {
-    headers.Authorization = `Bearer ${token}`;
+    defaultHeaders.Authorization = `Bearer ${token}`
   }
 
-  const requestInit: RequestInit = { method, headers };
+  const requestInit: RequestInit = {
+    method,
+    headers: defaultHeaders,
+  }
 
   if (method === Method.POST || method === Method.PUT) {
-    requestInit.body = JSON.stringify(data);
+    requestInit.body = isFormData ? data : JSON.stringify(data)
   }
 
-  return requestInit;
-};
+  return requestInit
+}
 
 const fetcher = async <T>(
   method: Method,
   endpoint: string,
-  data?: Record<string, any>,
+  data?: Record<string, any> | FormData,
+  headers?: Record<string, string>,
 ): Promise<T> => {
-  const normalizedEndpoint = removeInitialSlash(endpoint);
-  const url = `${config.apiUrl}/${normalizedEndpoint}`;
+  const normalizedEndpoint = removeInitialSlash(endpoint)
+  const url = `${config.apiUrl}/${normalizedEndpoint}`
 
   try {
-    const init = await createRequestInit(method, data);
-    const response = await fetch(url, init);
+    const init = await createRequestInit(method, data, headers || {})
+    const response = await fetch(url, init)
 
-    const result: T = await response.json();
+    const result: T = await response.json()
 
     if (!response.ok) {
       throw new Error(
         (result && typeof result === "object" && "message" in result
           ? result.message
           : "Ha ocurrido un error inesperado") as string,
-      );
+      )
     }
 
-    return result;
+    return result
   } catch (error: any) {
-    console.error("Error in fetcher:", { method, url, error });
-    throw error;
+    console.error("Error in fetcher:", { method, url, error })
+    throw error
   }
-};
+}
 
 export const client = {
   get: <T>(endpoint: string) => fetcher<T>(Method.GET, endpoint),
@@ -77,4 +87,9 @@ export const client = {
   put: <T>(endpoint: string, data: Record<string, any>) =>
     fetcher<T>(Method.PUT, endpoint, data),
   delete: <T>(endpoint: string) => fetcher<T>(Method.DELETE, endpoint),
-};
+  upload: <T>(
+    endpoint: string,
+    data: FormData,
+    headers?: Record<string, string>,
+  ) => fetcher<T>(Method.POST, endpoint, data, headers),
+}

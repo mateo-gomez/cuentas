@@ -9,12 +9,18 @@ import { theme } from "../theme"
 import { CategoriesOptions } from "./CategoriesOptions"
 import { StyledText } from "./StyledText"
 import { LogoutOption } from "./LogoutOption"
+import { Link } from "react-router-native"
 
 const options = [
   {
     title: "Categorías",
     icon: "grid-outline",
     options: <CategoriesOptions />,
+  },
+  {
+    title: "Importar transacciones",
+    icon: "cloud-upload-outline",
+    to: "/import",
   },
   // {
   //     title: "Cuentas",
@@ -26,17 +32,39 @@ const options = [
   //     icon: "settings-outline",
   //     options: <CategoriesOptions />,
   // },
-] as const
+]
 
 export const OptionsSideBar = () => (
   <View style={styles.container}>
-    {options.map((option) => (
-      <Collapse key={option.title}>
-        <CollapseHeader>
+    {options.map((option) =>
+      option.options ? (
+        <Collapse key={option.title}>
+          <CollapseHeader>
+            <View style={styles.touchable}>
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  name={option.icon as any}
+                  color={theme.colors.primary}
+                  size={70}
+                />
+              </View>
+              <StyledText
+                textCenter
+                fontSize={"subheading"}
+                fontWeight={"bold"}
+              >
+                {option.title}
+              </StyledText>
+            </View>
+          </CollapseHeader>
+          <CollapseBody>{option.options}</CollapseBody>
+        </Collapse>
+      ) : (
+        <Link to={option.to} key={option.title}>
           <View style={styles.touchable}>
             <View style={styles.iconContainer}>
               <Ionicons
-                name={option.icon}
+                name={option.icon as any}
                 color={theme.colors.primary}
                 size={70}
               />
@@ -45,10 +73,9 @@ export const OptionsSideBar = () => (
               {option.title}
             </StyledText>
           </View>
-        </CollapseHeader>
-        <CollapseBody>{option.options}</CollapseBody>
-      </Collapse>
-    ))}
+        </Link>
+      ),
+    )}
 
     <LogoutOption />
   </View>
