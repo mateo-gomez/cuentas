@@ -37,7 +37,7 @@ const Home = () => {
   const { dateRange: totalDateRange } = useDateRange()
   const [steps, setSteps] = useState(initialSteps)
   const navigate = useNavigate()
-  const drawerRef = useRef(null)
+  const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
 
   const handlePressPlusButton = () => {
     navigate("/transactions/income")
@@ -86,10 +86,43 @@ const Home = () => {
     }
   }
 
+  const handlePressMenu = () => {
+    const drawer = drawerRef.current
+
+    if (!drawer) {
+      return
+    }
+
+    const isDrawerOpen =
+      "drawerOpened" in drawer.state && drawer.state.drawerOpened
+
+    if (isDrawerOpen) {
+      drawer.closeDrawer()
+    } else {
+      drawer.openDrawer()
+    }
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <AppBar>
+      <AppBar
+        style={{
+          justifyContent: "space-between",
+          flexDirection: "row",
+          flex: 1,
+        }}
+      >
         <Logo />
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <TouchableOpacity onPress={handlePressMenu}>
+            <Ionicons
+              name="menu-outline"
+              color={theme.colors.white}
+              size={30}
+            />
+          </TouchableOpacity>
+        </View>
       </AppBar>
       <DrawerLayoutAndroid
         ref={drawerRef}
