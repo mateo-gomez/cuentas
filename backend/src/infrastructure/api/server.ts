@@ -31,6 +31,7 @@ export class Api implements App {
 	configMiddlewares(middlewares: Middleware[]) {
 		middlewareCompose(this.app, middlewares);
 		this.app.use(express.json());
+		this.app.use(express.urlencoded({ extended: true }));
 		this.app.use(cors());
 		this.app.use(helmet());
 	}
