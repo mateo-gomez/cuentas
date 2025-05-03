@@ -51,7 +51,7 @@ export const TransactionItem = ({
           ) : null}
         </View>
         <View style={styles.price}>
-          <NumberFormat fontWeight="normal" value={value} />
+          <NumberFormat fontWeight="normal" value={value} fontSize="small" />
         </View>
       </View>
     </Link>
@@ -66,11 +66,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   price: {
-    flex: 1,
     alignItems: "flex-end",
   },
   box: {
-    marginLeft: 20,
+    flex: 1,
     paddingHorizontal: 10,
   },
 })
