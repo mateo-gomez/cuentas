@@ -1,3 +1,4 @@
+import { UploadMiddleware } from "../../../../infrastructure/api/middlewares/uploadMiddleware";
 import { container } from "../../../../infrastructure/container";
 import { DatesController } from "./dates.controller";
 import { TransactionController } from "./transaction.controller";
@@ -8,7 +9,8 @@ const transactionController = new TransactionController(
 	container.transactionByIdGetter,
 	container.transactionCreator,
 	container.transactionUpdater,
-	container.transactionRemover
+	container.transactionRemover,
+	container.transactionImporter
 );
 
 const transactionAggregateController = new TransactionAggregateController(
@@ -28,6 +30,13 @@ router
 	.get("/:id", transactionController.getTransaction)
 	.post("/", transactionController.saveTransaction)
 	.put("/:id", transactionController.updateTransaction)
-	.delete("/:id", transactionController.deleteTransaction);
+	.delete("/:id", transactionController.deleteTransaction)
+	.post(
+		"/import",
+		UploadMiddleware.handle([
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		]).single("file"),
+		transactionController.import
+	);
 
 export default router;

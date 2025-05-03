@@ -1,3 +1,4 @@
+import { TransactionDTO } from "../application/dto/transactionDTO";
 import { Balance } from "./balance.entity";
 import { Transaction } from "./transaction.entity";
 
@@ -26,4 +27,6 @@ export interface TransactionRepository {
   delete: (id: string) => Promise<void>;
 
   firstDateRecord: () => Promise<{ firstDate: Date } | null>;
+
+  saveMany: (transactions: TransactionDTO[]) => Promise<void>;
 }

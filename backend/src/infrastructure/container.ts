@@ -19,6 +19,9 @@ import { AuthSignin } from "../features/auth/application/authSignin";
 import { MongoAuthRepository } from "../features/auth/infrastructure/database/mongoAuth.repository";
 import { AuthSignup } from "../features/auth/application/authSignup";
 import { AuthService } from "../application/services/auth.service";
+import { TransactionImporter } from "../features/transaction/application/useCases/TransactionImporter";
+import { ExcelTransactionParser } from "../features/transaction/infrastructure/services/excelTransactionParser";
+import { CategoryClassifier } from "../features/transaction/application/services/categoryClassifier";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
@@ -41,6 +44,7 @@ export const container = {
 	transactionCreator: new TransactionCreator(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
+	transactionImporter: new TransactionImporter(transactionRepository),
 
 	// grouped transactions
 	groupedTransactionByDayGetter: new GroupedTransactionByDayGetter(
@@ -61,4 +65,10 @@ export const container = {
 	authService,
 	authSignin: new AuthSignin(authRepository, authService),
 	authSignup: new AuthSignup(authRepository),
+
+	// excelTransactionParser
+	excelTransactionParser: new ExcelTransactionParser(
+		new CategoryClassifier(),
+		categoryRepository
+	),
 };

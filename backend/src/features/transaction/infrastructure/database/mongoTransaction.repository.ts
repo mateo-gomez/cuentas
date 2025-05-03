@@ -3,6 +3,7 @@ import { Transaction } from "../../domain/transaction.entity";
 import { TransactionRepository } from "../../domain/Transaction.repository";
 import { DatabaseError } from "../../../../infrastructure/api/errors/databaseError";
 import TransactionModel from "./Transaction";
+import { TransactionDTO } from "../../application/dto/transactionDTO";
 
 export class MongoTransactionRepository implements TransactionRepository {
   exists = async (id: string): Promise<boolean> => {
@@ -142,5 +143,9 @@ export class MongoTransactionRepository implements TransactionRepository {
     const firstDate = transaction?.date;
 
     return firstDate ? { firstDate } : null;
+  };
+
+  saveMany = async (transactions: TransactionDTO[]) => {
+    await TransactionModel.insertMany(transactions);
   };
 }

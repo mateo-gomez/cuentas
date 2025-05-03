@@ -5,71 +5,72 @@ import CategoryModel from "./Category";
 import { DuplicateError } from "../../../../infrastructure/api/errors/duplicateError";
 
 export class MongoCategoryRepository implements CategoryRepository {
-  exists = async (id: string): Promise<boolean> => {
-    const exists = await CategoryModel.exists({ _id: id });
+	exists = async (id: string): Promise<boolean> => {
+		const exists = await CategoryModel.exists({ _id: id });
 
-    return exists !== null;
-  };
+		return exists !== null;
+	};
 
-  getById = async (id: string): Promise<Category | null> => {
-    return await CategoryModel.findById(id).lean();
-  };
+	getById = async (id: string): Promise<Category | null> => {
+		return await CategoryModel.findById(id).lean();
+	};
 
-  getAll = async (): Promise<Category[]> => {
-    return await CategoryModel.find().lean();
-  };
+	getByName = async (name: string): Promise<Category | null> => {
+		return await CategoryModel.findOne({ name }).lean();
+	};
 
-  createCategory = async (
-    name: string,
-    icon: string,
-  ): Promise<Category> => {
-    try {
-      return await CategoryModel.create({ name, icon });
-    } catch (error) {
-      if (error.name === "MongoServerError" && error.code === 11000) {
-        throw new DuplicateError(
-          `La categoría "${name}" already exists.`,
-          error,
-        );
-      }
+	getAll = async (): Promise<Category[]> => {
+		return await CategoryModel.find().lean();
+	};
 
-      throw new DatabaseError("Error creando categoría", error);
-    }
-  };
+	createCategory = async (name: string, icon: string): Promise<Category> => {
+		try {
+			return await CategoryModel.create({ name, icon });
+		} catch (error) {
+			if (error.name === "MongoServerError" && error.code === 11000) {
+				throw new DuplicateError(
+					`La categoría "${name}" already exists.`,
+					error
+				);
+			}
 
-  updateCategory = async (
-    id: string,
-    name: string,
-    icon: string,
-  ): Promise<Category | null> => {
-    try {
-      const category = await CategoryModel.findByIdAndUpdate(
-        id,
-        { name, icon },
-        {
-          returnDocument: "after",
-          lean: true,
-        },
-      );
+			throw new DatabaseError("Error creando categoría", error);
+		}
+	};
 
-      return category;
-    } catch (error) {
-      if (error.name === "MongoServerError" && error.code === 11000) {
-        throw new DuplicateError(
-          `La categoría "${name}" already exists.`,
-          error,
-        );
-      }
+	updateCategory = async (
+		id: string,
+		name: string,
+		icon: string
+	): Promise<Category | null> => {
+		try {
+			const category = await CategoryModel.findByIdAndUpdate(
+				id,
+				{ name, icon },
+				{
+					returnDocument: "after",
+					lean: true,
+				}
+			);
 
-      throw new DatabaseError("Error al guardar categoría", error);
-    }
-  };
+			return category;
+		} catch (error) {
+			if (error.name === "MongoServerError" && error.code === 11000) {
+				throw new DuplicateError(
+					`La categoría "${name}" already exists.`,
+					error
+				);
+			}
 
-  delete = async (id: string): Promise<void> => {
-    const { deletedCount } = await CategoryModel.remove({ _id: id });
+			throw new DatabaseError("Error al guardar categoría", error);
+		}
+	};
 
-    if (deletedCount === 0) {
-      throw new DatabaseError(`Category ${id} not deleted`);
-    }
-  };
+	delete = async (id: string): Promise<void> => {
+		const { deletedCount } = await CategoryModel.remove({ _id: id });
+
+		if (deletedCount === 0) {
+			throw new DatabaseError(`Category ${id} not deleted`);
+		}
+	};
 }
