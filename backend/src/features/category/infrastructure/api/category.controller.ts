@@ -7,6 +7,7 @@ import { CategoryCreator } from "../../application/categoryCreator";
 import { CategoryGetter } from "../../application/categoryGetter";
 import { CategoryRemover } from "../../application/categoryRemover";
 import { CategoryUpdater } from "../../application/categoryUpdater";
+import { catchAsync } from "../../../../application/utils/catchAsync";
 
 export class CategoryController {
 	constructor(
@@ -17,7 +18,7 @@ export class CategoryController {
 		private readonly categoryRemover: CategoryRemover
 	) {}
 
-	getCategory = async (request: Request, response: Response) => {
+	getCategory = catchAsync(async (request: Request, response: Response) => {
 		const { id } = request.params;
 
 		if (!isIdValid(id)) {
@@ -28,25 +29,25 @@ export class CategoryController {
 
 		const responseBody = HttpResponse.success(category);
 		response.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	getCategories = async (_request: Request, response: Response) => {
+	getCategories = catchAsync(async (_request: Request, response: Response) => {
 		const categories = await this.categoryGetter.execute();
 
 		const responseBody = HttpResponse.success(categories);
 		response.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	saveCategory = async (request: Request, response: Response) => {
+	saveCategory = catchAsync(async (request: Request, response: Response) => {
 		const { name, icon } = request.body;
 
 		const category = await this.categoryCreator.execute(name, icon);
 
 		const responseBody = HttpResponse.success(category);
 		response.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	updateCategory = async (request: Request, response: Response) => {
+	updateCategory = catchAsync(async (request: Request, response: Response) => {
 		const { id } = request.params;
 		const { name, icon } = request.body;
 
@@ -58,9 +59,9 @@ export class CategoryController {
 
 		const responseBody = HttpResponse.success(category);
 		response.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	deleteCategory = async (request: Request, response: Response) => {
+	deleteCategory = catchAsync(async (request: Request, response: Response) => {
 		const { id } = request.params;
 
 		if (!isIdValid(id)) {
@@ -71,5 +72,5 @@ export class CategoryController {
 
 		const responseBody = HttpResponse.success();
 		response.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 }

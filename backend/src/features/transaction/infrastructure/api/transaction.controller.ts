@@ -7,16 +7,18 @@ import { TransactionCreator } from "../../application/transactionCreator";
 import { TransactionRemover } from "../../application/transactionRemover";
 import { TransactionUpdater } from "../../application/transactionUpdater";
 import { Request, Response } from "express";
+import { catchAsync } from "../../../../application/utils/catchAsync";
 
 export class TransactionController {
 	constructor(
 		private readonly transactionByIdGetter: TransactionByIdGetter,
 		private readonly transactionCreator: TransactionCreator,
 		private readonly transactionUpdater: TransactionUpdater,
-		private readonly transactionRemover: TransactionRemover
+		private readonly transactionRemover: TransactionRemover,
+		private readonly transactionImporter: TransactionImporter
 	) {}
 
-	getTransaction = async (req: Request, res: Response) => {
+	getTransaction = catchAsync(async (req: Request, res: Response) => {
 		const { id } = req.params;
 		const transaction = await this.transactionByIdGetter.execute(id);
 
@@ -26,9 +28,9 @@ export class TransactionController {
 
 		const responseBody = HttpResponse.success(transaction);
 		res.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	saveTransaction = async (req: Request, res: Response) => {
+	saveTransaction = catchAsync(async (req: Request, res: Response) => {
 		const body = await req.body;
 
 		const transaction = await this.transactionCreator.execute({
@@ -42,9 +44,9 @@ export class TransactionController {
 
 		const responseBody = HttpResponse.success(transaction);
 		res.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	updateTransaction = async (req: Request, res: Response) => {
+	updateTransaction = catchAsync(async (req: Request, res: Response) => {
 		const { id } = req.params;
 		const body = await req.body;
 
@@ -63,9 +65,9 @@ export class TransactionController {
 
 		const responseBody = HttpResponse.success(transaction);
 		res.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 
-	deleteTransaction = async (req: Request, res: Response) => {
+	deleteTransaction = catchAsync(async (req: Request, res: Response) => {
 		const { id } = req.params;
 
 		if (!isIdValid(id)) {
@@ -76,5 +78,5 @@ export class TransactionController {
 
 		const responseBody = HttpResponse.success();
 		res.status(responseBody.statusCode).json(responseBody);
-	};
+	});
 }
