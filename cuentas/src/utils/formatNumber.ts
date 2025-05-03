@@ -3,5 +3,5 @@ const intlCurrency = new Intl.NumberFormat("es-CO", {
 })
 
 export const formatNumber = (value: number | bigint) => {
-  return intlCurrency.format(value) + " COP"
+  return intlCurrency.format(value)
 }
