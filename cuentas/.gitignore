@@ -21,3 +21,6 @@ web-build/
 /.claude
 /.agents
 skills-lock.json
+
+
+/.idea
