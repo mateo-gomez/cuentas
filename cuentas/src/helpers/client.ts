@@ -1,6 +1,9 @@
 import { removeInitialSlash } from "../utils"
 import config from "../config"
 import { storage } from "./storage"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("client")
 enum Method {
   POST = "POST",
   PUT = "PUT",
@@ -12,7 +15,7 @@ const getToken = async (): Promise<string | null> => {
   try {
     return await storage.getItem("token")
   } catch (error) {
-    console.error("Error retrieving token:", error)
+    logger.error("Error retrieving token", { error })
     return null
   }
 }
@@ -75,7 +78,7 @@ const fetcher = async <T>(
 
     return result
   } catch (error: any) {
-    console.error("Error in fetcher:", { method, url, error })
+    logger.error("Error in fetcher", { method, url, error: error?.message ?? error })
     throw error
   }
 }
