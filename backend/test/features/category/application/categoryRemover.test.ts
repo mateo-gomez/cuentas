@@ -1,66 +1,33 @@
-import {
-  assertSpyCall,
-  assertSpyCalls,
-  returnsNext,
-  spy,
-  stub,
-} from "https://deno.land/std@0.221.0/testing/mock";
-import {
-  assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts";
 import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
 import { CategoryRemover } from "../../../../src/features/category/application/categoryRemover";
 import { NotFoundError } from "../../../../src/application/errors/notFoundError";
 
-const repositoryMock: Partial<CategoryRepository> = {
-  delete: () => Promise.resolve(),
-  exists: () => Promise.resolve(true),
-};
-const existsStub = stub(repositoryMock, "exists", returnsNext([true, false]));
-const deleteSpy = spy(repositoryMock, "delete");
+describe("CategoryRemover", () => {
+	test("remove successfully", async () => {
+		const existsMock = jest.fn().mockResolvedValue(true);
+		const deleteMock = jest.fn().mockResolvedValue(undefined);
+		const repositoryMock = {
+			exists: existsMock,
+			delete: deleteMock,
+		} as unknown as CategoryRepository;
+		const useCase = new CategoryRemover(repositoryMock);
 
-Deno.test(
-  "CategoryRemover - remove successfully",
-  async () => {
-    const useCase = new CategoryRemover(
-      repositoryMock as CategoryRepository,
-    );
+		await useCase.execute("1");
 
-    const categoryId = "1";
+		expect(existsMock).toHaveBeenCalledWith("1");
+		expect(deleteMock).toHaveBeenCalledWith("1");
+	});
 
-    await useCase.execute(categoryId);
+	test("throw NotFoundError when id does not exist", async () => {
+		const existsMock = jest.fn().mockResolvedValue(false);
+		const deleteMock = jest.fn();
+		const repositoryMock = {
+			exists: existsMock,
+			delete: deleteMock,
+		} as unknown as CategoryRepository;
+		const useCase = new CategoryRemover(repositoryMock);
 
-    assertSpyCalls(existsStub, 1);
-    assertSpyCall(existsStub, 0, {
-      args: [categoryId],
-      returned: true,
-    });
-
-    assertSpyCalls(deleteSpy, 1);
-    assertSpyCall(deleteSpy, 0, {
-      args: [categoryId],
-    });
-  },
-);
-
-Deno.test("CategoryRemover - throw NotFoundError when id does not exist", () => {
-  const useCase = new CategoryRemover(
-    repositoryMock as CategoryRepository,
-  );
-
-  const categoryId = "1";
-
-  assertRejects(
-    () => useCase.execute(categoryId),
-    NotFoundError,
-    "Categoría no encontrada",
-  );
-
-  assertSpyCalls(existsStub, 2);
-  assertSpyCall(existsStub, 1, {
-    args: [categoryId],
-    returned: false,
-  });
-
-  assertSpyCalls(deleteSpy, 1);
+		await expect(useCase.execute("1")).rejects.toThrow(NotFoundError);
+		expect(deleteMock).not.toHaveBeenCalled();
+	});
 });

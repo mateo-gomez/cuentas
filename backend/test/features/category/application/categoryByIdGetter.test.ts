@@ -1,57 +1,32 @@
-import {
-  assertObjectMatch,
-  assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts";
 import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
 import { CategoryByIdGetter } from "../../../../src/features/category/application/categoryByIdGetter";
 import { NotFoundError } from "../../../../src/application/errors/notFoundError";
 
-Deno.test(
-  "CategoryByIdGetter - get successfully",
-  async () => {
-    const repositoryMock: Partial<CategoryRepository> = {
-      getById: () =>
-        Promise.resolve({
-          _id: "1",
-          name: "hola",
-          icon: "icon",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }),
-    };
+describe("CategoryByIdGetter", () => {
+	test("get successfully", async () => {
+		const repositoryMock: Partial<CategoryRepository> = {
+			getById: () =>
+				Promise.resolve({
+					_id: "1",
+					name: "hola",
+					icon: "icon",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				}),
+		};
+		const useCase = new CategoryByIdGetter(repositoryMock as CategoryRepository);
 
-    const useCase = new CategoryByIdGetter(
-      repositoryMock as CategoryRepository,
-    );
+		const result = await useCase.execute("1");
 
-    const expected = {
-      _id: "1",
-      name: "hola",
-      icon: "icon",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+		expect(result).toMatchObject({ _id: "1", name: "hola", icon: "icon" });
+	});
 
-    const result = await useCase.execute("1");
+	test("throw NotFoundError when id does not exist", async () => {
+		const repositoryMock: Partial<CategoryRepository> = {
+			getById: () => Promise.resolve(null),
+		};
+		const useCase = new CategoryByIdGetter(repositoryMock as CategoryRepository);
 
-    assertObjectMatch(result, expected);
-  },
-);
-
-Deno.test("CategoryByIdGetter - throw NotFoundError when id does not exist", () => {
-  const repositoryMock: Partial<CategoryRepository> = {
-    getById: () => Promise.resolve(null),
-  };
-
-  const useCase = new CategoryByIdGetter(
-    repositoryMock as CategoryRepository,
-  );
-
-  const resultPromise = useCase.execute("notFoundId");
-
-  assertRejects(
-    () => resultPromise,
-    NotFoundError,
-    "Categoría no encontrada",
-  );
+		await expect(useCase.execute("notFoundId")).rejects.toThrow(NotFoundError);
+	});
 });

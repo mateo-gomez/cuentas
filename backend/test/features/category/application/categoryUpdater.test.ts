@@ -1,68 +1,51 @@
-import {
-  assertObjectMatch,
-  assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts";
-
 import { CategoryRepository } from "../../../../src/features/category/domain/category.repository";
 import { CategoryUpdater } from "../../../../src/features/category/application/categoryUpdater";
 import { DuplicateError } from "../../../../src/infrastructure/api/errors/duplicateError";
 import { ApplicationError } from "../../../../src/application/errors/applicationError";
 
-Deno.test(
-  "CategoryUpdater - update category successfully",
-  async () => {
-    const expected = {
-      _id: "1",
-      name: "drink",
-      icon: "drink-icon",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+describe("CategoryUpdater", () => {
+	test("update category successfully", async () => {
+		const expected = {
+			_id: "1",
+			name: "drink",
+			icon: "drink-icon",
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+		const repositoryMock: Partial<CategoryRepository> = {
+			getById: () =>
+				Promise.resolve({
+					_id: "1",
+					name: "food",
+					icon: "food-icon",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				}),
+			updateCategory: () => Promise.resolve(expected),
+		};
+		const useCase = new CategoryUpdater(repositoryMock as CategoryRepository);
 
-    const repositoryMock: Partial<CategoryRepository> = {
-      getById: () =>
-        Promise.resolve({
-          _id: "1",
-          name: "food",
-          icon: "food-icon",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }),
-      updateCategory: () => Promise.resolve(expected),
-    };
+		const result = await useCase.execute("1", "drink", "drink-icon");
 
-    const useCase = new CategoryUpdater(
-      repositoryMock as CategoryRepository,
-    );
+		expect(result).toMatchObject({ _id: "1", name: "drink", icon: "drink-icon" });
+	});
 
-    const result = await useCase.execute("1", "drink", "drink-icon");
+	test("throw ApplicationError when name already exists", async () => {
+		const repositoryMock: Partial<CategoryRepository> = {
+			getById: () =>
+				Promise.resolve({
+					_id: "1",
+					name: "food",
+					icon: "food-icon",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				}),
+			updateCategory: () => Promise.reject(new DuplicateError("")),
+		};
+		const useCase = new CategoryUpdater(repositoryMock as CategoryRepository);
 
-    assertObjectMatch(result, expected);
-  },
-);
-
-Deno.test("CategoryUpdater - throw DuplicateError when name already exists", () => {
-  const repositoryMock: Partial<CategoryRepository> = {
-    getById: () =>
-      Promise.resolve({
-        _id: "1",
-        name: "food",
-        icon: "food-icon",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    updateCategory: () => Promise.reject(new DuplicateError("")),
-  };
-
-  const useCase = new CategoryUpdater(
-    repositoryMock as CategoryRepository,
-  );
-
-  const resultPromise = useCase.execute("1", "drink", "drink-icon");
-
-  assertRejects(
-    () => resultPromise,
-    ApplicationError,
-    `La categoría "drink" ya existe`,
-  );
+		await expect(useCase.execute("1", "drink", "drink-icon")).rejects.toThrow(
+			ApplicationError
+		);
+	});
 });

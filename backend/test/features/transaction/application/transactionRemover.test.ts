@@ -1,64 +1,50 @@
-import {
-  assertRejects,
-} from "https://deno.land/std@0.152.0/testing/asserts";
 import { TransactionRepository } from "../../../../src/features/transaction/domain/Transaction.repository";
 import { NotFoundError } from "../../../../src/application/errors/notFoundError";
-import { TransactionRemover } from "../../../../src/features/transaction/application/transactionRemover";
-import { ApplicationError } from "../../../../src/application/errors/applicationError";
+import { TransactionRemover } from "../../../../src/features/transaction/application/useCases/transactionRemover";
 
-class PartialMockTransactionRepository
-  implements Partial<TransactionRepository> {
-  exists = (id: string): Promise<boolean> =>
-    Promise.resolve(id === "existingId" || id === "withError");
+describe("TransactionRemover", () => {
+	test("Removes an existing transaction successfully", async () => {
+		const deleteMock = jest.fn().mockResolvedValue(undefined);
+		const existsMock = jest.fn().mockResolvedValue(true);
+		const transactionRepository = {
+			exists: existsMock,
+			delete: deleteMock,
+		} as unknown as TransactionRepository;
+		const transactionRemover = new TransactionRemover(transactionRepository);
 
-  // deno-lint-ignore require-await
-  delete = async (id: string): Promise<void> => {
-    if (id !== "existingId") {
-      throw new Error("Failed to delete transaction");
-    }
-  };
-}
+		await transactionRemover.execute("existingId");
 
-Deno.test("TransactionRemover - Removes an existing transaction successfully", async () => {
-  // Arrange
-  const transactionRepository = new PartialMockTransactionRepository();
-  const transactionRemover = new TransactionRemover(
-    transactionRepository as TransactionRepository,
-  );
+		expect(deleteMock).toHaveBeenCalledWith("existingId");
+	});
 
-  // Act
-  await transactionRemover.execute("existingId");
+	test("Throws NotFoundError when the transaction does not exist", async () => {
+		const existsMock = jest.fn().mockResolvedValue(false);
+		const deleteMock = jest.fn();
+		const transactionRepository = {
+			exists: existsMock,
+			delete: deleteMock,
+		} as unknown as TransactionRepository;
+		const transactionRemover = new TransactionRemover(transactionRepository);
 
-  // Assert
-  // No assertions needed as the test is successful if no error is thrown
-});
+		await expect(transactionRemover.execute("nonExistingId")).rejects.toThrow(
+			NotFoundError
+		);
+		expect(deleteMock).not.toHaveBeenCalled();
+	});
 
-Deno.test("TransactionRemover - Throws NotFoundError when the transaction does not exist", () => {
-  // Arrange
-  const transactionRepository = new PartialMockTransactionRepository();
-  const transactionRemover = new TransactionRemover(
-    transactionRepository as TransactionRepository,
-  );
+	test("Throws an error when deletion fails", async () => {
+		const existsMock = jest.fn().mockResolvedValue(true);
+		const deleteMock = jest
+			.fn()
+			.mockRejectedValue(new Error("Failed to delete"));
+		const transactionRepository = {
+			exists: existsMock,
+			delete: deleteMock,
+		} as unknown as TransactionRepository;
+		const transactionRemover = new TransactionRemover(transactionRepository);
 
-  // Act and Assert
-  assertRejects(
-    () => transactionRemover.execute("nonExistingId"),
-    NotFoundError,
-    "Categoría no encontrada",
-  );
-});
-
-Deno.test("TransactionRemover - Throws an error when deletion fails", () => {
-  // Arrange
-  const transactionRepository = new PartialMockTransactionRepository();
-  const transactionRemover = new TransactionRemover(
-    transactionRepository as TransactionRepository,
-  );
-
-  // Act and Assert
-  assertRejects(
-    () => transactionRemover.execute("withError"),
-    ApplicationError,
-    "Error al eliminar categoría",
-  );
+		await expect(transactionRemover.execute("existingId")).rejects.toThrow(
+			"Error al eliminar categoría"
+		);
+	});
 });
