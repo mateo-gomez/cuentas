@@ -20,37 +20,37 @@ const Routes = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useEffect(() => {
-    const handleBackPress = () => {
-      if (location.pathname === "/") {
-        Alert.alert(
-          "Salir",
-          "¿Desea salir de la app?",
-          [
-            {
-              text: "Cancelar",
-              style: "cancel",
-            },
-            {
-              text: "Salir",
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        )
-      } else {
-        navigate(-1)
-      }
+  // useEffect(() => {
+  //   const handleBackPress = () => {
+  //     if (location.pathname === "/") {
+  //       Alert.alert(
+  //         "Salir",
+  //         "¿Desea salir de la app?",
+  //         [
+  //           {
+  //             text: "Cancelar",
+  //             style: "cancel",
+  //           },
+  //           {
+  //             text: "Salir",
+  //             onPress: () => BackHandler.exitApp(),
+  //           },
+  //         ],
+  //         { cancelable: true },
+  //       )
+  //     } else {
+  //       navigate(-1)
+  //     }
 
-      return true
-    }
+  //     return true
+  //   }
 
-    BackHandler.addEventListener("hardwareBackPress", handleBackPress)
+  //   BackHandler.addEventListener("hardwareBackPress", handleBackPress)
 
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackPress)
-    }
-  }, [navigate, location])
+  //   return () => {
+  //     // BackHandler.exitApp()
+  //   }
+  // }, [navigate, location])
 
   return (
     <View style={styles.container}>

@@ -17,3 +17,7 @@ web-build/
 
 /android
 /ios
+
+/.claude
+/.agents
+skills-lock.json
