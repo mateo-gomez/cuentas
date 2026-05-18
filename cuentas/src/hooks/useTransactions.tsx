@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { TransactionAggregate } from "../../types"
 import { getTransactions } from "../services"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("useTransactions")
 
 export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
   const [transactions, setTransactions] = useState<TransactionAggregate[]>([])
@@ -20,8 +23,7 @@ export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
         setBalance(balance)
       })
       .catch((err) => {
-        console.log("error loading transaction")
-        console.error(err)
+        logger.error("Error loading transactions", { error: err?.message ?? err })
         setError(err.message)
       })
       .finally(() => setLoading(false))

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { getDateRange } from "../services/dateRange"
 import { DateRange } from "../../types/dateRange"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("useDateRange")
 
 export const useDateRange = () => {
   const [dateRange, setDateRange] = useState<DateRange | null>()
@@ -12,8 +15,7 @@ export const useDateRange = () => {
     getDateRange()
       .then(setDateRange)
       .catch((err) => {
-        console.log("error loading date range")
-        console.error(err)
+        logger.error("Error loading date range", { error: err?.message ?? err })
         setError(err.message)
       })
       .finally(() => setLoading(false))

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { Transaction } from "../../types"
 import { getTransaction } from "../services"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("useTransaction")
 
 export const useTransaction = (id: string) => {
   const [transaction, setTransaction] = useState<Transaction | null>()
@@ -12,8 +15,7 @@ export const useTransaction = (id: string) => {
       getTransaction(id)
         .then(setTransaction)
         .catch((err) => {
-          console.log("error loading transaction")
-          console.error(err)
+          logger.error("Error loading transaction", { id, error: err?.message ?? err })
         })
         .finally(() => setLoading(false))
     }

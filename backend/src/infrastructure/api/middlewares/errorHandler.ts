@@ -1,5 +1,8 @@
 import { ErrorRequestHandler } from "express";
+import { createLogger } from "../../../lib/logger";
 import { ApplicationError } from "../../../application/errors/applicationError";
+
+const logger = createLogger("ErrorHandler");
 import { ForbiddenError } from "../../../application/errors/forbiddenError";
 import { NotFoundError } from "../../../application/errors/notFoundError";
 import { HttpNotFoundError } from "../errors/httpNotFoundError";
@@ -16,7 +19,7 @@ export class ErrorHandler {
 			response: Response,
 			next: NextFunction
 		) => {
-			console.error("error", error);
+			logger.error("Unhandled error", { name: error.name, message: error.message });
 			if (response.headersSent) {
 				next(error);
 				return;

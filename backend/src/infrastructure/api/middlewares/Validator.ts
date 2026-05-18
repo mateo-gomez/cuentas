@@ -11,6 +11,6 @@ export class Validator implements Middleware {
     _response: Response,
     next: NextFunction,
   ) {
-    console.log("VALIDANDO!!!!!!");
+    next();
   }
 }

@@ -7,6 +7,9 @@ import {
 } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Signup")
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
@@ -25,7 +28,7 @@ const Signup = () => {
     try {
       await register({ email, password, name, surename, lastname })
     } catch (error) {
-      console.error("error al intentar registrar", error)
+      logger.error("Register failed", { error })
     }
   }
 

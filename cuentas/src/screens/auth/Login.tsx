@@ -2,6 +2,9 @@
 import { View, TextInput, KeyboardAvoidingView, StyleSheet } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Login")
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
@@ -17,7 +20,7 @@ const Login = () => {
     try {
       await login({ email, password })
     } catch (error) {
-      console.error("error al intentar login", error)
+      logger.error("Login failed", { error })
     }
   }
 

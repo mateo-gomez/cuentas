@@ -11,6 +11,9 @@ import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 
 import { AppBar, OptionsSideBar } from "../../Components"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Home")
 import { Logo } from "../../Components/Logo"
 import Transactions from "./Transactions"
 import { useDateRange } from "../../hooks/useDateRange"
@@ -48,7 +51,7 @@ const Home = () => {
   }
 
   const onEndReached = () => {
-    console.log("on end reached")
+    logger.debug("FlatList end reached")
     const currentStep = steps.at(-1)
 
     if (totalDateRange?.start < currentStep.start) {

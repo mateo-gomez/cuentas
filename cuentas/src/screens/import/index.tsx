@@ -9,6 +9,9 @@ import { AppBar, BackButton, StyledText } from "../../Components"
 import { useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
 import { importTransactions } from "../../services"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Import")
 
 const Import = () => {
   const [selectedFile, setSelectedFile] =
@@ -29,7 +32,7 @@ const Import = () => {
         setSelectedFile(result.assets[0])
       }
     } catch (error) {
-      console.error("Error al seleccionar archivo:", error)
+      logger.error("Error selecting file", { error })
       Alert.alert("Error", "No se pudo seleccionar el archivo.")
     }
   }
@@ -56,7 +59,7 @@ const Import = () => {
       Alert.alert("Éxito", "Archivo subido correctamente.")
       setSelectedFile(null)
     } catch (err) {
-      console.error("Error al subir archivo:", err)
+      logger.error("Error uploading file", { error: err })
       Alert.alert("Error", "No se pudo subir el archivo.")
     } finally {
       setUploading(false)

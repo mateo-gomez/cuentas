@@ -1,5 +1,8 @@
 import { useContext, useEffect, useState } from "react"
 import { authContext } from "../contexts/AuthContext"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("useAuth")
 import {
   checkUserLogged,
   loginWithEmailAndPassword,
@@ -47,7 +50,7 @@ export const useAuth = () => {
     } catch (error) {
       const errorCode = error.code
 
-      console.error("login error", error)
+      logger.error("login error", { error })
 
       if (errorCode === "auth/user-not-found") {
         setError("El usuario no existe")

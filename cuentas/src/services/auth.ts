@@ -1,6 +1,9 @@
 import { client, storage } from "../helpers";
 import { Auth } from "../../types/Auth";
 import { UserDTO } from "../../types/User";
+import { createLogger } from "../lib/logger";
+
+const logger = createLogger("auth.service");
 
 export const registerWithEmailAndPassword = async (user: UserDTO) => {
   try {
@@ -11,7 +14,7 @@ export const registerWithEmailAndPassword = async (user: UserDTO) => {
 
     return data;
   } catch (error) {
-    console.error("register error", error);
+    logger.error("register error", { error });
 
     throw error;
   }
@@ -32,7 +35,7 @@ export const loginWithEmailAndPassword = async (
 
     return data;
   } catch (error) {
-    console.error("login error", error);
+    logger.error("login error", { error });
 
     throw error;
   }

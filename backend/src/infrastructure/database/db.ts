@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import { createLogger } from "../../lib/logger";
+
+const logger = createLogger("DBMongo");
 
 export interface DB {
 	connect: Promise<DB>;
@@ -16,7 +19,7 @@ export class DBMongo {
 
 		await mongoose.connect(resolvedURI);
 
-		console.log("database connected!");
+		logger.info("Database connected");
 
 		return this;
 	}

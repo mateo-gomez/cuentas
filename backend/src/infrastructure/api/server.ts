@@ -2,6 +2,9 @@ import { middlewareCompose } from "./middlewares/middlewareCompose";
 import { Middleware } from "./middlewares/BaseMiddleware";
 import { App } from "../interfaces/app";
 import express from "express";
+import { createLogger } from "../../lib/logger";
+
+const logger = createLogger("Api");
 import helmet from "helmet";
 import cors from "cors";
 import { ErrorHandler } from "./middlewares/errorHandler";
@@ -54,12 +57,10 @@ export class Api implements App {
 		return new Promise((resolve, reject) => {
 			this.app
 				.listen(this.listenOptions.port, () => {
-					console.log(
-						`Server listening on http://localhost:${this.listenOptions.port}...`
-					);
+					logger.info(`Server listening on http://localhost:${this.listenOptions.port}`);
 				})
 				.on("error", (err) => {
-					console.error(err);
+					logger.error("Server failed to start", { message: err.message });
 					reject(err);
 				});
 		});

@@ -13,6 +13,9 @@ import {
 } from "../../Components"
 import { useTransaction } from "../../hooks"
 import { createTransaction, updateTransaction } from "../../services"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Transaction")
 
 const initialDate = new Date()
 
@@ -51,7 +54,7 @@ const Transaction = () => {
 
       navigate("/")
     } catch (error) {
-      console.error("submit transaction error: ", error)
+      logger.error("Submit transaction failed", { error })
     }
   }
 

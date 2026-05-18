@@ -8,6 +8,9 @@ import { Ionicons } from "@expo/vector-icons"
 import { Category as CategoryType } from "../../../types"
 import { useCategory, useSelect } from "../../hooks"
 import { createCategory, deleteCategory, updateCategory } from "../../services"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Category")
 
 const availableCategories = Object.values(categoryIcons).map(
   (icon): CategoryType => ({
@@ -69,7 +72,7 @@ const Category = () => {
 
       navigate("/")
     } catch (error) {
-      console.error("Error: " + error.message)
+      logger.error("Submit category failed", { message: error.message })
 
       if (error.errors) {
         setErrors(error.errors)
