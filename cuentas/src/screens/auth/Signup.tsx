@@ -7,14 +7,14 @@ import {
 } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import { createLogger } from "../../lib/logger"
-
-const logger = createLogger("Signup")
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
 import { StatusBar } from "expo-status-bar"
 import { Button } from "../../Components/Button"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Signup")
 
 const Signup = () => {
   const { register, error } = useAuth()

@@ -2,14 +2,14 @@
 import { View, TextInput, KeyboardAvoidingView, StyleSheet } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import { createLogger } from "../../lib/logger"
-
-const logger = createLogger("Login")
 import { StyledText } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
 import { Button } from "../../Components/Button"
 import { StatusBar } from "expo-status-bar"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Login")
 
 const Login = () => {
   const { login, error } = useAuth()

@@ -1,8 +1,5 @@
 import { useContext, useEffect, useState } from "react"
 import { authContext } from "../contexts/AuthContext"
-import { createLogger } from "../lib/logger"
-
-const logger = createLogger("useAuth")
 import {
   checkUserLogged,
   loginWithEmailAndPassword,
@@ -12,6 +9,9 @@ import {
 import { useNavigate } from "react-router-native"
 import { UserDTO } from "../../types/User"
 import { storage } from "../helpers"
+import { createLogger } from "../lib/logger"
+
+const logger = createLogger("useAuth")
 
 export const useAuth = () => {
   const { user, setUser } = useContext(authContext)
