@@ -127,7 +127,7 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   delete = async (id: string): Promise<void> => {
-    const { deletedCount } = await TransactionModel.remove({ _id: id });
+    const { deletedCount } = await TransactionModel.deleteOne({ _id: id });
 
     if (deletedCount === 0) {
       throw new DatabaseError(`Error eliminando transacción ${id}`);

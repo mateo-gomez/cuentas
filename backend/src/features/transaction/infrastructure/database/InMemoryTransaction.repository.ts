@@ -2,6 +2,7 @@ import { Balance } from "../../domain/balance.entity";
 import { Transaction } from "../../domain/transaction.entity";
 import { TransactionRepository } from "../../domain/Transaction.repository";
 import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
+import { TransactionDTO } from "../../application/dto/transactionDTO";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
   private transactions: Transaction[];
@@ -102,6 +103,10 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     this.transactions = await Promise.resolve(
       this.transactions.filter((transaction) => transaction._id !== id),
     );
+  }
+
+  saveMany(_transactions: TransactionDTO[]): Promise<void> {
+    return Promise.resolve();
   }
 
   firstDateRecord(): Promise<{ firstDate: Date } | null> {

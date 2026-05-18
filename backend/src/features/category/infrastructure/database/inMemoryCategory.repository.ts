@@ -17,6 +17,12 @@ export class inMemoryCategoryRepository implements CategoryRepository {
     return Promise.resolve(category || null);
   };
 
+  getByName = (name: string): Promise<Category | null> => {
+    const category = this.collection.find((category) => category.name === name);
+
+    return Promise.resolve(category || null);
+  };
+
   getAll = (): Promise<Category[]> => {
     return Promise.resolve(this.collection);
   };

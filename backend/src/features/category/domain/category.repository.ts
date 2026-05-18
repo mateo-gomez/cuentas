@@ -5,6 +5,8 @@ export interface CategoryRepository {
 
   getById: (id: string) => Promise<Category | null>;
 
+  getByName: (name: string) => Promise<Category | null>;
+
   getAll: () => Promise<Category[]>;
 
   createCategory: (

@@ -27,14 +27,15 @@ export class MongoCategoryRepository implements CategoryRepository {
 		try {
 			return await CategoryModel.create({ name, icon });
 		} catch (error) {
-			if (error.name === "MongoServerError" && error.code === 11000) {
+			const e = error as { name?: string; code?: number } & Error;
+			if (e.name === "MongoServerError" && e.code === 11000) {
 				throw new DuplicateError(
 					`La categoría "${name}" already exists.`,
-					error
+					e
 				);
 			}
 
-			throw new DatabaseError("Error creando categoría", error);
+			throw new DatabaseError("Error creando categoría", e);
 		}
 	};
 
@@ -55,19 +56,20 @@ export class MongoCategoryRepository implements CategoryRepository {
 
 			return category;
 		} catch (error) {
-			if (error.name === "MongoServerError" && error.code === 11000) {
+			const e = error as { name?: string; code?: number } & Error;
+			if (e.name === "MongoServerError" && e.code === 11000) {
 				throw new DuplicateError(
 					`La categoría "${name}" already exists.`,
-					error
+					e
 				);
 			}
 
-			throw new DatabaseError("Error al guardar categoría", error);
+			throw new DatabaseError("Error al guardar categoría", e);
 		}
 	};
 
 	delete = async (id: string): Promise<void> => {
-		const { deletedCount } = await CategoryModel.remove({ _id: id });
+		const { deletedCount } = await CategoryModel.deleteOne({ _id: id });
 
 		if (deletedCount === 0) {
 			throw new DatabaseError(`Category ${id} not deleted`);

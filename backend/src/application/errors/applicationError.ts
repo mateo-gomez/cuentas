@@ -1,9 +1,9 @@
 export class ApplicationError extends Error {
   constructor(
     message: string,
-    cause?: ErrorOptions,
+    cause?: unknown,
   ) {
-    super(message, { cause: cause });
+    super(message, { cause });
 
     Object.setPrototypeOf(this, new.target.prototype);
 
