@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-native"
 import { theme } from "../../theme"
 import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { AppBar, OptionsSideBar } from "../../Components"
 import { Logo } from "../../Components/Logo"
@@ -41,6 +42,7 @@ const Home = () => {
   const [steps, setSteps] = useState(initialSteps)
   const navigate = useNavigate()
   const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
+  const insets = useSafeAreaInsets()
 
   const handlePressPlusButton = () => {
     navigate("/transactions/income")
@@ -151,7 +153,7 @@ const Home = () => {
             onStartReachedThreshold={1}
           />
 
-          <View style={styles.buttons}>
+          <View style={[styles.buttons, { paddingBottom: insets.bottom || 10 }]}>
             <TouchableOpacity onPress={handlePressMinusButton}>
               <Ionicons
                 name="remove-circle-outline"
