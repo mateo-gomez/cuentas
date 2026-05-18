@@ -15,6 +15,8 @@ import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
 import { useEffect } from "react"
 import Import from "./screens/import"
+import BudgetScreen from "./screens/budget"
+import BudgetEdit from "./screens/budget/Edit"
 
 const Routes = () => {
   const navigate = useNavigate()
@@ -68,6 +70,8 @@ const Routes = () => {
           <Route path="/categories/create" element={<Category />} />
           <Route path="/categories/:id" element={<Category />} />
           <Route path="/import" element={<Import />} />
+          <Route path="/budget" element={<BudgetScreen />} />
+          <Route path="/budget/edit" element={<BudgetEdit />} />
         </Route>
       </Router>
     </View>

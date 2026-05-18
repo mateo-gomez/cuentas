@@ -159,6 +159,13 @@ const Home = () => {
                 size={120}
               />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigate("/budget")}>
+              <Ionicons
+                name="wallet-outline"
+                color={theme.colors.primary}
+                size={60}
+              />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handlePressPlusButton}>
               <Ionicons
                 name="add-circle-outline"

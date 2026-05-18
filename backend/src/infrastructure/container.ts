@@ -22,12 +22,16 @@ import { AuthService } from "../application/services/auth.service";
 import { TransactionImporter } from "../features/transaction/application/useCases/TransactionImporter";
 import { ExcelTransactionParser } from "../features/transaction/infrastructure/services/excelTransactionParser";
 import { CategoryClassifier } from "../features/transaction/application/services/categoryClassifier";
+import { BudgetGetter } from "../features/budget/application/budgetGetter";
+import { BudgetUpsert } from "../features/budget/application/budgetUpsert";
+import { MongoBudgetRepository } from "../features/budget/infrastructure/database/mongoBudget.repository";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
 const transactionAggregateService = new TransactionAggregateService();
 const authRepository = new MongoAuthRepository();
 const authService = new AuthService();
+const budgetRepository = new MongoBudgetRepository();
 
 export const container = {
 	// category
@@ -71,4 +75,9 @@ export const container = {
 		new CategoryClassifier(),
 		categoryRepository
 	),
+
+	// budget
+	budgetRepository,
+	budgetGetter: new BudgetGetter(budgetRepository, transactionRepository),
+	budgetUpsert: new BudgetUpsert(budgetRepository),
 };
