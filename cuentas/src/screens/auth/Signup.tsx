@@ -7,7 +7,7 @@ import {
 } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import { StyledText } from "../../Components"
+import { StyledText, ErrorBanner } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
 import { StatusBar } from "expo-status-bar"
@@ -23,12 +23,16 @@ const Signup = () => {
   const [name, setName] = useState("")
   const [surename, setSurename] = useState("")
   const [lastname, setLastname] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleRegister = async () => {
+    setLoading(true)
     try {
       await register({ email, password, name, surename, lastname })
     } catch (error) {
       logger.error("Register failed", { error })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -49,6 +53,8 @@ const Signup = () => {
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
@@ -76,8 +82,11 @@ const Signup = () => {
             onChangeText={setLastname}
           />
         </View>
+
+        <ErrorBanner message={error} />
+
         <View style={{ marginTop: 20, gap: 10 }}>
-          <Button onPress={handleRegister}>
+          <Button onPress={handleRegister} loading={loading} disabled={loading}>
             <StyledText textCenter color="white" fontWeight="bold">
               Registrarme
             </StyledText>
@@ -85,7 +94,7 @@ const Signup = () => {
 
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <StyledText>¿Ya tienes una cuenta? </StyledText>
-            <Link to="/register" underlayColor={theme.colors.highlight}>
+            <Link to="/login" underlayColor={theme.colors.highlight}>
               <StyledText
                 color={"primary"}
                 fontWeight="bold"

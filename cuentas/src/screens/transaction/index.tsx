@@ -7,6 +7,7 @@ import { Category, TransactionDTO } from "../../../types"
 import {
   AppBar,
   BackButton,
+  ErrorBanner,
   StyledText,
   OverlayLoader,
   DatePicker,
@@ -26,6 +27,7 @@ const Transaction = () => {
   const [transactionValue, setTransactionValue] = useState(0)
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(initialDate)
+  const [submitError, setSubmitError] = useState("")
   const [errors, setErrors] = useState({
     date: null,
     transactionValue: null,
@@ -45,6 +47,7 @@ const Transaction = () => {
   }
 
   const handleSubmit = async (transaction: TransactionDTO) => {
+    setSubmitError("")
     try {
       if (transaction.id) {
         await updateTransaction(transaction)
@@ -55,6 +58,7 @@ const Transaction = () => {
       navigate("/")
     } catch (error) {
       logger.error("Submit transaction failed", { error })
+      setSubmitError(error instanceof Error ? error.message : "Error al guardar")
     }
   }
 
@@ -154,6 +158,7 @@ const Transaction = () => {
       </AppBar>
       {loading ? <OverlayLoader message="Cargando registro..." /> : null}
       <View style={styles.wrapper}>
+        <ErrorBanner message={submitError} />
         <DatePicker
           style={styles.datePicker}
           date={date}

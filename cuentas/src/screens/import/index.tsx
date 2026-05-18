@@ -60,7 +60,7 @@ const Import = () => {
       setSelectedFile(null)
     } catch (err) {
       logger.error("Error uploading file", { error: err })
-      Alert.alert("Error", "No se pudo subir el archivo.")
+      Alert.alert("Error", err instanceof Error ? err.message : "No se pudo subir el archivo.")
     } finally {
       setUploading(false)
     }

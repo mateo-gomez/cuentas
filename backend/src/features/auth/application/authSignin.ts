@@ -29,7 +29,7 @@ export class AuthSignin {
 			throw new Error("Invalid email or password");
 		}
 
-		const checkPassword = this.comparePassword(password, user.password);
+		const checkPassword = await this.comparePassword(password, user.password);
 
 		if (!checkPassword) {
 			throw new Error("Invalid email or password");

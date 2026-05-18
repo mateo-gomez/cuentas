@@ -1,8 +1,7 @@
-// crea una pantalla de inicio de sesión de usuario en inglés
 import { View, TextInput, KeyboardAvoidingView, StyleSheet } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import { StyledText } from "../../Components"
+import { StyledText, ErrorBanner } from "../../Components"
 import { theme } from "../../theme"
 import { Link } from "react-router-native"
 import { Button } from "../../Components/Button"
@@ -15,12 +14,16 @@ const Login = () => {
   const { login, error } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
+    setLoading(true)
     try {
       await login({ email, password })
     } catch (error) {
       logger.error("Login failed", { error })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -38,6 +41,8 @@ const Login = () => {
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
@@ -47,8 +52,11 @@ const Login = () => {
             secureTextEntry
           />
         </View>
+
+        <ErrorBanner message={error} />
+
         <View style={{ marginTop: 20, gap: 10 }}>
-          <Button onPress={handleLogin}>
+          <Button onPress={handleLogin} loading={loading} disabled={loading}>
             <StyledText color="white" fontWeight="bold" textCenter>
               Iniciar sesión
             </StyledText>

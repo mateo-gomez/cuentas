@@ -2,6 +2,7 @@ import { removeInitialSlash } from "../utils"
 import config from "../config"
 import { storage } from "./storage"
 import { createLogger } from "../lib/logger"
+import { ApiError } from "./ApiError"
 
 const logger = createLogger("client")
 enum Method {
@@ -69,11 +70,13 @@ const fetcher = async <T>(
     const result: T = await response.json()
 
     if (!response.ok) {
-      throw new Error(
-        (result && typeof result === "object" && "message" in result
-          ? result.message
-          : "Ha ocurrido un error inesperado") as string,
-      )
+      const message = (result && typeof result === "object" && "message" in result
+        ? result.message
+        : "Ha ocurrido un error inesperado") as string
+      const errors = (result && typeof result === "object" && "errors" in result
+        ? result.errors
+        : undefined) as Record<string, string[]> | undefined
+      throw new ApiError(message, response.status, errors)
     }
 
     return result

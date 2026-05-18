@@ -1,13 +1,15 @@
-import { GestureResponderEvent, Pressable, StyleSheet } from "react-native"
+import { ActivityIndicator, GestureResponderEvent, Pressable, StyleSheet } from "react-native"
 import { theme } from "../theme"
 import { useState } from "react"
 
 interface ButtonProps {
   onPress: (event: GestureResponderEvent) => void
   children: React.ReactNode
+  disabled?: boolean
+  loading?: boolean
 }
 
-export const Button = ({ onPress, children, ...rest }: ButtonProps) => {
+export const Button = ({ onPress, children, disabled, loading, ...rest }: ButtonProps) => {
   const [isPressed, setIsPressed] = useState(false)
 
   const handlePressIn = () => {
@@ -23,15 +25,18 @@ export const Button = ({ onPress, children, ...rest }: ButtonProps) => {
     onPress(event)
   }
 
+  const isDisabled = disabled || loading
+
   return (
     <Pressable
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}
-      style={[styles.button, isPressed && styles.buttonPressed]}
+      disabled={isDisabled}
+      style={[styles.button, isPressed && styles.buttonPressed, isDisabled && styles.buttonDisabled]}
       {...rest}
     >
-      {children}
+      {loading ? <ActivityIndicator color={theme.colors.white} /> : children}
     </Pressable>
   )
 }
@@ -50,5 +55,8 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     opacity: 0.5,
+  },
+  buttonDisabled: {
+    opacity: 0.4,
   },
 })
