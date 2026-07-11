@@ -1,13 +1,19 @@
 import OpenAI from "openai";
 import config from "../../../../../config/config";
-const client = new OpenAI({
-	apiKey: config.OPENAI_API_KEY,
-});
 
 export class CategoryClassifier {
+	private client: OpenAI | null = null;
+
+	private getClient = (): OpenAI => {
+		if (!this.client) {
+			this.client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
+		}
+		return this.client;
+	};
+
 	AIClassify = async (description: string): Promise<string> => {
 		const prompt = `Clasifica esta transacción en una categoría como "comida", "transporte", "salud", "hogar", "ocio", "educación", "otros".\n\nDescripción: "${description}"\nCategoría:`;
-		const response = await client.chat.completions.create({
+		const response = await this.getClient().chat.completions.create({
 			model: "gpt-3.5-turbo",
 			messages: [{ role: "user", content: prompt }],
 			max_tokens: 10,
