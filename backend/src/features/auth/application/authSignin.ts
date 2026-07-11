@@ -1,18 +1,12 @@
-import config from "../../../../config/config";
 import { AuthRepository } from "../domain/auth.repository";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { AuthService } from "../../../application/services/auth.service";
+import { RefreshTokenIssuer } from "./refreshTokenIssuer";
 
 export class AuthSignin {
-	private secret: string;
-
 	constructor(
 		private readonly authRepository: AuthRepository,
-		private readonly authService: AuthService
-	) {
-		this.secret = config.JWT_SECRET || "";
-	}
+		private readonly tokenIssuer: RefreshTokenIssuer,
+	) {}
 
 	private comparePassword(password: string, hash: string) {
 		return bcrypt.compare(password, hash);
@@ -40,11 +34,12 @@ export class AuthSignin {
 			id: user._id,
 		};
 
-		const token = await this.authService.generateToken(payload);
+		const { token, refreshToken } = await this.tokenIssuer.issue(payload);
 
 		return {
 			user,
 			token,
+			refreshToken,
 		};
 	}
 }

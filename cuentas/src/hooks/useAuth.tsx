@@ -45,6 +45,7 @@ export const useAuth = () => {
 
       if (auth) {
         storage.setItem("token", auth.token)
+        storage.setItem("refreshToken", auth.refreshToken)
         storage.setItem("user", JSON.stringify(auth.user))
         setUser(auth.user)
       }
@@ -65,6 +66,7 @@ export const useAuth = () => {
 
       if (auth) {
         storage.setItem("token", auth.token)
+        storage.setItem("refreshToken", auth.refreshToken)
         storage.setItem("user", JSON.stringify(auth.user))
         setUser(auth.user)
       }
@@ -79,10 +81,9 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    await storage.removeItem("token")
-    await storage.removeItem("user")
+    // signOut revokes the refresh token on the backend and clears storage.
+    await signOut()
     setUser(null)
-    signOut()
   }
 
   return { user, login, register, logout, error }

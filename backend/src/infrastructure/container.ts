@@ -19,6 +19,10 @@ import { AuthSignin } from "../features/auth/application/authSignin";
 import { MongoAuthRepository } from "../features/auth/infrastructure/database/mongoAuth.repository";
 import { AuthSignup } from "../features/auth/application/authSignup";
 import { AuthService } from "../application/services/auth.service";
+import { AuthRefresh } from "../features/auth/application/authRefresh";
+import { AuthLogout } from "../features/auth/application/authLogout";
+import { RefreshTokenIssuer } from "../features/auth/application/refreshTokenIssuer";
+import { MongoRefreshTokenRepository } from "../features/auth/infrastructure/database/mongoRefreshToken.repository";
 import { TransactionImporter } from "../features/transaction/application/useCases/TransactionImporter";
 import { ExcelTransactionParser } from "../features/transaction/infrastructure/services/excelTransactionParser";
 import { CategoryClassifier } from "../features/transaction/application/services/categoryClassifier";
@@ -31,6 +35,11 @@ const transactionRepository = new MongoTransactionRepository();
 const transactionAggregateService = new TransactionAggregateService();
 const authRepository = new MongoAuthRepository();
 const authService = new AuthService();
+const refreshTokenRepository = new MongoRefreshTokenRepository();
+const refreshTokenIssuer = new RefreshTokenIssuer(
+	authService,
+	refreshTokenRepository
+);
 const budgetRepository = new MongoBudgetRepository();
 
 export const container = {
@@ -67,8 +76,15 @@ export const container = {
 
 	// auth
 	authService,
-	authSignin: new AuthSignin(authRepository, authService),
+	refreshTokenRepository,
+	authSignin: new AuthSignin(authRepository, refreshTokenIssuer),
 	authSignup: new AuthSignup(authRepository),
+	authRefresh: new AuthRefresh(
+		authService,
+		refreshTokenRepository,
+		refreshTokenIssuer
+	),
+	authLogout: new AuthLogout(authService, refreshTokenRepository),
 
 	// excelTransactionParser
 	excelTransactionParser: new ExcelTransactionParser(

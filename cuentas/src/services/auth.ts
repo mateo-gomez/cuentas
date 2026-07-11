@@ -42,7 +42,19 @@ export const loginWithEmailAndPassword = async (
 };
 
 export const signOut = async () => {
+  // Best-effort revoke on the backend so the refresh token can't be reused.
+  try {
+    const refreshToken = await storage.getItem("refreshToken");
+    if (refreshToken) {
+      await client.post("/auth/logout", { refreshToken });
+    }
+  } catch (error) {
+    logger.error("logout revoke error", { error });
+  }
+
   await storage.removeItem("token");
+  await storage.removeItem("refreshToken");
+  await storage.removeItem("user");
 };
 
 export const checkUserLogged = async () => {

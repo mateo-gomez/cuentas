@@ -5,6 +5,15 @@ import { createLogger } from "../lib/logger"
 import { ApiError } from "./ApiError"
 
 const logger = createLogger("client")
+
+// Called when the session can no longer be recovered (refresh failed/invalid).
+// Registered by AuthProvider so it can clear the in-memory user and redirect.
+let onSessionExpired: (() => void) | null = null
+
+export const setSessionExpiredHandler = (handler: (() => void) | null) => {
+  onSessionExpired = handler
+}
+
 enum Method {
   POST = "POST",
   PUT = "PUT",
@@ -21,12 +30,71 @@ const getToken = async (): Promise<string | null> => {
   }
 }
 
+const clearSession = async () => {
+  await storage.removeItem("token")
+  await storage.removeItem("refreshToken")
+  await storage.removeItem("user")
+}
+
+// Exchanges the stored refresh token for a fresh access + refresh pair.
+// Raw fetch (not the client) so it never recurses through the interceptor.
+const requestNewTokens = async (): Promise<boolean> => {
+  const refreshToken = await storage.getItem("refreshToken")
+
+  if (!refreshToken) {
+    return false
+  }
+
+  try {
+    const response = await fetch(`${config.apiUrl}/auth/refresh`, {
+      method: Method.POST,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    })
+
+    if (!response.ok) {
+      return false
+    }
+
+    const body = await response.json()
+    const tokens = body?.data
+
+    if (!tokens?.token || !tokens?.refreshToken) {
+      return false
+    }
+
+    await storage.setItem("token", tokens.token)
+    await storage.setItem("refreshToken", tokens.refreshToken)
+    return true
+  } catch (error) {
+    logger.error("Token refresh failed", { error })
+    return false
+  }
+}
+
+// Single-flight: many requests can 401 at once, but only one refresh runs.
+// The rest await the same promise so tokens rotate exactly once.
+let refreshPromise: Promise<boolean> | null = null
+
+const attemptRefresh = (): Promise<boolean> => {
+  if (!refreshPromise) {
+    refreshPromise = requestNewTokens().finally(() => {
+      refreshPromise = null
+    })
+  }
+
+  return refreshPromise
+}
+
 const createRequestInit = async (
   method: Method,
+  token: string | null,
   data?: Record<string, any> | FormData,
   headers: Record<string, string> = {},
 ): Promise<RequestInit> => {
-  const token = await getToken()
   const isFormData = data instanceof FormData
 
   const defaultHeaders: Record<string, string> = {
@@ -62,14 +130,41 @@ const fetcher = async <T>(
 ): Promise<T> => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
   const url = `${config.apiUrl}/${normalizedEndpoint}`
+  const isAuthEndpoint = normalizedEndpoint.startsWith("auth/")
+
+  const isSessionError = (status: number) => status === 401 || status === 403
 
   try {
-    const init = await createRequestInit(method, data, headers || {})
-    const response = await fetch(url, init)
+    const token = await getToken()
+    let response = await fetch(
+      url,
+      await createRequestInit(method, token, data, headers || {}),
+    )
+
+    // Access token rejected: silently refresh once and replay the request.
+    // Skip auth/* endpoints so signin/refresh failures never loop.
+    const canRecover = !!token && !isAuthEndpoint
+    if (!response.ok && isSessionError(response.status) && canRecover) {
+      const refreshed = await attemptRefresh()
+
+      if (refreshed) {
+        const newToken = await getToken()
+        response = await fetch(
+          url,
+          await createRequestInit(method, newToken, data, headers || {}),
+        )
+      }
+    }
 
     const result: T = await response.json()
 
     if (!response.ok) {
+      // Refresh could not recover the session → force the user back to login.
+      if (isSessionError(response.status) && canRecover) {
+        await clearSession()
+        onSessionExpired?.()
+      }
+
       const message = (result && typeof result === "object" && "message" in result
         ? result.message
         : "Ha ocurrido un error inesperado") as string
