@@ -101,6 +101,30 @@ describe("BudgetGetter", () => {
     expect(status.isOverBudget).toBe(false);
   });
 
+  test("merges expenses for the same category when _id is a non-string ObjectId", async () => {
+    // `.lean()` + populate returns category._id as a Mongo ObjectId, so two
+    // transactions in the same category carry two distinct object instances
+    // that stringify to the same value. They must collapse into one row.
+    await budgetRepo.upsert(USER_ID, YEAR, MONTH, 1000, []);
+    const inMonth = new Date(YEAR, MONTH - 1, 12);
+    const objectId = () => ({ toString: () => "cat-oid" });
+
+    await txRepo.createTransaction({
+      ...makeTransaction("ignored", 100, TransactionType.expenses, inMonth),
+      category: { _id: objectId(), name: "Cat", icon: "icon", createdAt: new Date(), updatedAt: new Date() },
+    } as any);
+    await txRepo.createTransaction({
+      ...makeTransaction("ignored", 50, TransactionType.expenses, inMonth),
+      category: { _id: objectId(), name: "Cat", icon: "icon", createdAt: new Date(), updatedAt: new Date() },
+    } as any);
+
+    const status = await getter.execute(USER_ID, YEAR, MONTH);
+
+    const rows = status.categories.filter((c) => c.categoryId === "cat-oid");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].spent).toBe(150);
+  });
+
   test("ignores transactions outside the month", async () => {
     await budgetRepo.upsert(USER_ID, YEAR, MONTH, 1000, []);
     const outOfMonth = new Date(YEAR, MONTH - 2, 10);

@@ -35,18 +35,23 @@ export class BudgetGetter {
     let totalSpent = 0;
 
     for (const tx of expenses) {
-      const catId = tx.category._id;
+      // `category` is populated with `.lean()`, so `_id` is a Mongo ObjectId at
+      // runtime (the domain type lies). Stringify so equal categories share one
+      // Map key instead of one entry per ObjectId instance.
+      const catId = String(tx.category._id);
       spentByCategory.set(catId, (spentByCategory.get(catId) ?? 0) + tx.value);
       totalSpent += tx.value;
     }
 
-    // Merge duplicate allocations by categoryId so the client never receives
-    // two status entries (and two identical React keys) for the same category.
+    // Merge allocations by categoryId (also an ObjectId at runtime) so the client
+    // never receives two status entries (and two identical React keys) for the
+    // same category.
     const allocatedByCategory = new Map<string, number>();
     for (const alloc of budget.categories) {
+      const catId = String(alloc.categoryId);
       allocatedByCategory.set(
-        alloc.categoryId,
-        (allocatedByCategory.get(alloc.categoryId) ?? 0) + alloc.allocated,
+        catId,
+        (allocatedByCategory.get(catId) ?? 0) + alloc.allocated,
       );
     }
 
