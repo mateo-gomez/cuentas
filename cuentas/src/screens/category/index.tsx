@@ -1,10 +1,11 @@
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import { theme } from "../../theme"
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import grafito from "../../theme"
 import { useEffect, useState } from "react"
-import { AppBar, BackButton, CategoryList, StyledText } from "../../Components"
+import CategoryGrid from "../../Components/CategoryGrid"
 import { categoryIcons } from "../../constants/"
 import { useNavigate, useParams } from "react-router-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Category as CategoryType } from "../../../types"
 import { useCategory, useSelect } from "../../hooks"
 import { createCategory, deleteCategory, updateCategory } from "../../services"
@@ -22,6 +23,7 @@ const availableCategories = Object.values(categoryIcons).map(
 
 const Category = () => {
   const navigate = useNavigate()
+  const insets = useSafeAreaInsets()
   const { id } = useParams()
   const { category, loading, error } = useCategory(id)
   const [name, setName] = useState("")
@@ -91,64 +93,63 @@ const Category = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <AppBar>
-        <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-          }}
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigate(-1)}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <View style={{ flexDirection: "row" }}>
-            <BackButton />
+          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+        </TouchableOpacity>
 
-            <StyledText color={"white"} fontWeight="bold">
-              {category ? "Editar categoría" : "Nueva categoría"}
-            </StyledText>
-          </View>
+        <Text style={styles.title} numberOfLines={1}>
+          {category ? "Editar categoría" : "Nueva categoría"}
+        </Text>
 
-          <View style={{ flexDirection: "row", gap: 10 }}>
-            <TouchableOpacity onPress={handleDeleteCategory}>
-              <Ionicons
-                name={"trash-outline"}
-                color={theme.colors.white}
-                size={theme.fontSizes.subheading}
-              />
+        <View style={styles.actions}>
+          {id ? (
+            <TouchableOpacity
+              onPress={handleDeleteCategory}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Ionicons name="trash-outline" size={22} color={grafito.ink3} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleSubmit}>
-              <StyledText color={"white"}>
-                {id ? "GUARDAR" : "AÑADIR"}
-              </StyledText>
-            </TouchableOpacity>
-          </View>
+          ) : null}
+          <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
+            <Text style={styles.savePillText}>{id ? "Guardar" : "Añadir"}</Text>
+          </TouchableOpacity>
         </View>
-      </AppBar>
+      </View>
+
+      {/* ── Body ───────────────────────────────────────────────────────────── */}
       <View style={styles.container}>
         <TextInput
           textAlign="center"
           numberOfLines={1}
           maxLength={20}
           placeholder="Nombre"
+          placeholderTextColor={grafito.ink5}
           style={[styles.nameInput, errors.name && styles.error]}
           onChangeText={handleChangeName}
           value={name}
         />
 
         {error ? (
-          <StyledText textCenter>
-            "Ha ocurrido un error al cargar las categorías"
-          </StyledText>
+          <Text style={styles.message}>
+            Ha ocurrido un error al cargar las categorías
+          </Text>
         ) : null}
 
-        {loading ? <StyledText textCenter>Cargando...</StyledText> : null}
+        {loading ? <Text style={styles.message}>Cargando...</Text> : null}
 
         {!loading && !error ? (
-          <CategoryList
+          <CategoryGrid
+            style={styles.grid}
             categories={availableCategories}
             onSelect={handleSelectCategory}
-            highlightCriteria={(category) =>
-              categorySelected && category.icon === categorySelected.icon
+            isSelected={(category) =>
+              !!categorySelected && category.icon === categorySelected.icon
             }
           />
         ) : null}
@@ -158,26 +159,70 @@ const Category = () => {
 }
 
 const styles = StyleSheet.create({
-  nameInput: {
-    borderRadius: 10,
-    borderColor: theme.colors.transparent,
-    borderWidth: 2,
-    backgroundColor: theme.colors.primary,
-    color: theme.colors.white,
-    padding: 10,
-    fontSize: theme.fontSizes.heading * 1.5,
-    marginVertical: 20,
+  screen: {
+    flex: 1,
+    backgroundColor: grafito.bg,
   },
-  error: {
-    borderColor: theme.colors.red,
-    borderWidth: 2,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+    gap: 12,
   },
-  categories: {
-    marginTop: 20,
+  title: {
+    flex: 1,
+    fontFamily: grafito.fonts.serif,
+    fontSize: 20,
+    color: grafito.ink,
+  },
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  savePill: {
+    backgroundColor: grafito.accent,
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  savePillText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 15,
+    fontWeight: "600",
+    color: grafito.onAccent,
   },
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+  },
+  nameInput: {
+    backgroundColor: grafito.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: grafito.line,
+    color: grafito.ink,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontFamily: grafito.fonts.serif,
+    fontSize: 26,
+    marginVertical: 20,
+  },
+  error: {
+    borderColor: grafito.neg,
+  },
+  message: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 14,
+    color: grafito.ink3,
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  grid: {
+    flex: 1,
   },
 })
 

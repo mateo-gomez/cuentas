@@ -1,8 +1,9 @@
+import { StyleSheet, Text, View } from "react-native"
 import { useOutletContext } from "react-router-native"
-import { CategoryList, StyledText } from "../../Components"
+import CategoryGrid from "../../Components/CategoryGrid"
 import { useCategories } from "../../hooks/useCategories"
 import { Category } from "../../../types"
-import { View } from "react-native"
+import grafito from "../../theme"
 
 interface UseOutletContext {
   handleSelectCategory: (category: Category) => void
@@ -18,21 +19,34 @@ const Categories = () => {
     (category) => category._id === categoryId,
   )
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </View>
+    )
+  }
+
   return (
-    <View style={{ alignItems: "center" }}>
-      {loading ? (
-        <StyledText>Cargando...</StyledText>
-      ) : (
-        <CategoryList
-          highlightCriteria={(category) =>
-            currentCategory && category._id === currentCategory._id
-          }
-          categories={categories}
-          onSelect={handleSelectCategory}
-        />
-      )}
-    </View>
+    <CategoryGrid
+      categories={categories}
+      onSelect={handleSelectCategory}
+      isSelected={(category) =>
+        !!currentCategory && category._id === currentCategory._id
+      }
+    />
   )
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 24,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: grafito.ink3,
+  },
+})
 
 export default Categories

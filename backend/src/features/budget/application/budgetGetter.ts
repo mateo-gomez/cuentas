@@ -40,17 +40,29 @@ export class BudgetGetter {
       totalSpent += tx.value;
     }
 
-    const categories: BudgetCategoryStatus[] = budget.categories.map((alloc) => {
-      const spent = spentByCategory.get(alloc.categoryId) ?? 0;
-      spentByCategory.delete(alloc.categoryId);
-      return {
-        categoryId: alloc.categoryId,
-        allocated: alloc.allocated,
-        spent,
-        remaining: alloc.allocated - spent,
-        isOver: spent > alloc.allocated,
-      };
-    });
+    // Merge duplicate allocations by categoryId so the client never receives
+    // two status entries (and two identical React keys) for the same category.
+    const allocatedByCategory = new Map<string, number>();
+    for (const alloc of budget.categories) {
+      allocatedByCategory.set(
+        alloc.categoryId,
+        (allocatedByCategory.get(alloc.categoryId) ?? 0) + alloc.allocated,
+      );
+    }
+
+    const categories: BudgetCategoryStatus[] = [...allocatedByCategory].map(
+      ([categoryId, allocated]) => {
+        const spent = spentByCategory.get(categoryId) ?? 0;
+        spentByCategory.delete(categoryId);
+        return {
+          categoryId,
+          allocated,
+          spent,
+          remaining: allocated - spent,
+          isOver: spent > allocated,
+        };
+      },
+    );
 
     for (const [categoryId, spent] of spentByCategory) {
       categories.push({ categoryId, allocated: 0, spent, remaining: -spent, isOver: true });

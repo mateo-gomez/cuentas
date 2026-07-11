@@ -1,4 +1,4 @@
-import { Alert, BackHandler, StyleSheet, View } from "react-native"
+import { BackHandler, Platform, StyleSheet, ToastAndroid, View } from "react-native"
 import {
   Route,
   Routes as Router,
@@ -13,46 +13,49 @@ import Category from "./screens/category"
 import Login from "./screens/auth/Login"
 import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import Import from "./screens/import"
 import BudgetScreen from "./screens/budget"
 import BudgetEdit from "./screens/budget/Edit"
 
+const DOUBLE_BACK_DELAY = 2000
+
 const Routes = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const lastBackPress = useRef(0)
 
-  // useEffect(() => {
-  //   const handleBackPress = () => {
-  //     if (location.pathname === "/") {
-  //       Alert.alert(
-  //         "Salir",
-  //         "¿Desea salir de la app?",
-  //         [
-  //           {
-  //             text: "Cancelar",
-  //             style: "cancel",
-  //           },
-  //           {
-  //             text: "Salir",
-  //             onPress: () => BackHandler.exitApp(),
-  //           },
-  //         ],
-  //         { cancelable: true },
-  //       )
-  //     } else {
-  //       navigate(-1)
-  //     }
+  useEffect(() => {
+    const handleBackPress = () => {
+      // On Home, require a double back press to exit the app.
+      if (location.pathname === "/") {
+        const now = Date.now()
+        if (now - lastBackPress.current < DOUBLE_BACK_DELAY) {
+          BackHandler.exitApp()
+          return true
+        }
+        lastBackPress.current = now
+        if (Platform.OS === "android") {
+          ToastAndroid.show(
+            "Presione nuevamente para salir",
+            ToastAndroid.SHORT,
+          )
+        }
+        return true
+      }
 
-  //     return true
-  //   }
+      // Anywhere else, go back to the previous route.
+      navigate(-1)
+      return true
+    }
 
-  //   BackHandler.addEventListener("hardwareBackPress", handleBackPress)
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress,
+    )
 
-  //   return () => {
-  //     // BackHandler.exitApp()
-  //   }
-  // }, [navigate, location])
+    return () => subscription.remove()
+  }, [navigate, location.pathname])
 
   return (
     <View style={styles.container}>

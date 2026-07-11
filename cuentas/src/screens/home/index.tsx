@@ -1,18 +1,20 @@
 import {
+  Dimensions,
   DrawerLayoutAndroid,
   FlatList,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native"
 import { useNavigate } from "react-router-native"
-import { theme } from "../../theme"
+import grafito from "../../theme"
 import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { AppBar, OptionsSideBar } from "../../Components"
-import { Logo } from "../../Components/Logo"
+import { OptionsSideBar } from "../../Components"
+import BottomTabBar from "../../Components/BottomTabBar"
 import Transactions from "./Transactions"
 import { useDateRange } from "../../hooks/useDateRange"
 import { monthRange } from "../../utils"
@@ -21,6 +23,11 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Home")
 
 const now = new Date()
+
+const MONTH_NAMES = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+]
 
 const initialSteps = [
   {
@@ -37,20 +44,34 @@ const initialSteps = [
   },
 ]
 
+const SCREEN_WIDTH = Dimensions.get("screen").width
+
 const Home = () => {
   const { dateRange: totalDateRange } = useDateRange()
   const [steps, setSteps] = useState(initialSteps)
+  const [visibleIndex, setVisibleIndex] = useState(0)
   const navigate = useNavigate()
-  const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
   const insets = useSafeAreaInsets()
+  const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
 
-  const handlePressPlusButton = () => {
-    navigate("/transactions/income")
+  const handlePressMenu = () => {
+    const drawer = drawerRef.current
+    if (!drawer) return
+
+    const isDrawerOpen =
+      "drawerOpened" in drawer.state && drawer.state.drawerOpened
+
+    if (isDrawerOpen) {
+      drawer.closeDrawer()
+    } else {
+      drawer.openDrawer()
+    }
   }
 
-  const handlePressMinusButton = () => {
-    navigate("/transactions/outcome")
-  }
+  const visibleStep = steps[visibleIndex] ?? steps[0]
+  const visibleMonth = visibleStep?.start
+    ? MONTH_NAMES[visibleStep.start.getMonth()] + " " + visibleStep.start.getFullYear()
+    : ""
 
   const onEndReached = () => {
     logger.debug("FlatList end reached")
@@ -87,111 +108,150 @@ const Home = () => {
         end,
       }
 
-      setSteps((prevStates) => [...prevStates, newPage])
+      setSteps((prevStates) => [newPage, ...prevStates])
     }
   }
 
-  const handlePressMenu = () => {
-    const drawer = drawerRef.current
-
-    if (!drawer) {
-      return
-    }
-
-    const isDrawerOpen =
-      "drawerOpened" in drawer.state && drawer.state.drawerOpened
-
-    if (isDrawerOpen) {
-      drawer.closeDrawer()
+  const goToPrevMonth = () => {
+    const nextIndex = visibleIndex + 1
+    if (nextIndex < steps.length) {
+      setVisibleIndex(nextIndex)
     } else {
-      drawer.openDrawer()
+      onEndReached()
+      setVisibleIndex(nextIndex)
+    }
+  }
+
+  const goToNextMonth = () => {
+    if (visibleIndex > 0) {
+      setVisibleIndex(visibleIndex - 1)
     }
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <AppBar
-        style={{
-          justifyContent: "space-between",
-          flexDirection: "row",
-          flex: 1,
-        }}
-      >
-        <Logo />
-
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TouchableOpacity onPress={handlePressMenu}>
-            <Ionicons
-              name="menu-outline"
-              color={theme.colors.white}
-              size={30}
-            />
+    <DrawerLayoutAndroid
+      ref={drawerRef}
+      drawerPosition="right"
+      drawerWidth={300}
+      renderNavigationView={OptionsSideBar}
+    >
+    <View style={[styles.root, { paddingTop: insets.top }]}>
+      {/* Inline header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>cuentas</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.searchPill} onPress={() => {}}>
+            <Text style={styles.searchPillText}>Buscar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handlePressMenu} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+            <Ionicons name="menu-outline" size={26} color={grafito.ink} />
           </TouchableOpacity>
         </View>
-      </AppBar>
-      <DrawerLayoutAndroid
-        ref={drawerRef}
-        drawerPosition="right"
-        drawerWidth={300}
-        renderNavigationView={OptionsSideBar}
-      >
-        <View style={styles.main}>
-          <FlatList
-            data={steps}
-            renderItem={({ item }) => (
-              <Transactions start={item.start} end={item.end} />
-            )}
-            pagingEnabled
-            horizontal
-            inverted
-            initialNumToRender={5}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            onStartReached={onStartReached}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={1}
-            onStartReachedThreshold={1}
-          />
+      </View>
 
-          <View style={[styles.buttons, { paddingBottom: insets.bottom || 10 }]}>
-            <TouchableOpacity onPress={handlePressMinusButton}>
-              <Ionicons
-                name="remove-circle-outline"
-                color={theme.colors.red}
-                size={120}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigate("/budget")}>
-              <Ionicons
-                name="wallet-outline"
-                color={theme.colors.primary}
-                size={60}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handlePressPlusButton}>
-              <Ionicons
-                name="add-circle-outline"
-                color={theme.colors.greenLight}
-                size={120}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </DrawerLayoutAndroid>
+      {/* Month switcher */}
+      <View style={styles.monthSwitcher}>
+        <TouchableOpacity onPress={goToPrevMonth} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Ionicons name="chevron-back" size={22} color={grafito.ink3} />
+        </TouchableOpacity>
+        <Text style={styles.monthLabel}>{visibleMonth}</Text>
+        <TouchableOpacity onPress={goToNextMonth} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Ionicons name="chevron-forward" size={22} color={grafito.ink3} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Paged transaction list */}
+      <View style={styles.listContainer}>
+        <FlatList
+          data={steps}
+          renderItem={({ item }) => (
+            <Transactions start={item.start} end={item.end} />
+          )}
+          pagingEnabled
+          horizontal
+          inverted
+          initialNumToRender={5}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          onStartReached={onStartReached}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={1}
+          onStartReachedThreshold={1}
+          onViewableItemsChanged={({ viewableItems }) => {
+            if (viewableItems.length > 0 && viewableItems[0].index != null) {
+              setVisibleIndex(viewableItems[0].index)
+            }
+          }}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 51 }}
+          getItemLayout={(_, index) => ({
+            length: SCREEN_WIDTH,
+            offset: SCREEN_WIDTH * index,
+            index,
+          })}
+        />
+      </View>
+
+      {/* Bottom tab bar */}
+      <BottomTabBar
+        activeTab="home"
+        onPressPlus={() => navigate("/transactions/outcome")}
+        onSelect={(tab) => {
+          if (tab === "budget") navigate("/budget")
+        }}
+      />
     </View>
+    </DrawerLayoutAndroid>
   )
 }
 
 const styles = StyleSheet.create({
-  main: {
-    justifyContent: "space-between",
+  root: {
     flex: 1,
+    backgroundColor: grafito.bg,
   },
-  buttons: {
-    paddingVertical: 10,
-    alignItems: "center",
-    justifyContent: "space-around",
+  header: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
+  headerTitle: {
+    fontFamily: "Georgia",
+    fontSize: 22,
+    color: grafito.ink,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  searchPill: {
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  searchPillText: {
+    fontSize: 14,
+    color: grafito.ink3,
+  },
+  monthSwitcher: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    gap: 16,
+  },
+  monthLabel: {
+    fontFamily: "Georgia",
+    fontSize: 34,
+    fontWeight: "700",
+    color: grafito.ink,
+  },
+  listContainer: {
+    flex: 1,
   },
 })
 

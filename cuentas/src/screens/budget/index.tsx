@@ -1,159 +1,299 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
+import React, { useMemo } from "react"
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+} from "react-native"
+import Svg, { Circle } from "react-native-svg"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router-native"
-import { AppBar, BackButton, StyledText } from "../../Components"
-import { theme } from "../../theme"
+import CategoryChip from "../../Components/CategoryChip"
+import BottomTabBar from "../../Components/BottomTabBar"
+import grafito from "../../theme"
 import { useBudget } from "../../hooks"
+import { useCategories } from "../../hooks"
 import { formatNumber } from "../../utils"
 
 const now = new Date()
 
-const ProgressBar = ({
-  spent,
-  total,
+const MONTHS_ES = [
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE",
+]
+
+// ─── Donut ring via SVG ───────────────────────────────────────────────────────
+const RING_SIZE = 120
+const STROKE = 14
+
+const DonutRing = ({
+  progress,
+  available,
   isOver,
 }: {
-  spent: number
-  total: number
+  progress: number
+  available: number
   isOver: boolean
 }) => {
-  const pct = total > 0 ? Math.min(spent / total, 1) : 0
+  const r = (RING_SIZE - STROKE) / 2
+  const cx = RING_SIZE / 2
+  const cy = RING_SIZE / 2
+  const circumference = 2 * Math.PI * r
+  const clampedProgress = Math.min(Math.max(progress, 0), 1)
+  const dashOffset = circumference * (1 - clampedProgress)
+
   return (
-    <View style={styles.progressTrack}>
-      <View
-        style={[
-          styles.progressFill,
-          {
-            width: `${pct * 100}%`,
-            backgroundColor: isOver ? theme.colors.red : theme.colors.secondary,
-          },
-        ]}
-      />
+    <View style={styles.donutWrap}>
+      <Svg
+        width={RING_SIZE}
+        height={RING_SIZE}
+        style={{ transform: [{ rotate: "-90deg" }] }}
+      >
+        {/* Background track */}
+        <Circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={grafito.line2}
+          strokeWidth={STROKE}
+        />
+        {/* Progress arc */}
+        <Circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={isOver ? grafito.neg : grafito.accent}
+          strokeWidth={STROKE}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+        />
+      </Svg>
+      {/* Center text overlay */}
+      <View style={styles.donutCenter} pointerEvents="none">
+        <Text style={styles.donutEyebrow}>disponible</Text>
+        <Text
+          style={[styles.donutAmount, { color: isOver ? grafito.neg : grafito.ink }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {isOver ? "-" : ""}${formatNumber(Math.abs(available))}
+        </Text>
+      </View>
     </View>
   )
 }
 
-const BudgetScreen = () => {
-  const navigate = useNavigate()
-  const { status, loading } = useBudget(now.getFullYear(), now.getMonth() + 1)
-
-  const budget = status?.budget ?? null
-  const totalSpent = status?.totalSpent ?? 0
-  const totalRemaining = status?.totalRemaining ?? 0
-  const isOver = status?.isOverBudget ?? false
+// ─── Category row ─────────────────────────────────────────────────────────────
+const CategoryRow = ({
+  categoryId,
+  name,
+  icon,
+  spent,
+  allocated,
+  remaining,
+  isOver,
+}: {
+  categoryId: string
+  name: string
+  icon?: string
+  spent: number
+  allocated: number
+  remaining: number
+  isOver: boolean
+}) => {
+  const pct = allocated > 0 ? Math.min(spent / allocated, 1) : 0
+  const remainingColor = isOver ? grafito.neg : grafito.pos
 
   return (
-    <View style={{ flex: 1 }}>
-      <AppBar>
-        <View style={styles.appBarRow}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <BackButton />
-            <StyledText color="white" fontWeight="bold">
-              Presupuesto
-            </StyledText>
-          </View>
-          <TouchableOpacity onPress={() => navigate("/budget/edit")}>
-            <StyledText color="white">CONFIGURAR</StyledText>
-          </TouchableOpacity>
+    <View style={styles.catRow}>
+      <View style={styles.catTop}>
+        <CategoryChip categoryId={categoryId} name={name} icon={icon} size="sm" />
+        <Text style={styles.catName} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={[styles.catRemaining, { color: remainingColor }]}>
+          {isOver
+            ? `-$${formatNumber(Math.abs(remaining))}`
+            : allocated > 0
+            ? `$${formatNumber(remaining)}`
+            : "Sin límite"}
+        </Text>
+      </View>
+      {allocated > 0 && (
+        <View style={styles.catBarTrack}>
+          <View
+            style={[
+              styles.catBarFill,
+              {
+                width: `${pct * 100}%`,
+                backgroundColor: isOver ? grafito.neg : grafito.accent,
+              },
+            ]}
+          />
         </View>
-      </AppBar>
-
-      {loading ? (
-        <View style={styles.centered}>
-          <StyledText>Cargando...</StyledText>
-        </View>
-      ) : !budget ? (
-        <View style={styles.centered}>
-          <StyledText textCenter color="primary">
-            No tienes un presupuesto configurado
-          </StyledText>
-          <TouchableOpacity
-            style={styles.ctaButton}
-            onPress={() => navigate("/budget/edit")}
-          >
-            <StyledText color="white" fontWeight="bold">
-              Configurar presupuesto
-            </StyledText>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.card}>
-            <StyledText fontWeight="bold" fontSize="subheading">
-              Total mensual
-            </StyledText>
-            <StyledText color="primary">
-              Presupuesto: ${formatNumber(budget.total)}
-            </StyledText>
-
-            <ProgressBar spent={totalSpent} total={budget.total} isOver={isOver} />
-
-            <View style={styles.row}>
-              <StyledText color="primary">
-                Gastado: ${formatNumber(totalSpent)}
-              </StyledText>
-              <StyledText
-                style={{ color: isOver ? theme.colors.red : theme.colors.greenLight }}
-                fontWeight="bold"
-              >
-                {isOver
-                  ? `Te pasaste $${formatNumber(Math.abs(totalRemaining))}`
-                  : `Te quedan $${formatNumber(totalRemaining)}`}
-              </StyledText>
-            </View>
-          </View>
-
-          {(status?.categories ?? [])
-            .filter((c) => c.allocated > 0 || c.spent > 0)
-            .map((cat) => (
-              <View key={cat.categoryId} style={styles.card}>
-                <View style={styles.row}>
-                  <StyledText fontWeight="bold">{cat.categoryId}</StyledText>
-                  <StyledText
-                    style={{ color: cat.isOver ? theme.colors.red : theme.colors.textPrimary }}
-                  >
-                    {cat.allocated > 0
-                      ? `$${formatNumber(cat.allocated)}`
-                      : "Sin límite"}
-                  </StyledText>
-                </View>
-
-                {cat.allocated > 0 && (
-                  <ProgressBar
-                    spent={cat.spent}
-                    total={cat.allocated}
-                    isOver={cat.isOver}
-                  />
-                )}
-
-                <View style={styles.row}>
-                  <StyledText color="primary">
-                    Gastado: ${formatNumber(cat.spent)}
-                  </StyledText>
-                  {cat.allocated > 0 && (
-                    <StyledText
-                      style={{ color: cat.isOver ? theme.colors.red : theme.colors.greenLight }}
-                    >
-                      {cat.isOver
-                        ? `Pasado $${formatNumber(Math.abs(cat.remaining))}`
-                        : `Quedan $${formatNumber(cat.remaining)}`}
-                    </StyledText>
-                  )}
-                </View>
-              </View>
-            ))}
-        </ScrollView>
       )}
     </View>
   )
 }
 
+// ─── Main screen ──────────────────────────────────────────────────────────────
+const BudgetScreen = () => {
+  const navigate = useNavigate()
+  const insets = useSafeAreaInsets()
+  const { status, loading } = useBudget(now.getFullYear(), now.getMonth() + 1)
+  const { categories } = useCategories()
+
+  const budget = status?.budget ?? null
+  const totalSpent = status?.totalSpent ?? 0
+  const totalRemaining = status?.totalRemaining ?? 0
+  const isOver = status?.isOverBudget ?? false
+  const progress = budget && budget.total > 0 ? totalSpent / budget.total : 0
+
+  // Build a lookup map: category _id → { name, icon }
+  const catMap = useMemo(() => {
+    const map: Record<string, { name: string; icon: string }> = {}
+    for (const c of categories) {
+      if (c._id) map[c._id] = { name: c.name, icon: c.icon }
+    }
+    return map
+  }, [categories])
+
+  const monthLabel = MONTHS_ES[now.getMonth()]
+
+  return (
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
+      {/* ── Inline header ─────────────────────────────────────────────────── */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.eyebrow}>{monthLabel}</Text>
+          <Text style={styles.title}>Presupuesto</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.configPill}
+          onPress={() => navigate("/budget/edit")}
+        >
+          <Text style={styles.configPillText}>Configurar</Text>
+        </TouchableOpacity>
+      </View>
+
+      {loading ? (
+        <View style={styles.centered}>
+          <Text style={styles.loadingText}>Cargando...</Text>
+        </View>
+      ) : !budget ? (
+        <View style={styles.centered}>
+          <Text style={[styles.emptyText, { textAlign: "center" }]}>
+            No tienes un presupuesto configurado
+          </Text>
+          <TouchableOpacity
+            style={styles.ctaButton}
+            onPress={() => navigate("/budget/edit")}
+          >
+            <Text style={styles.ctaButtonText}>Configurar presupuesto</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.content}>
+          {/* ── Hero card ─────────────────────────────────────────────────── */}
+          <View style={styles.heroCard}>
+            <DonutRing
+              progress={progress}
+              available={totalRemaining}
+              isOver={isOver}
+            />
+
+            {/* Stats row */}
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={styles.statLabel}>GASTADO</Text>
+                <Text style={styles.statValue}>${formatNumber(totalSpent)}</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statLabel}>META</Text>
+                <Text style={styles.statValue}>${formatNumber(budget.total)}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── Category list ─────────────────────────────────────────────── */}
+          {(status?.categories ?? [])
+            .filter((c) => c.allocated > 0 || c.spent > 0)
+            .map((cat) => {
+              const info = catMap[cat.categoryId]
+              const name = info?.name ?? cat.categoryId
+              const icon = info?.icon
+              return (
+                <CategoryRow
+                  key={cat.categoryId}
+                  categoryId={cat.categoryId}
+                  name={name}
+                  icon={icon}
+                  spent={cat.spent}
+                  allocated={cat.allocated}
+                  remaining={cat.remaining}
+                  isOver={cat.isOver}
+                />
+              )
+            })}
+        </ScrollView>
+      )}
+
+      <BottomTabBar
+        activeTab="budget"
+        onPressPlus={() => navigate("/transactions/outcome")}
+        onSelect={(tab) => {
+          if (tab === "home") navigate("/")
+        }}
+      />
+    </View>
+  )
+}
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  appBarRow: {
+  screen: {
+    flex: 1,
+    backgroundColor: grafito.bg,
+  },
+  // Header
+  header: {
     flexDirection: "row",
-    width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 12,
   },
+  eyebrow: {
+    fontFamily: grafito.fonts.mono,
+    fontSize: 11,
+    color: grafito.ink4,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  title: {
+    fontFamily: grafito.fonts.serif,
+    fontSize: 26,
+    color: grafito.ink,
+    marginTop: 2,
+  },
+  configPill: {
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  configPillText: {
+    fontSize: 13,
+    color: grafito.ink3,
+    fontFamily: grafito.fonts.sans,
+  },
+  // Loading / empty states
   centered: {
     flex: 1,
     alignItems: "center",
@@ -161,42 +301,139 @@ const styles = StyleSheet.create({
     gap: 20,
     padding: 30,
   },
-  content: {
-    padding: 16,
-    gap: 12,
+  loadingText: {
+    fontSize: 14,
+    color: grafito.ink4,
+    fontFamily: grafito.fonts.sans,
   },
-  card: {
-    backgroundColor: theme.colors.white,
-    borderRadius: 12,
-    padding: 16,
-    gap: 10,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  progressTrack: {
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.colors.highlight,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: 5,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  emptyText: {
+    fontSize: 15,
+    color: grafito.ink3,
+    fontFamily: grafito.fonts.sans,
+    lineHeight: 22,
   },
   ctaButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: grafito.accent,
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 24,
     alignItems: "center",
+  },
+  ctaButtonText: {
+    color: grafito.onAccent,
+    fontFamily: grafito.fonts.sans,
+    fontWeight: "600",
+    fontSize: 15,
+  },
+  // Scroll content
+  content: {
+    padding: 16,
+    gap: 0,
+  },
+  // Hero card
+  heroCard: {
+    backgroundColor: grafito.surface,
+    borderRadius: 16,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    alignItems: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    gap: 20,
+  },
+  // Donut
+  donutWrap: {
+    width: RING_SIZE,
+    height: RING_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  donutCenter: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: STROKE + 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  donutEyebrow: {
+    fontFamily: grafito.fonts.mono,
+    fontSize: 10,
+    color: grafito.ink4,
+    letterSpacing: 0.3,
+    textTransform: "lowercase",
+  },
+  donutAmount: {
+    fontFamily: grafito.fonts.serif,
+    fontSize: 22,
+    color: grafito.ink,
+    marginTop: 1,
+  },
+  // Stats row
+  statsRow: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  statItem: {
+    alignItems: "center",
+    gap: 2,
+  },
+  statLabel: {
+    fontFamily: grafito.fonts.mono,
+    fontSize: 11,
+    color: grafito.ink4,
+    letterSpacing: 0.4,
+  },
+  statValue: {
+    fontFamily: grafito.fonts.serif,
+    fontSize: 16,
+    color: grafito.ink,
+  },
+  statDivider: {
+    width: 1,
+    height: 28,
+    backgroundColor: grafito.line2,
+  },
+  // Category rows
+  catRow: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: grafito.line2,
+    gap: 8,
+  },
+  catTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  catName: {
+    flex: 1,
+    fontSize: 14,
+    color: grafito.ink2,
+    fontFamily: grafito.fonts.sans,
+  },
+  catRemaining: {
+    fontSize: 13,
+    fontFamily: grafito.fonts.serif,
+  },
+  catBarTrack: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: grafito.line2,
+    overflow: "hidden",
+    marginLeft: 38, // align with text after chip
+  },
+  catBarFill: {
+    height: "100%",
+    borderRadius: 2,
   },
 })
 

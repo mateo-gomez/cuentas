@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react"
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
-import { theme } from "../../theme"
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import grafito from "../../theme"
 import { formatNumber } from "../../utils"
 import { Outlet, useNavigate, useParams } from "react-router-native"
 import { Category, TransactionDTO } from "../../../types"
 import {
-  AppBar,
-  BackButton,
   ErrorBanner,
-  StyledText,
   OverlayLoader,
-  DatePicker,
 } from "../../Components"
 import { useTransaction } from "../../hooks"
 import { createTransaction, updateTransaction } from "../../services"
 import { createLogger } from "../../lib/logger"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
+import { Ionicons } from "@expo/vector-icons"
+import { formatDate } from "../../utils"
+import CategoryChip from "../../Components/CategoryChip"
 
 const logger = createLogger("Transaction")
 
@@ -23,11 +30,15 @@ const initialDate = new Date()
 const Transaction = () => {
   const { type, id } = useParams()
   const navigate = useNavigate()
+  const insets = useSafeAreaInsets()
   const { transaction, loading } = useTransaction(id)
   const [transactionValue, setTransactionValue] = useState(0)
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(initialDate)
   const [submitError, setSubmitError] = useState("")
+  const [transactionType, setTransactionType] = useState<"expense" | "income">(
+    type === "income" ? "income" : "expense",
+  )
   const [errors, setErrors] = useState({
     date: null,
     transactionValue: null,
@@ -68,8 +79,8 @@ const Transaction = () => {
       value: transactionValue,
       description,
       date,
-      category: transaction.category._id,
-      type: type === "income" ? 1 : 0,
+      category: transaction?.category?._id,
+      type: transactionType === "income" ? 1 : 0,
     })
   }
 
@@ -80,7 +91,7 @@ const Transaction = () => {
       description,
       date,
       category: category._id,
-      type: type === "income" ? 1 : 0,
+      type: transactionType === "income" ? 1 : 0,
     })
   }
 
@@ -98,7 +109,7 @@ const Transaction = () => {
     setErrors((errors) => ({ ...errors, transactionValue: true }))
   }
 
-  const isDirty = (record, reference) => {
+  const isDirty = (record: Record<string, unknown> | undefined, reference: Record<string, unknown>) => {
     if (!record) return false
 
     return Object.entries(reference).some(
@@ -107,122 +118,230 @@ const Transaction = () => {
   }
 
   const handleBackPress = () => {
-    const isTransactionDirty = isDirty(transaction, {
-      value: transactionValue,
-      description,
-      date,
-    })
+    const isTransactionDirty = isDirty(
+      transaction as unknown as Record<string, unknown>,
+      {
+        value: transactionValue,
+        description,
+        date,
+      },
+    )
     if (isTransactionDirty) {
       handleSave()
     }
+    navigate("/")
   }
 
-  useEffect(() => {
-    if (errors.transactionValue && transactionValue) {
-      setErrors((errors) => ({ ...errors, transactionValue: null }))
-    }
-  }, [transactionValue])
+  const handleOpenDatePicker = () => {
+    DateTimePickerAndroid.open({
+      mode: "date",
+      value: date,
+      onChange: (_ev, newDate) => {
+        if (newDate) handleChangeDate(newDate)
+      },
+    })
+  }
+
+  const currentCategory = transaction?.category
 
   return (
-    <View style={{ flex: 1 }}>
-      <AppBar>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
-            <BackButton onPress={handleBackPress} />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* ── Header ── */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBackPress} style={styles.ghostBtn}>
+          <Text style={styles.ghostBtnText}>Cancelar</Text>
+        </TouchableOpacity>
 
-            <StyledText color={"white"} fontWeight="bold">
-              {id ? "Editando " : " Nuevo "}
-              {type === "income" ? "ingreso" : "gasto"}
-            </StyledText>
-          </View>
-
+        {/* Type toggle pill */}
+        <View style={styles.togglePill}>
           <TouchableOpacity
-            style={{
-              padding: 8,
-              borderRadius: 4,
-              borderWidth: 1,
-              borderColor: theme.colors.grey,
-            }}
-            onPress={handleSave}
+            style={[
+              styles.toggleOption,
+              transactionType === "expense" && styles.toggleOptionActive,
+            ]}
+            onPress={() => setTransactionType("expense")}
           >
-            <StyledText color="white">Guardar</StyledText>
+            <Text
+              style={[
+                styles.toggleOptionText,
+                transactionType === "expense" && styles.toggleOptionTextActive,
+              ]}
+            >
+              Gasto
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.toggleOption,
+              transactionType === "income" && styles.toggleOptionActive,
+            ]}
+            onPress={() => setTransactionType("income")}
+          >
+            <Text
+              style={[
+                styles.toggleOptionText,
+                transactionType === "income" && styles.toggleOptionTextActive,
+              ]}
+            >
+              Ingreso
+            </Text>
           </TouchableOpacity>
         </View>
-      </AppBar>
+
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+          <Text style={styles.saveBtnText}>Guardar</Text>
+        </TouchableOpacity>
+      </View>
+
       {loading ? <OverlayLoader message="Cargando registro..." /> : null}
-      <View style={styles.wrapper}>
-        <ErrorBanner message={submitError} />
-        <DatePicker
-          style={styles.datePicker}
-          date={date}
-          onChange={handleChangeDate}
-        />
+      <ErrorBanner message={submitError} />
 
-        <TextInput
-          placeholder="Descripción"
-          style={styles.description}
-          onChangeText={handleChangeDescription}
-        />
+      {/* ── Amount display ── */}
+      <Text style={[styles.amountText, errors.transactionValue && styles.amountError]}>
+        {formatNumber(transactionValue)}
+      </Text>
 
-        <TextInput
-          textAlign="center"
-          numberOfLines={1}
-          maxLength={20}
-          showSoftInputOnFocus={false}
-          caretHidden={true}
-          style={[
-            styles.transactionInput,
-            errors.transactionValue && styles.error,
-          ]}
-          value={formatNumber(transactionValue)}
-        />
+      {/* ── Description ── */}
+      <TextInput
+        placeholder="Descripción"
+        placeholderTextColor={grafito.ink4}
+        style={styles.descriptionInput}
+        value={description}
+        onChangeText={handleChangeDescription}
+      />
 
-        <View style={{ marginTop: 20 }}>
-          <Outlet
-            context={{
-              handlePressNumpad,
-              handleSelectCategory,
-              isValidTransactionValue,
-              categoryId: transaction?.category?._id,
-            }}
-          />
-        </View>
+      {/* ── Category + Date row ── */}
+      <View style={styles.metaRow}>
+        <TouchableOpacity style={styles.metaCol}>
+          {currentCategory ? (
+            <>
+              <CategoryChip
+                size="md"
+                categoryId={currentCategory._id}
+                name={currentCategory.name}
+                icon={currentCategory.icon}
+              />
+              <Text style={styles.metaText}>{currentCategory.name}</Text>
+            </>
+          ) : (
+            <Text style={[styles.metaText, { color: grafito.ink4 }]}>Sin categoría</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.metaCol} onPress={handleOpenDatePicker}>
+          <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />
+          <Text style={[styles.metaText, { color: grafito.ink3 }]}>
+            {formatDate(date)}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ── Nested route (NumPad / Categories) ── */}
+      <View style={{ marginTop: 16 }}>
+        <Outlet
+          context={{
+            handlePressNumpad,
+            handleSelectCategory,
+            isValidTransactionValue,
+            categoryId: transaction?.category?._id,
+          }}
+        />
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  transactionInput: {
-    borderRadius: 10,
-    borderColor: theme.colors.transparent,
-    borderWidth: 2,
-    backgroundColor: theme.colors.primary,
-    color: theme.colors.white,
-    padding: 10,
-    fontSize: theme.fontSizes.heading * 1.5,
-    marginTop: 20,
+  container: {
+    flex: 1,
+    backgroundColor: grafito.bg,
   },
-  description: {
-    borderStyle: "solid",
-    borderColor: theme.colors.primary,
+  // Header
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  ghostBtn: {
+    paddingHorizontal: 4,
+    paddingVertical: 6,
+  },
+  ghostBtnText: {
+    fontSize: 15,
+    color: grafito.ink3,
+  },
+  togglePill: {
+    flexDirection: "row",
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  toggleOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+  },
+  toggleOptionActive: {
+    backgroundColor: grafito.accent,
+  },
+  toggleOptionText: {
+    fontSize: 14,
+    color: grafito.ink3,
+  },
+  toggleOptionTextActive: {
+    color: grafito.onAccent,
+  },
+  saveBtn: {
+    backgroundColor: grafito.accent,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+  },
+  saveBtnText: {
+    color: grafito.onAccent,
+    fontSize: 15,
+  },
+  // Amount
+  amountText: {
+    fontFamily: grafito.fonts.serif,
+    fontSize: 64,
+    color: grafito.ink,
+    textAlign: "center",
+    marginTop: 12,
+    marginHorizontal: 16,
+  },
+  amountError: {
+    color: grafito.neg,
+  },
+  // Description
+  descriptionInput: {
     borderBottomWidth: 1,
-    padding: 10,
-    fontSize: theme.fontSizes.body,
-    marginTop: 10,
+    borderBottomColor: grafito.line,
+    fontSize: 15,
+    color: grafito.ink,
+    paddingVertical: 8,
+    marginHorizontal: 16,
+    marginTop: 12,
   },
-  datePicker: { padding: 10 },
-  wrapper: { flex: 1, margin: 20 },
-  error: {
-    borderColor: theme.colors.red,
-    borderWidth: 2,
+  // Meta row
+  metaRow: {
+    flexDirection: "row",
+    marginHorizontal: 16,
+    marginTop: 14,
+    gap: 16,
+  },
+  metaCol: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flex: 1,
+  },
+  metaText: {
+    fontSize: 14,
+    color: grafito.ink2,
+    marginLeft: 8,
   },
 })
 

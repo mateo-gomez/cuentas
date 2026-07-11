@@ -1,11 +1,15 @@
 import {
   ActivityIndicator,
   Alert,
-  Button,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
 } from "react-native"
-import { AppBar, BackButton, StyledText } from "../../Components"
+import { Ionicons } from "@expo/vector-icons"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useNavigate } from "react-router-native"
+import grafito from "../../theme"
 import { useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
 import { importTransactions } from "../../services"
@@ -14,6 +18,8 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Import")
 
 const Import = () => {
+  const navigate = useNavigate()
+  const insets = useSafeAreaInsets()
   const [selectedFile, setSelectedFile] =
     useState<DocumentPicker.DocumentPickerAsset | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -66,59 +72,140 @@ const Import = () => {
     }
   }
 
+  const uploadDisabled = !selectedFile || uploading
+
   return (
-    <View style={{ flex: 1 }}>
-      <AppBar style={{ flexDirection: "row" }}>
-        <BackButton />
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigate(-1)}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+        </TouchableOpacity>
+        <Text style={styles.title}>Importar</Text>
+      </View>
 
-        <StyledText color="white" fontWeight="bold">
-          Importar
-        </StyledText>
-      </AppBar>
-
+      {/* ── Body ───────────────────────────────────────────────────────────── */}
       <View style={styles.container}>
-        <Button title="Seleccionar archivo Excel" onPress={handlePickFile} />
-        {selectedFile && (
-          <StyledText style={styles.fileName}>
-            📄 {selectedFile.name}
-          </StyledText>
-        )}
+        <Text style={styles.hint}>
+          Seleccioná un archivo Excel para importar tus transacciones.
+        </Text>
 
-        <View style={styles.spacer} />
+        <TouchableOpacity style={styles.pickButton} onPress={handlePickFile}>
+          <Ionicons name="document-outline" size={20} color={grafito.ink} />
+          <Text style={styles.pickButtonText}>Seleccionar archivo Excel</Text>
+        </TouchableOpacity>
 
-        <Button
-          title={uploading ? "Subiendo..." : "Subir archivo"}
+        {selectedFile ? (
+          <View style={styles.fileChip}>
+            <Ionicons name="document-text-outline" size={18} color={grafito.ink3} />
+            <Text style={styles.fileName} numberOfLines={1}>
+              {selectedFile.name}
+            </Text>
+          </View>
+        ) : null}
+
+        <TouchableOpacity
+          style={[styles.uploadButton, uploadDisabled && styles.uploadButtonDisabled]}
           onPress={handleUpload}
-          disabled={!selectedFile || uploading}
-        />
+          disabled={uploadDisabled}
+        >
+          <Text style={styles.uploadButtonText}>
+            {uploading ? "Subiendo..." : "Subir archivo"}
+          </Text>
+        </TouchableOpacity>
 
-        {uploading && (
+        {uploading ? (
           <ActivityIndicator
             size="large"
-            color="#0000ff"
+            color={grafito.accent}
             style={styles.loader}
           />
-        )}
+        ) : null}
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: grafito.bg,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+    gap: 8,
+  },
+  title: {
+    fontFamily: grafito.fonts.serif,
+    fontSize: 20,
+    color: grafito.ink,
+  },
   container: {
     padding: 20,
-    gap: 10,
+    gap: 16,
+  },
+  hint: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 14,
+    color: grafito.ink3,
+    lineHeight: 20,
+  },
+  pickButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: grafito.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: grafito.line,
+    paddingVertical: 14,
+  },
+  pickButtonText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 15,
+    fontWeight: "600",
+    color: grafito.ink,
+  },
+  fileChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: grafito.surface3,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   fileName: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#333",
+    flex: 1,
+    fontFamily: grafito.fonts.mono,
+    fontSize: 13,
+    color: grafito.ink2,
   },
-  spacer: {
-    height: 20,
+  uploadButton: {
+    backgroundColor: grafito.accent,
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: "center",
+  },
+  uploadButtonDisabled: {
+    opacity: 0.4,
+  },
+  uploadButtonText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 15,
+    fontWeight: "600",
+    color: grafito.onAccent,
   },
   loader: {
-    marginTop: 20,
+    marginTop: 8,
   },
 })
 
