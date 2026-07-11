@@ -53,6 +53,7 @@ const Home = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
+  const listRef = useRef<FlatList | null>(null)
 
   const handlePressMenu = () => {
     const drawer = drawerRef.current
@@ -112,20 +113,27 @@ const Home = () => {
     }
   }
 
+  const scrollToMonth = (index: number) => {
+    // Defer so a freshly appended page is committed before we scroll to it.
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToIndex({ index, animated: true })
+    })
+  }
+
   const goToPrevMonth = () => {
     const nextIndex = visibleIndex + 1
-    if (nextIndex < steps.length) {
-      setVisibleIndex(nextIndex)
-    } else {
+    if (nextIndex >= steps.length) {
       onEndReached()
-      setVisibleIndex(nextIndex)
     }
+    setVisibleIndex(nextIndex)
+    scrollToMonth(nextIndex)
   }
 
   const goToNextMonth = () => {
-    if (visibleIndex > 0) {
-      setVisibleIndex(visibleIndex - 1)
-    }
+    if (visibleIndex <= 0) return
+    const nextIndex = visibleIndex - 1
+    setVisibleIndex(nextIndex)
+    scrollToMonth(nextIndex)
   }
 
   return (
@@ -163,10 +171,16 @@ const Home = () => {
       {/* Paged transaction list */}
       <View style={styles.listContainer}>
         <FlatList
+          ref={listRef}
           data={steps}
           renderItem={({ item }) => (
             <Transactions start={item.start} end={item.end} />
           )}
+          onScrollToIndexFailed={({ index }) => {
+            setTimeout(() => {
+              listRef.current?.scrollToIndex({ index, animated: true })
+            }, 80)
+          }}
           pagingEnabled
           horizontal
           inverted
