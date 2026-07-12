@@ -1,11 +1,11 @@
 {
   "name": "cuentas",
   "version": "1.0.0",
-  "description": "personal finance app made with React Native and Deno",
+  "description": "personal finance app made with React Native and Node.js",
   "main": "index.js",
   "scripts": {
     "app:dev": "cd ./cuentas && npx expo start",
-    "server:dev": "cd ./backend && deno task dev",
+    "server:dev": "cd ./backend && npm run dev",
     "parser:dev": "cd ./pdf-parser && uvicorn app.main:app --reload --port 8000",
     "dev": "npm run app:dev && npm run server:dev",
     "test": "echo \"Error: no test specified\" && exit 1",

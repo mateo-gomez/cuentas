@@ -8,10 +8,7 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://mateo-gomez-cuentas-jdwjb77z3y1p.deno.dev"
-      }
+      "distribution": "internal"
     },
     "production": {}
   },
