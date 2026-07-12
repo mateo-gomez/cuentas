@@ -53,13 +53,13 @@ export const getTransaction = async (
 export const createTransaction = async (
   newTransaction: TransactionDTO,
 ): Promise<void> => {
-  client.post("transactions", newTransaction)
+  await client.post("transactions", newTransaction)
 }
 
 export const updateTransaction = async (
   transaction: TransactionDTO,
 ): Promise<void> => {
-  client.put(`transactions/${transaction.id}`, transaction)
+  await client.put(`transactions/${transaction.id}`, transaction)
 }
 
 export const deleteTransaction = async (id: string): Promise<void> => {
