@@ -24,7 +24,10 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: PDF_PARSER_URL
-        sync: false
+        fromService:
+          name: pdf-parser
+          type: web
+          property: host
       - key: ACCESS_TOKEN_TTL
         value: 15m
       - key: REFRESH_TOKEN_TTL
