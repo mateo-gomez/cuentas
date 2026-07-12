@@ -1,6 +1,9 @@
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -153,7 +156,14 @@ const Import = () => {
       </View>
 
       {/* ── Body ───────────────────────────────────────────────────────────── */}
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
         <Text style={styles.hint}>
           Seleccioná un archivo Excel para importar tus transacciones.
         </Text>
@@ -193,7 +203,7 @@ const Import = () => {
         <View style={styles.divider} />
 
         <Text style={styles.hint}>
-          O importá un extracto bancario en PDF (Bancolombia).
+          O importá un extracto bancario en PDF (Bancolombia, Davibank o Rappi).
         </Text>
 
         <TouchableOpacity
@@ -243,7 +253,8 @@ const Import = () => {
             </TouchableOpacity>
           </View>
         ) : null}
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   )
 }
@@ -252,6 +263,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: grafito.bg,
+  },
+  flex: {
+    flex: 1,
   },
   header: {
     flexDirection: "row",

@@ -168,7 +168,11 @@ const PdfImportReview = () => {
       />
 
       <TouchableOpacity
-        style={[styles.confirmButton, confirming && styles.confirmButtonDisabled]}
+        style={[
+          styles.confirmButton,
+          { marginBottom: insets.bottom + 20 },
+          confirming && styles.confirmButtonDisabled,
+        ]}
         onPress={handleConfirm}
         disabled={confirming}
       >
@@ -225,7 +229,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
     marginHorizontal: 20,
-    marginBottom: 20,
   },
   confirmButtonDisabled: {
     opacity: 0.4,
