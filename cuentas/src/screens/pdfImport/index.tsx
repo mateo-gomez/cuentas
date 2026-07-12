@@ -14,6 +14,7 @@ import grafito from "../../theme"
 import { PdfImportRow } from "../../Components/PdfImportRow"
 import { OverlayLoader } from "../../Components/OverlayLoader"
 import { ErrorBanner } from "../../Components/ErrorBanner"
+import { ReconciliationBanner } from "../../Components/ReconciliationBanner"
 import { usePdfImport } from "../../hooks"
 import { PdfConfirmRow, PdfParseResponse } from "../../../types"
 
@@ -124,6 +125,8 @@ const PdfImportReview = () => {
       </View>
 
       {confirmError ? <ErrorBanner message={confirmError} /> : null}
+
+      <ReconciliationBanner reconciliation={result.reconciliation} />
 
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"

@@ -2,12 +2,32 @@ import pdfplumber
 import pytest
 
 from app.parsers import bancolombia
+from app.parsers.base import reconcile_running_balance
 
 
 @pytest.fixture(scope="module")
-def transactions(bancolombia_pdf):
+def parse_result(bancolombia_pdf):
     with pdfplumber.open(bancolombia_pdf) as pdf:
         return bancolombia.parse(pdf)
+
+
+@pytest.fixture(scope="module")
+def transactions(parse_result):
+    return parse_result.transactions
+
+
+def test_fixture_reconciles(parse_result):
+    assert parse_result.reconciliation.available is True
+    assert parse_result.reconciliation.reconciled is True
+
+
+def test_forced_mismatch_is_flagged():
+    # Same shape as the real fixture's first three rows, but with a closing
+    # saldo that does not follow from the deltas — must be unreconciled.
+    pairs = [(3.38, 4161550.40), (-120000.00, 4041550.40), (500.00, 9999999.99)]
+    result = reconcile_running_balance(pairs)
+    assert result.available is True
+    assert result.reconciled is False
 
 
 def test_extracts_expected_transaction_count(transactions):

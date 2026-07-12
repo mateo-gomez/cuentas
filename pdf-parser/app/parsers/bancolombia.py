@@ -31,8 +31,8 @@ from datetime import date
 
 import pdfplumber
 
-from app.schemas import RawTransaction
-from app.parsers.base import parse_amount, resolve_year
+from app.schemas import ParseResult, RawTransaction
+from app.parsers.base import parse_amount, reconcile_running_balance, resolve_year
 
 PERIOD_RE = re.compile(
     r"DESDE:\s*(\d{4})/(\d{2})/(\d{2})\s+HASTA:\s*(\d{4})/(\d{2})/(\d{2})"
@@ -90,14 +90,15 @@ def _split_description_value_saldo(rest: str) -> tuple[str, str, str] | None:
     return description, value_str, saldo_str
 
 
-def parse(pdf: "pdfplumber.PDF") -> list[RawTransaction]:
+def parse(pdf: "pdfplumber.PDF") -> ParseResult:
     pages_text = [page.extract_text() or "" for page in pdf.pages]
     if not pages_text:
-        return []
+        return ParseResult(transactions=[], reconciliation=reconcile_running_balance([]))
 
     statement_from, statement_to = _extract_period(pages_text[0])
 
     transactions: list[RawTransaction] = []
+    balance_pairs: list[tuple[float, float]] = []
     for page_text in pages_text:
         for raw_line in page_text.splitlines():
             line = raw_line.strip()
@@ -108,11 +109,12 @@ def parse(pdf: "pdfplumber.PDF") -> list[RawTransaction]:
             split = _split_description_value_saldo(date_match.group("rest"))
             if not split:
                 continue
-            description, value_str, _saldo_str = split
+            description, value_str, saldo_str = split
 
             day = int(date_match.group("day"))
             month = int(date_match.group("month"))
             value = parse_amount(value_str)
+            saldo = parse_amount(saldo_str)
 
             year = resolve_year(day, month, statement_from, statement_to)
             iso_date = date(year, month, day).isoformat()
@@ -127,5 +129,7 @@ def parse(pdf: "pdfplumber.PDF") -> list[RawTransaction]:
                     rawLine=line,
                 )
             )
+            balance_pairs.append((value, saldo))
 
-    return transactions
+    reconciliation = reconcile_running_balance(balance_pairs)
+    return ParseResult(transactions=transactions, reconciliation=reconciliation)

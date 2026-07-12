@@ -10,8 +10,19 @@ export interface RawParsedTransaction {
 	warnings?: string[];
 }
 
+export interface Reconciliation {
+	available: boolean;
+	reconciled: boolean;
+	openingBalance: number | null;
+	closingBalance: number | null;
+	computedDelta: number | null;
+	expectedDelta: number | null;
+	difference: number | null;
+}
+
 export interface ParsedStatement {
 	bankId: string;
 	rows: RawParsedTransaction[];
 	warnings: string[];
+	reconciliation: Reconciliation;
 }

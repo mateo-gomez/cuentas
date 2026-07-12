@@ -12,11 +12,22 @@ export interface PdfPreviewRow {
   warnings?: string[]
 }
 
+export interface PdfReconciliation {
+  available: boolean
+  reconciled: boolean
+  openingBalance: number | null
+  closingBalance: number | null
+  computedDelta: number | null
+  expectedDelta: number | null
+  difference: number | null
+}
+
 export interface PdfParseResponse {
   importSessionId: string
   bankId: string
   rows: PdfPreviewRow[]
   warnings: string[]
+  reconciliation: PdfReconciliation
 }
 
 export interface PdfConfirmRow {

@@ -8,12 +8,45 @@ constants and column/line logic.
 from datetime import date
 from typing import Protocol
 
-from app.schemas import RawTransaction
+from app.schemas import ParseResult, RawTransaction, Reconciliation
 
 
 class BankParser(Protocol):
-    def __call__(self, pdf: "pdfplumber.PDF") -> list[RawTransaction]:  # noqa: F821
+    def __call__(self, pdf: "pdfplumber.PDF") -> ParseResult:  # noqa: F821
         ...
+
+
+def reconcile_running_balance(pairs: list[tuple[float, float]]) -> Reconciliation:
+    """Reconcile a statement's running balance against parsed transactions.
+
+    `pairs` is `[(value, saldo), ...]` in statement order, where `saldo` is
+    the running balance printed on each row. Math is done in integer cents
+    (`round(value * 100)`) to avoid IEEE-754 float drift; tolerance is 1
+    cent. Returns `available=False` when there are no rows to reconcile
+    (see design Decision 2/3).
+    """
+    if not pairs:
+        return Reconciliation(available=False)
+
+    first_value, first_saldo = pairs[0]
+    last_saldo = pairs[-1][1]
+
+    opening_balance = first_saldo - first_value
+    closing_balance = last_saldo
+
+    computed_delta_cents = sum(round(value * 100) for value, _saldo in pairs)
+    expected_delta_cents = round(closing_balance * 100) - round(opening_balance * 100)
+    difference_cents = computed_delta_cents - expected_delta_cents
+
+    return Reconciliation(
+        available=True,
+        reconciled=abs(difference_cents) <= 1,
+        openingBalance=opening_balance,
+        closingBalance=closing_balance,
+        computedDelta=computed_delta_cents / 100,
+        expectedDelta=expected_delta_cents / 100,
+        difference=difference_cents / 100,
+    )
 
 
 def parse_amount(raw: str, decimal_sep: str = ".", thousands_sep: str = ",") -> float:

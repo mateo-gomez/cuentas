@@ -1,4 +1,7 @@
 import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
+import { Reconciliation } from "../../domain/pdfImport/ParsedStatement";
+
+export type { Reconciliation };
 
 export interface PreviewRow {
 	rowId: string; // server-assigned, stable within session

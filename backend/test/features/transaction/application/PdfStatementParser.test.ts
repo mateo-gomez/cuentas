@@ -50,6 +50,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{
 					date: "2026-01-10",
@@ -84,6 +93,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{
 					date: "2026-01-10",
@@ -114,6 +132,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{
 					// parsed: expense of the SAME magnitude, same day/description
@@ -129,6 +156,40 @@ describe("PdfStatementParser", () => {
 		const result = await parser.execute(Buffer.from(""), "statement.pdf");
 
 		expect(result.rows[0].possibleDuplicate).toBe(false);
+	});
+
+	test("threads reconciliation through unchanged from the parsed statement, without affecting confirm eligibility", async () => {
+		const repository = new InMemoryTransactionRepository();
+		const parsed: ParsedStatement = {
+			bankId: "bancolombia",
+			warnings: [],
+			rows: [
+				{
+					date: "2026-01-10",
+					description: "Compra",
+					value: -1000,
+					type: TransactionType.expenses,
+				},
+			],
+			reconciliation: {
+				available: true,
+				reconciled: false,
+				openingBalance: 5000,
+				closingBalance: 4000,
+				computedDelta: -1000,
+				expectedDelta: -1000,
+				difference: 0,
+			},
+		};
+		const { parser, previewStore } = buildParser(parsed, repository);
+
+		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+
+		expect(result.reconciliation).toEqual(parsed.reconciliation);
+		// Reconciliation is advisory metadata only — it must not block/alter
+		// the held preview or confirm eligibility (PdfImportConfirmer, PreviewStore
+		// are unchanged and untouched by this field).
+		expect(previewStore.get(result.importSessionId)).not.toBeNull();
 	});
 
 	test("re-uploading the same statement flags every row as possibleDuplicate", async () => {
@@ -151,6 +212,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{ date: "2026-03-01", description: "Row A", value: -1000, type: TransactionType.expenses },
 				{ date: "2026-03-02", description: "Row B", value: 2000, type: TransactionType.income },
@@ -176,6 +246,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{
 					date: "2026-01-15",
@@ -209,6 +288,15 @@ describe("PdfStatementParser", () => {
 		const parsed: ParsedStatement = {
 			bankId: "bancolombia",
 			warnings: [],
+		reconciliation: {
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		},
 			rows: [
 				{ date: "2026-01-01", description: "A", value: -100, type: TransactionType.expenses },
 				{ date: "2026-01-05", description: "B", value: 200, type: TransactionType.income },
@@ -222,7 +310,20 @@ describe("PdfStatementParser", () => {
 		spy.mockClear();
 
 		const { parser: emptyParser } = buildParser(
-			{ bankId: "bancolombia", warnings: [], rows: [] },
+			{
+				bankId: "bancolombia",
+				warnings: [],
+				rows: [],
+				reconciliation: {
+					available: false,
+					reconciled: false,
+					openingBalance: null,
+					closingBalance: null,
+					computedDelta: null,
+					expectedDelta: null,
+					difference: null,
+				},
+			},
 			repository,
 		);
 		await emptyParser.execute(Buffer.from(""), "statement.pdf");

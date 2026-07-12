@@ -28,6 +28,51 @@ describe("assertParseResponse", () => {
 		expect(parsed.rows[1].type).toBe(TransactionType.income);
 	});
 
+	test("maps a present reconciliation object", () => {
+		const parsed = assertParseResponse({
+			bankId: "bancolombia",
+			transactions: [],
+			warnings: [],
+			reconciliation: {
+				available: true,
+				reconciled: false,
+				openingBalance: 100,
+				closingBalance: 90,
+				computedDelta: -5,
+				expectedDelta: -10,
+				difference: 5,
+			},
+		});
+
+		expect(parsed.reconciliation).toEqual({
+			available: true,
+			reconciled: false,
+			openingBalance: 100,
+			closingBalance: 90,
+			computedDelta: -5,
+			expectedDelta: -10,
+			difference: 5,
+		});
+	});
+
+	test("defaults reconciliation to unavailable when absent from the payload", () => {
+		const parsed = assertParseResponse({
+			bankId: "bancolombia",
+			transactions: [],
+			warnings: [],
+		});
+
+		expect(parsed.reconciliation).toEqual({
+			available: false,
+			reconciled: false,
+			openingBalance: null,
+			closingBalance: null,
+			computedDelta: null,
+			expectedDelta: null,
+			difference: null,
+		});
+	});
+
 	test("rejects a missing bankId", () => {
 		expect(() =>
 			assertParseResponse({ transactions: [] }),

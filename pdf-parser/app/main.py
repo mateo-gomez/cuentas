@@ -64,7 +64,7 @@ async def parse_pdf(file: UploadFile) -> ParseResponse | JSONResponse:
         parser = PARSERS[bank_id]
 
         try:
-            transactions = parser(pdf)
+            parse_result = parser(pdf)
         except NotImplementedError as exc:
             return JSONResponse(
                 status_code=422,
@@ -76,4 +76,9 @@ async def parse_pdf(file: UploadFile) -> ParseResponse | JSONResponse:
         except Exception as exc:  # pragma: no cover - defensive
             raise HTTPException(status_code=500, detail=f"parse_error: {exc}") from exc
 
-    return ParseResponse(bankId=bank_id, transactions=transactions, warnings=[])
+    return ParseResponse(
+        bankId=bank_id,
+        transactions=parse_result.transactions,
+        warnings=[],
+        reconciliation=parse_result.reconciliation,
+    )

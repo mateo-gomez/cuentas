@@ -5,6 +5,7 @@ import pdfParserConfig from "../../../../infrastructure/config/pdfParser.config"
 import { PdfBankParser } from "../../domain/pdfImport/PdfBankParser";
 import {
 	ParsedStatement,
+	Reconciliation,
 	RawParsedTransaction,
 } from "../../domain/pdfImport/ParsedStatement";
 
@@ -21,11 +22,53 @@ interface RawPythonTransaction {
 	warnings?: unknown;
 }
 
+interface RawPythonReconciliation {
+	available?: unknown;
+	reconciled?: unknown;
+	openingBalance?: unknown;
+	closingBalance?: unknown;
+	computedDelta?: unknown;
+	expectedDelta?: unknown;
+	difference?: unknown;
+}
+
 interface RawPythonParseResponse {
 	bankId: unknown;
 	transactions: unknown;
 	warnings?: unknown;
+	reconciliation?: unknown;
 }
+
+const UNAVAILABLE_RECONCILIATION: Reconciliation = {
+	available: false,
+	reconciled: false,
+	openingBalance: null,
+	closingBalance: null,
+	computedDelta: null,
+	expectedDelta: null,
+	difference: null,
+};
+
+const nullableNumber = (value: unknown): number | null =>
+	typeof value === "number" && Number.isFinite(value) ? value : null;
+
+const assertReconciliation = (value: unknown): Reconciliation => {
+	if (typeof value !== "object" || value === null) {
+		return UNAVAILABLE_RECONCILIATION;
+	}
+
+	const candidate = value as RawPythonReconciliation;
+
+	return {
+		available: candidate.available === true,
+		reconciled: candidate.reconciled === true,
+		openingBalance: nullableNumber(candidate.openingBalance),
+		closingBalance: nullableNumber(candidate.closingBalance),
+		computedDelta: nullableNumber(candidate.computedDelta),
+		expectedDelta: nullableNumber(candidate.expectedDelta),
+		difference: nullableNumber(candidate.difference),
+	};
+};
 
 const toDomainType = (type: unknown): TransactionType => {
 	if (type === "income") return TransactionType.income;
@@ -111,7 +154,12 @@ export const assertParseResponse = (payload: unknown): ParsedStatement => {
 		? candidate.warnings.filter((w): w is string => typeof w === "string")
 		: [];
 
-	return { bankId: candidate.bankId, rows, warnings };
+	const reconciliation =
+		"reconciliation" in candidate
+			? assertReconciliation(candidate.reconciliation)
+			: UNAVAILABLE_RECONCILIATION;
+
+	return { bankId: candidate.bankId, rows, warnings, reconciliation };
 };
 
 export class HttpPdfBankParser implements PdfBankParser {

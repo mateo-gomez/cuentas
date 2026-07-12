@@ -1,7 +1,7 @@
 import { TransactionRepository } from "../../domain/Transaction.repository";
 import { PdfBankParser } from "../../domain/pdfImport/PdfBankParser";
 import { PreviewStore } from "../../domain/pdfImport/PreviewStore";
-import { RawParsedTransaction } from "../../domain/pdfImport/ParsedStatement";
+import { RawParsedTransaction, Reconciliation } from "../../domain/pdfImport/ParsedStatement";
 import { PreviewRow } from "../dto/pdfImportDTO";
 import {
 	dayKeyFromDate,
@@ -17,6 +17,7 @@ export interface PdfParseResult {
 	bankId: string;
 	rows: PreviewRow[];
 	warnings: string[];
+	reconciliation: Reconciliation;
 }
 
 export class PdfStatementParser {
@@ -52,6 +53,7 @@ export class PdfStatementParser {
 			bankId: parsed.bankId,
 			rows,
 			warnings: parsed.warnings,
+			reconciliation: parsed.reconciliation,
 		};
 	};
 

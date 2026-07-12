@@ -23,10 +23,26 @@ class RawTransaction(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class Reconciliation(BaseModel):
+    available: bool
+    reconciled: bool = False
+    openingBalance: Optional[float] = None
+    closingBalance: Optional[float] = None
+    computedDelta: Optional[float] = None
+    expectedDelta: Optional[float] = None
+    difference: Optional[float] = None
+
+
+class ParseResult(BaseModel):
+    transactions: list[RawTransaction]
+    reconciliation: Reconciliation
+
+
 class ParseResponse(BaseModel):
     bankId: str
     transactions: list[RawTransaction]
     warnings: list[str] = Field(default_factory=list)
+    reconciliation: Reconciliation
 
 
 class ErrorResponse(BaseModel):
