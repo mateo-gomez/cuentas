@@ -21,7 +21,9 @@ interface HeroCardProps {
 const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
   <View style={hero.card}>
     <Text style={hero.eyebrow}>SALDO DEL MES</Text>
-    <Text style={hero.balanceText}>${formatNumber(Math.abs(balance))}</Text>
+    <Text style={[hero.balanceText, { color: balance < 0 ? grafito.neg : grafito.ink }]}>
+      {balance < 0 ? "-" : ""}${formatNumber(Math.abs(balance))}
+    </Text>
 
     {/* Dashed divider */}
     <View style={hero.dividerRow}>

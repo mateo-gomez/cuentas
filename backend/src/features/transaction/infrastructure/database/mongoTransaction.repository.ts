@@ -45,14 +45,15 @@ export class MongoTransactionRepository implements TransactionRepository {
       {
         $group: {
           _id: null,
+          // TransactionType enum: expenses = 0, income = 1
           incomes: {
             $sum: {
-              $cond: { if: { $eq: ["$type", 0] }, then: "$value", else: 0 },
+              $cond: { if: { $eq: ["$type", 1] }, then: "$value", else: 0 },
             },
           },
           expenses: {
             $sum: {
-              $cond: { if: { $eq: ["$type", 1] }, then: "$value", else: 0 },
+              $cond: { if: { $eq: ["$type", 0] }, then: "$value", else: 0 },
             },
           },
         },
@@ -84,14 +85,15 @@ export class MongoTransactionRepository implements TransactionRepository {
       {
         $group: {
           _id: null,
+          // TransactionType enum: expenses = 0, income = 1
           incomes: {
             $sum: {
-              $cond: { if: { $eq: ["$type", 0] }, then: "$value", else: 0 },
+              $cond: { if: { $eq: ["$type", 1] }, then: "$value", else: 0 },
             },
           },
           expenses: {
             $sum: {
-              $cond: { if: { $eq: ["$type", 1] }, then: "$value", else: 0 },
+              $cond: { if: { $eq: ["$type", 0] }, then: "$value", else: 0 },
             },
           },
         },
@@ -135,6 +137,14 @@ export class MongoTransactionRepository implements TransactionRepository {
     if (deletedCount === 0) {
       throw new DatabaseError(`Error eliminando transacción ${id}`);
     }
+  };
+
+  deleteMany = async (ids: string[]): Promise<number> => {
+    const { deletedCount } = await TransactionModel.deleteMany({
+      _id: { $in: ids },
+    });
+
+    return deletedCount;
   };
 
   firstDateRecord = async (): Promise<{ firstDate: Date } | null> => {
