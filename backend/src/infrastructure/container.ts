@@ -10,6 +10,7 @@ import { GroupedTransactionByDayGetter } from "../features/transaction/applicati
 import { GroupedTransactionByDayInRangeGetter } from "../features/transaction/application/useCases/groupedTransactionByDayInRangeGetter";
 import { TransactionCreator } from "../features/transaction/application/useCases/transactionCreator";
 import { TransactionRemover } from "../features/transaction/application/useCases/transactionRemover";
+import { TransactionsRemover } from "../features/transaction/application/useCases/transactionsRemover";
 import { TransactionUpdater } from "../features/transaction/application/useCases/transactionUpdater";
 import { MongoCategoryRepository } from "../features/category/infrastructure/database/mongoCategory.repository";
 import { MongoTransactionRepository } from "../features/transaction/infrastructure/database/mongoTransaction.repository";
@@ -64,6 +65,7 @@ export const container = {
 	transactionCreator: new TransactionCreator(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
+	transactionsRemover: new TransactionsRemover(transactionRepository),
 	transactionImporter,
 
 	// pdf import

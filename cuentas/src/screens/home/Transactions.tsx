@@ -1,11 +1,12 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import grafito from "../../theme"
 import { useTransactions } from "../../hooks"
 import { formatDate, formatNumber } from "../../utils"
-import { memo } from "react"
+import { memo, useCallback, useState } from "react"
 import { TransactionAggregate, Transaction, TransactionType } from "../../../types"
 import CategoryChip from "../../Components/CategoryChip"
 import { useNavigate } from "react-router-native"
+import { Ionicons } from "@expo/vector-icons"
 
 const SCREEN_WIDTH = Dimensions.get("screen").width
 
@@ -114,9 +115,12 @@ const hero = StyleSheet.create({
 
 interface DayGroupProps {
   group: TransactionAggregate
+  selectionMode: boolean
+  selectedIds: Set<string>
+  onToggleSelect: (id: string) => void
 }
 
-const DayGroup = ({ group }: DayGroupProps) => {
+const DayGroup = ({ group, selectionMode, selectedIds, onToggleSelect }: DayGroupProps) => {
   const dayTotal = group.balance.balance
   const dayLabel = formatDate(new Date(group.minDate), {
     weekday: "short",
@@ -136,7 +140,13 @@ const DayGroup = ({ group }: DayGroupProps) => {
 
       {/* Transactions */}
       {group.transactions.map((tx) => (
-        <TransactionRow key={tx._id} transaction={tx} />
+        <TransactionRow
+          key={tx._id}
+          transaction={tx}
+          selectionMode={selectionMode}
+          selected={selectedIds.has(tx._id)}
+          onToggleSelect={onToggleSelect}
+        />
       ))}
     </View>
   )
@@ -173,27 +183,53 @@ const day = StyleSheet.create({
 
 interface TransactionRowProps {
   transaction: Transaction
+  selectionMode: boolean
+  selected: boolean
+  onToggleSelect: (id: string) => void
 }
 
-const TransactionRow = ({ transaction }: TransactionRowProps) => {
+const TransactionRow = ({
+  transaction,
+  selectionMode,
+  selected,
+  onToggleSelect,
+}: TransactionRowProps) => {
   const navigate = useNavigate()
   const isIncome = transaction.type === TransactionType.income
   const categoryId = transaction.category?._id ?? transaction.category?.name ?? "default"
   const categoryName = transaction.category?.name ?? "Sin categoría"
   const categoryIcon = transaction.category?.icon
 
+  const handlePress = () => {
+    if (selectionMode) {
+      onToggleSelect(transaction._id)
+      return
+    }
+    navigate(`/transactions/${TransactionType[transaction.type]}/${transaction._id}`)
+  }
+
   return (
     <TouchableOpacity
-      style={row.container}
-      onPress={() => navigate(`/transactions/${TransactionType[transaction.type]}/${transaction._id}`)}
+      style={[row.container, selected && row.selected]}
+      onPress={handlePress}
+      onLongPress={() => onToggleSelect(transaction._id)}
+      delayLongPress={250}
       activeOpacity={0.7}
     >
-      <CategoryChip
-        categoryId={categoryId}
-        name={categoryName}
-        icon={categoryIcon}
-        size="md"
-      />
+      {selectionMode ? (
+        <Ionicons
+          name={selected ? "checkmark-circle" : "ellipse-outline"}
+          size={24}
+          color={selected ? grafito.pos : grafito.ink4}
+        />
+      ) : (
+        <CategoryChip
+          categoryId={categoryId}
+          name={categoryName}
+          icon={categoryIcon}
+          size="md"
+        />
+      )}
       <View style={row.info}>
         <Text style={row.categoryName} numberOfLines={1}>{categoryName}</Text>
         {transaction.description ? (
@@ -215,6 +251,9 @@ const row = StyleSheet.create({
     gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: grafito.line2,
+  },
+  selected: {
+    backgroundColor: grafito.surface3,
   },
   info: {
     flex: 1,
@@ -239,13 +278,56 @@ const row = StyleSheet.create({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 const Transactions = ({ start, end }: { start: Date; end: Date }) => {
-  const { transactions, loading, balance } = useTransactions({ start, end })
+  const { transactions, loading, balance, removeTransactions } = useTransactions({ start, end })
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [deleting, setDeleting] = useState(false)
+
+  const selectionMode = selectedIds.size > 0
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
+
+  const clearSelection = useCallback(() => setSelectedIds(new Set()), [])
+
+  const runDelete = useCallback(async () => {
+    const ids = [...selectedIds]
+    setDeleting(true)
+    try {
+      await removeTransactions(ids)
+      clearSelection()
+    } catch {
+      Alert.alert("Error", "No se pudieron eliminar las transacciones")
+    } finally {
+      setDeleting(false)
+    }
+  }, [selectedIds, removeTransactions, clearSelection])
+
+  const confirmDelete = useCallback(() => {
+    const count = selectedIds.size
+    Alert.alert(
+      "Eliminar",
+      `¿Eliminar ${count} ${count === 1 ? "transacción" : "transacciones"}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Eliminar", style: "destructive", onPress: runDelete },
+      ],
+    )
+  }, [selectedIds, runDelete])
 
   return (
     <View style={{ flex: 1, width: SCREEN_WIDTH }}>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: selectionMode ? 80 : 16 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero card */}
@@ -266,13 +348,79 @@ const Transactions = ({ start, end }: { start: Date; end: Date }) => {
           </View>
         ) : (
           transactions.map((group) => (
-            <DayGroup key={group._id} group={group} />
+            <DayGroup
+              key={group._id}
+              group={group}
+              selectionMode={selectionMode}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+            />
           ))
         )}
       </ScrollView>
+
+      {/* Selection action bar */}
+      {selectionMode ? (
+        <View style={bar.container}>
+          <TouchableOpacity style={bar.side} onPress={clearSelection} disabled={deleting}>
+            <Ionicons name="close" size={22} color={grafito.ink3} />
+            <Text style={bar.count}>{selectedIds.size}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={bar.deleteBtn} onPress={confirmDelete} disabled={deleting}>
+            <Ionicons name="trash-outline" size={18} color="#fff" />
+            <Text style={bar.deleteText}>{deleting ? "Eliminando..." : "Eliminar"}</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   )
 }
+
+const bar = StyleSheet.create({
+  container: {
+    position: "absolute",
+    left: 16,
+    right: 16,
+    bottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: grafito.surface,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  side: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  count: {
+    fontFamily: "Georgia",
+    fontSize: 16,
+    color: grafito.ink,
+  },
+  deleteBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: grafito.neg,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  deleteText: {
+    fontFamily: "System",
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "600",
+  },
+})
 
 const empty = StyleSheet.create({
   container: {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { TransactionAggregate } from "../../types"
-import { getTransactions } from "../services"
+import { deleteTransactions, getTransactions } from "../services"
 import { createLogger } from "../lib/logger"
 
 const logger = createLogger("useTransactions")
@@ -15,9 +15,9 @@ export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  useEffect(() => {
+  const load = useCallback(() => {
     setLoading(true)
-    getTransactions({ start, end })
+    return getTransactions({ start, end })
       .then(({ transactions, balance }) => {
         setTransactions(transactions)
         setBalance(balance)
@@ -27,7 +27,19 @@ export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
         setError(err.message)
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [start, end])
 
-  return { transactions, balance, loading, error }
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const removeTransactions = useCallback(
+    async (ids: string[]) => {
+      await deleteTransactions(ids)
+      await load()
+    },
+    [load],
+  )
+
+  return { transactions, balance, loading, error, refetch: load, removeTransactions }
 }

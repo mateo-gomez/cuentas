@@ -5,6 +5,7 @@ import { HttpNotFoundError } from "../../../../infrastructure/api/errors/httpNot
 import { TransactionByIdGetter } from "../../application/useCases/TransactionByIdGetter";
 import { TransactionCreator } from "../../application/useCases/transactionCreator";
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
+import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
 import { TransactionUpdater } from "../../application/useCases/transactionUpdater";
 import { Request, Response } from "express";
 import { TransactionImporter } from "../../application/useCases/TransactionImporter";
@@ -23,6 +24,7 @@ export class TransactionController {
 		private readonly transactionCreator: TransactionCreator,
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
+		private readonly transactionsRemover: TransactionsRemover,
 		private readonly transactionImporter: TransactionImporter,
 		private readonly pdfStatementParser: PdfStatementParser,
 		private readonly pdfImportConfirmer: PdfImportConfirmer
@@ -87,6 +89,32 @@ export class TransactionController {
 		await this.transactionRemover.execute(id);
 
 		const responseBody = HttpResponse.success();
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	deleteTransactions = catchAsync(async (req: Request, res: Response) => {
+		const { ids } = req.body as { ids: unknown };
+
+		if (!Array.isArray(ids) || ids.length === 0) {
+			throw new ValidationError().addError(
+				"ids",
+				"Se requiere una lista de ids"
+			);
+		}
+
+		const invalidId = ids.find((id) => !isIdValid(id));
+		if (invalidId !== undefined) {
+			throw new ValidationError().addError(
+				"ids",
+				`El id ${invalidId} is inválido`
+			);
+		}
+
+		const deletedCount = await this.transactionsRemover.execute(
+			ids as string[]
+		);
+
+		const responseBody = HttpResponse.success({ deletedCount });
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 

@@ -31,6 +31,8 @@ export interface TransactionRepository {
 
   delete: (id: string) => Promise<void>;
 
+  deleteMany: (ids: string[]) => Promise<number>;
+
   firstDateRecord: () => Promise<{ firstDate: Date } | null>;
 
   saveMany: (transactions: TransactionDTO[]) => Promise<void>;

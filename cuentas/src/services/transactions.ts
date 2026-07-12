@@ -62,6 +62,14 @@ export const updateTransaction = async (
   client.put(`transactions/${transaction.id}`, transaction)
 }
 
+export const deleteTransaction = async (id: string): Promise<void> => {
+  await client.delete(`transactions/${id}`)
+}
+
+export const deleteTransactions = async (ids: string[]): Promise<void> => {
+  await client.post("transactions/bulk-delete", { ids })
+}
+
 export const importTransactions = async (formData: FormData) => {
   const response = await client.upload("transactions/import", formData)
 

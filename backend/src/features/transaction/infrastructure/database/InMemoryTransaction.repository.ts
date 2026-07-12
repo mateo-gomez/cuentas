@@ -108,6 +108,14 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     );
   }
 
+  async deleteMany(ids: string[]): Promise<number> {
+    const before = this.transactions.length;
+    this.transactions = await Promise.resolve(
+      this.transactions.filter((transaction) => !ids.includes(transaction._id)),
+    );
+    return before - this.transactions.length;
+  }
+
   saveMany(_transactions: TransactionDTO[]): Promise<void> {
     return Promise.resolve();
   }
