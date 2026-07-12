@@ -11,7 +11,11 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "ts": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "build:beta": "eas build --android --profile beta --platform all",
+    "build:production": "eas build --android --profile production --platform all",
+    "submit:beta": "eas submit --android --profile beta",
+    "submit:production": "eas submit --android --profile production"
   },
   "jest": {
     "preset": "jest-expo",
