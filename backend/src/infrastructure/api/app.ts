@@ -3,6 +3,7 @@ import { middlewares } from "./middlewares/index";
 import { Api } from "./server";
 import { DBMongo } from "../database/db";
 import { routes } from "./Routes/index";
+import { container } from "../container";
 
 (async () => {
 	const listenOptions = { port: config.PORT };
@@ -11,5 +12,6 @@ import { routes } from "./Routes/index";
 	const app = new Api({ listenOptions, middlewares, routes });
 
 	await db.connect();
+	await container.categorySeeder.seed();
 	await app.run();
 })();

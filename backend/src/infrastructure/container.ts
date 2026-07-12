@@ -3,6 +3,7 @@ import { CategoryCreator } from "../features/category/application/categoryCreato
 import { CategoryGetter } from "../features/category/application/categoryGetter";
 import { CategoryRemover } from "../features/category/application/categoryRemover";
 import { CategoryUpdater } from "../features/category/application/categoryUpdater";
+import { CategorySeeder } from "../features/category/application/CategorySeeder";
 import { TransactionByIdGetter } from "../features/transaction/application/useCases/TransactionByIdGetter";
 import { BalanceGetter } from "../features/transaction/application/useCases/balanceGetter";
 import { BalanceInRangeGetter } from "../features/transaction/application/useCases/balanceInRangeGetter";
@@ -58,6 +59,7 @@ export const container = {
 	categoryCreator: new CategoryCreator(categoryRepository),
 	categoryUpdater: new CategoryUpdater(categoryRepository),
 	categoryRemover: new CategoryRemover(categoryRepository),
+	categorySeeder: new CategorySeeder(categoryRepository),
 
 	// transaction
 	transactionRepository,

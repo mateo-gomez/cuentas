@@ -15,7 +15,8 @@ import { PdfImportRow } from "../../Components/PdfImportRow"
 import { OverlayLoader } from "../../Components/OverlayLoader"
 import { ErrorBanner } from "../../Components/ErrorBanner"
 import { ReconciliationBanner } from "../../Components/ReconciliationBanner"
-import { usePdfImport } from "../../hooks"
+import { CategoryPickerModal } from "../../Components/CategoryPickerModal"
+import { usePdfImport, useCategories } from "../../hooks"
 import { PdfConfirmRow, PdfParseResponse } from "../../../types"
 
 // The parse result travels from the picker screen via router state so we
@@ -46,6 +47,7 @@ const PdfImportReview = () => {
   const location = useLocation()
   const insets = useSafeAreaInsets()
   const { confirmState, confirm } = usePdfImport()
+  const { categories } = useCategories()
 
   const state = location.state as LocationState | undefined
   const result = state?.result
@@ -53,6 +55,7 @@ const PdfImportReview = () => {
   const [rows, setRows] = useState<ReviewRow[]>(() =>
     result ? buildInitialRows(result) : [],
   )
+  const [pickerRowId, setPickerRowId] = useState<string | null>(null)
 
   const includedCount = useMemo(
     () => rows.filter((row) => !row.excluded).length,
@@ -145,14 +148,24 @@ const PdfImportReview = () => {
             onChangeDescription={(description) =>
               updateRow(row.rowId, { description })
             }
-            onChangeCategoryName={(categoryName) =>
-              updateRow(row.rowId, { categoryName })
-            }
+            onPressCategory={() => setPickerRowId(row.rowId)}
             onToggleIncluded={() => updateRow(row.rowId, { excluded: !row.excluded })}
             onRemove={() => removeRow(row.rowId)}
           />
         ))}
       </ScrollView>
+
+      <CategoryPickerModal
+        visible={pickerRowId !== null}
+        categories={categories}
+        selectedName={
+          rows.find((row) => row.rowId === pickerRowId)?.categoryName || undefined
+        }
+        onSelect={(categoryName) => {
+          if (pickerRowId) updateRow(pickerRowId, { categoryName })
+        }}
+        onClose={() => setPickerRowId(null)}
+      />
 
       <TouchableOpacity
         style={[styles.confirmButton, confirming && styles.confirmButtonDisabled]}

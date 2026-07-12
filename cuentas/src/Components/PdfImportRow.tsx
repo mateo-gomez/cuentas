@@ -14,7 +14,7 @@ interface PdfImportRowProps {
   possibleDuplicate: boolean
   included: boolean
   onChangeDescription: (description: string) => void
-  onChangeCategoryName: (categoryName: string) => void
+  onPressCategory: () => void
   onToggleIncluded: () => void
   onRemove: () => void
 }
@@ -30,7 +30,7 @@ export const PdfImportRow = ({
   possibleDuplicate,
   included,
   onChangeDescription,
-  onChangeCategoryName,
+  onPressCategory,
   onToggleIncluded,
   onRemove,
 }: PdfImportRowProps) => {
@@ -69,13 +69,14 @@ export const PdfImportRow = ({
           placeholderTextColor={grafito.ink4}
         />
 
-        <TextInput
-          style={styles.category}
-          value={categoryName}
-          onChangeText={onChangeCategoryName}
-          placeholder="Categoría"
-          placeholderTextColor={grafito.ink4}
-        />
+        <TouchableOpacity style={styles.categoryPicker} onPress={onPressCategory}>
+          <StyledText
+            style={[styles.category, !categoryName && styles.categoryPlaceholder]}
+          >
+            {categoryName || "Elegir categoría"}
+          </StyledText>
+          <Ionicons name="chevron-down" size={14} color={grafito.ink4} />
+        </TouchableOpacity>
 
         <StyledText
           selectable
@@ -143,11 +144,21 @@ const styles = StyleSheet.create({
     color: grafito.ink,
     paddingVertical: 2,
   },
+  categoryPicker: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 2,
+  },
   category: {
     fontFamily: grafito.fonts.sans,
     fontSize: 13,
     color: grafito.ink3,
-    paddingVertical: 2,
+  },
+  categoryPlaceholder: {
+    color: grafito.ink4,
+    fontStyle: "italic",
   },
   value: {
     fontFamily: grafito.fonts.mono,
