@@ -1,8 +1,9 @@
 """Registry mapping a `BankId` to its parser callable.
 
-Only Bancolombia is calibrated in this slice. Davibank and Rappi are
-registered as stubs so the dispatcher shape is correct for follow-up work
-(see design: "First slice: Bancolombia end-to-end").
+All three target banks are calibrated against anonymized samples in
+repo-root `.samples/`: Bancolombia (savings account, running-balance
+reconciliation) plus Davibank and Rappi (credit cards — see each module for
+the section/installment handling and the credit-card reconciliation notes).
 """
 
 from app.parsers import bancolombia, davibank, rappi

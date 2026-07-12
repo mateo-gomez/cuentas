@@ -16,12 +16,26 @@ def sample_path(name: str) -> str:
     return os.path.join(SAMPLES_DIR, name)
 
 
-@pytest.fixture(scope="session")
-def bancolombia_pdf() -> str:
-    path = sample_path("bancolombia.pdf")
+def _require_sample(name: str) -> str:
+    path = sample_path(name)
     if not os.path.exists(path):
         pytest.skip(
-            "bancolombia.pdf not found in .samples/ (gitignored local sample); "
+            f"{name} not found in .samples/ (gitignored local sample); "
             "drop an anonymized statement there to run this test"
         )
     return path
+
+
+@pytest.fixture(scope="session")
+def bancolombia_pdf() -> str:
+    return _require_sample("bancolombia.pdf")
+
+
+@pytest.fixture(scope="session")
+def davibank_pdf() -> str:
+    return _require_sample("davibank.pdf")
+
+
+@pytest.fixture(scope="session")
+def rappi_pdf() -> str:
+    return _require_sample("rappi.pdf")

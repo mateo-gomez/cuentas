@@ -49,6 +49,37 @@ def reconcile_running_balance(pairs: list[tuple[float, float]]) -> Reconciliatio
     )
 
 
+def reconcile_declared_total(
+    imported_magnitudes: list[float], declared_total: float | None
+) -> Reconciliation:
+    """Reconcile imported transactions against a total the statement declares.
+
+    Credit-card statements have no running account balance to reconcile
+    against (unlike a savings account — see `reconcile_running_balance`), but
+    some print a labelled period total (e.g. Rappi's "Consumos del mes"). This
+    compares the sum of the imported transaction magnitudes against that
+    declared total. Math is done in integer cents with a 1-cent tolerance.
+
+    Returns `available=False` when the statement does not expose a usable
+    declared total (`declared_total is None`) or nothing was imported — a
+    refusal to assert reconciliation rather than a false pass.
+    """
+    if declared_total is None or not imported_magnitudes:
+        return Reconciliation(available=False)
+
+    computed_cents = sum(round(v * 100) for v in imported_magnitudes)
+    declared_cents = round(declared_total * 100)
+    difference_cents = computed_cents - declared_cents
+
+    return Reconciliation(
+        available=True,
+        reconciled=abs(difference_cents) <= 1,
+        computedDelta=computed_cents / 100,
+        expectedDelta=declared_cents / 100,
+        difference=difference_cents / 100,
+    )
+
+
 def parse_amount(raw: str, decimal_sep: str = ".", thousands_sep: str = ",") -> float:
     """Parse a signed amount string into a float.
 
