@@ -1,6 +1,9 @@
 import { Balance } from "../../domain/balance.entity";
 import { Transaction } from "../../domain/transaction.entity";
-import { TransactionRepository } from "../../domain/Transaction.repository";
+import {
+  DedupTransaction,
+  TransactionRepository,
+} from "../../domain/Transaction.repository";
 import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
 
@@ -107,6 +110,19 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
   saveMany(_transactions: TransactionDTO[]): Promise<void> {
     return Promise.resolve();
+  }
+
+  findForDedup(from: Date, to: Date): Promise<DedupTransaction[]> {
+    return Promise.resolve(
+      this.transactions
+        .filter((transaction) => transaction.date >= from && transaction.date <= to)
+        .map(({ date, value, type, description }) => ({
+          date,
+          value,
+          type,
+          description,
+        })),
+    );
   }
 
   firstDateRecord(): Promise<{ firstDate: Date } | null> {

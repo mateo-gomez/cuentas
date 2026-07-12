@@ -13,6 +13,9 @@ import { catchAsync } from "../../../../application/utils/catchAsync";
 import { ExcelTransactionParser } from "../services/excelTransactionParser";
 import { CategoryClassifier } from "../../application/services/categoryClassifier";
 import { MongoCategoryRepository } from "../../../category/infrastructure/database/mongoCategory.repository";
+import { PdfStatementParser } from "../../application/useCases/PdfStatementParser";
+import { PdfImportConfirmer } from "../../application/useCases/PdfImportConfirmer";
+import { ConfirmRow } from "../../application/dto/pdfImportDTO";
 
 export class TransactionController {
 	constructor(
@@ -20,7 +23,9 @@ export class TransactionController {
 		private readonly transactionCreator: TransactionCreator,
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
-		private readonly transactionImporter: TransactionImporter
+		private readonly transactionImporter: TransactionImporter,
+		private readonly pdfStatementParser: PdfStatementParser,
+		private readonly pdfImportConfirmer: PdfImportConfirmer
 	) {}
 
 	getTransaction = catchAsync(async (req: Request, res: Response) => {
@@ -108,4 +113,44 @@ export class TransactionController {
 			res.status(responseBody.statusCode).json(responseBody);
 		}
 	);
+
+	parsePdf = catchAsync(async (req: Request, res: Response) => {
+		const { file } = req;
+
+		if (!file) {
+			throw new ValidationError({
+				file: ["No se proporcionó un archivo"],
+			});
+		}
+
+		const result = await this.pdfStatementParser.execute(
+			file.buffer,
+			file.originalname
+		);
+
+		const responseBody = HttpResponse.success(result);
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	confirmPdfImport = catchAsync(async (req: Request, res: Response) => {
+		const { importSessionId, rows } = req.body as {
+			importSessionId: string;
+			rows: ConfirmRow[];
+		};
+
+		if (!importSessionId || typeof importSessionId !== "string") {
+			throw new ValidationError({
+				importSessionId: ["El id de sesión es requerido"],
+			});
+		}
+
+		if (!Array.isArray(rows)) {
+			throw new ValidationError({ rows: ["Se requiere una lista de filas"] });
+		}
+
+		const result = await this.pdfImportConfirmer.execute(importSessionId, rows);
+
+		const responseBody = HttpResponse.success(result);
+		res.status(responseBody.statusCode).json(responseBody);
+	});
 }

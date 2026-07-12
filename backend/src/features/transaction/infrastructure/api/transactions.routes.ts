@@ -10,7 +10,9 @@ const transactionController = new TransactionController(
 	container.transactionCreator,
 	container.transactionUpdater,
 	container.transactionRemover,
-	container.transactionImporter
+	container.transactionImporter,
+	container.pdfStatementParser,
+	container.pdfImportConfirmer
 );
 
 const transactionAggregateController = new TransactionAggregateController(
@@ -37,6 +39,12 @@ router
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		]).single("file"),
 		transactionController.import
-	);
+	)
+	.post(
+		"/import/pdf",
+		UploadMiddleware.memory(["application/pdf"]).single("file"),
+		transactionController.parsePdf
+	)
+	.post("/import/pdf/confirm", transactionController.confirmPdfImport);
 
 export default router;

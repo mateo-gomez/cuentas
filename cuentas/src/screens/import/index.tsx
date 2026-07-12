@@ -10,9 +10,10 @@ import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router-native"
 import grafito from "../../theme"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
 import { importTransactions } from "../../services"
+import { usePdfImport } from "../../hooks"
 import { createLogger } from "../../lib/logger"
 
 const logger = createLogger("Import")
@@ -23,6 +24,18 @@ const Import = () => {
   const [selectedFile, setSelectedFile] =
     useState<DocumentPicker.DocumentPickerAsset | null>(null)
   const [uploading, setUploading] = useState(false)
+  const { parseState, parse } = usePdfImport()
+
+  useEffect(() => {
+    if (parseState.status === "parsed") {
+      navigate("/import/pdf", { state: { result: parseState.result } })
+    } else if (parseState.status === "unsupported") {
+      Alert.alert("Banco no soportado", parseState.message)
+    } else if (parseState.status === "error") {
+      Alert.alert("Error", parseState.message)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parseState])
 
   const handlePickFile = async () => {
     try {
@@ -72,6 +85,33 @@ const Import = () => {
     }
   }
 
+  const handlePickAndParsePdf = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/pdf"],
+        copyToCacheDirectory: true,
+      })
+
+      if (result.canceled || result.assets.length === 0) {
+        return
+      }
+
+      const file = result.assets[0]
+      const formData = new FormData()
+      formData.append("file", {
+        uri: file.uri,
+        name: file.name,
+        type: file.mimeType || "application/pdf",
+      } as any)
+
+      await parse(formData)
+    } catch (error) {
+      logger.error("Error selecting PDF file", { error })
+      Alert.alert("Error", "No se pudo seleccionar el archivo.")
+    }
+  }
+
+  const parsingPdf = parseState.status === "parsing"
   const uploadDisabled = !selectedFile || uploading
 
   return (
@@ -118,6 +158,31 @@ const Import = () => {
         </TouchableOpacity>
 
         {uploading ? (
+          <ActivityIndicator
+            size="large"
+            color={grafito.accent}
+            style={styles.loader}
+          />
+        ) : null}
+
+        <View style={styles.divider} />
+
+        <Text style={styles.hint}>
+          O importá un extracto bancario en PDF (Bancolombia).
+        </Text>
+
+        <TouchableOpacity
+          style={styles.pickButton}
+          onPress={handlePickAndParsePdf}
+          disabled={parsingPdf}
+        >
+          <Ionicons name="document-attach-outline" size={20} color={grafito.ink} />
+          <Text style={styles.pickButtonText}>
+            {parsingPdf ? "Procesando..." : "Seleccionar extracto PDF"}
+          </Text>
+        </TouchableOpacity>
+
+        {parsingPdf ? (
           <ActivityIndicator
             size="large"
             color={grafito.accent}
@@ -206,6 +271,11 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 8,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: grafito.line,
+    marginVertical: 8,
   },
 })
 

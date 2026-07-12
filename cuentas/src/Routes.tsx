@@ -15,6 +15,7 @@ import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
 import { useEffect, useRef } from "react"
 import Import from "./screens/import"
+import PdfImportReview from "./screens/pdfImport"
 import BudgetScreen from "./screens/budget"
 import BudgetEdit from "./screens/budget/Edit"
 
@@ -73,6 +74,7 @@ const Routes = () => {
           <Route path="/categories/create" element={<Category />} />
           <Route path="/categories/:id" element={<Category />} />
           <Route path="/import" element={<Import />} />
+          <Route path="/import/pdf" element={<PdfImportReview />} />
           <Route path="/budget" element={<BudgetScreen />} />
           <Route path="/budget/edit" element={<BudgetEdit />} />
         </Route>

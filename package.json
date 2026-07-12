@@ -6,8 +6,10 @@
   "scripts": {
     "app:dev": "cd ./cuentas && npx expo start",
     "server:dev": "cd ./backend && deno task dev",
+    "parser:dev": "cd ./pdf-parser && uvicorn app.main:app --reload --port 8000",
     "dev": "npm run app:dev && npm run server:dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "eas build --android --profile production --platform all"
   },
   "repository": {
     "type": "git",

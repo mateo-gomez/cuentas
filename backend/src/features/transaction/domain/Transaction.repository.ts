@@ -2,6 +2,11 @@ import { TransactionDTO } from "../application/dto/transactionDTO";
 import { Balance } from "./balance.entity";
 import { Transaction } from "./transaction.entity";
 
+export type DedupTransaction = Pick<
+  Transaction,
+  "date" | "value" | "type" | "description"
+>;
+
 export interface TransactionRepository {
   exists: (id: string) => Promise<boolean>;
 
@@ -29,4 +34,6 @@ export interface TransactionRepository {
   firstDateRecord: () => Promise<{ firstDate: Date } | null>;
 
   saveMany: (transactions: TransactionDTO[]) => Promise<void>;
+
+  findForDedup: (from: Date, to: Date) => Promise<DedupTransaction[]>;
 }

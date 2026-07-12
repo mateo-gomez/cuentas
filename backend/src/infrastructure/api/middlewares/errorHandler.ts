@@ -6,6 +6,7 @@ const logger = createLogger("ErrorHandler");
 import { ForbiddenError } from "../../../application/errors/forbiddenError";
 import { NotFoundError } from "../../../application/errors/notFoundError";
 import { HttpNotFoundError } from "../errors/httpNotFoundError";
+import { UnsupportedBankError } from "../errors/unsupportedBankError";
 import { ValidationError } from "../errors/validationError";
 import { HttpResponse } from "../httpResponse";
 import { Status } from "../status";
@@ -52,6 +53,14 @@ export class ErrorHandler {
 			if (error instanceof HttpNotFoundError) {
 				const res = HttpResponse.failed(error.message, error.statusCode);
 				response.status(res.statusCode).json(res);
+				return;
+			}
+
+			if (error instanceof UnsupportedBankError) {
+				const res = HttpResponse.failed(error.message, error.statusCode);
+				response
+					.status(res.statusCode)
+					.json({ ...res, errors: { code: error.code } });
 				return;
 			}
 

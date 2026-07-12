@@ -29,6 +29,10 @@ import { CategoryClassifier } from "../features/transaction/application/services
 import { BudgetGetter } from "../features/budget/application/budgetGetter";
 import { BudgetUpsert } from "../features/budget/application/budgetUpsert";
 import { MongoBudgetRepository } from "../features/budget/infrastructure/database/mongoBudget.repository";
+import { PdfStatementParser } from "../features/transaction/application/useCases/PdfStatementParser";
+import { PdfImportConfirmer } from "../features/transaction/application/useCases/PdfImportConfirmer";
+import { HttpPdfBankParser } from "../features/transaction/infrastructure/services/HttpPdfBankParser";
+import { InMemoryPreviewStore } from "../features/transaction/infrastructure/services/InMemoryPreviewStore";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
@@ -41,6 +45,9 @@ const refreshTokenIssuer = new RefreshTokenIssuer(
 	refreshTokenRepository
 );
 const budgetRepository = new MongoBudgetRepository();
+const transactionImporter = new TransactionImporter(transactionRepository);
+const httpPdfBankParser = new HttpPdfBankParser();
+const inMemoryPreviewStore = new InMemoryPreviewStore();
 
 export const container = {
 	// category
@@ -57,7 +64,19 @@ export const container = {
 	transactionCreator: new TransactionCreator(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
-	transactionImporter: new TransactionImporter(transactionRepository),
+	transactionImporter,
+
+	// pdf import
+	pdfStatementParser: new PdfStatementParser(
+		httpPdfBankParser,
+		inMemoryPreviewStore,
+		transactionRepository
+	),
+	pdfImportConfirmer: new PdfImportConfirmer(
+		inMemoryPreviewStore,
+		categoryRepository,
+		transactionImporter
+	),
 
 	// grouped transactions
 	groupedTransactionByDayGetter: new GroupedTransactionByDayGetter(

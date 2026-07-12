@@ -14,28 +14,40 @@ const storage = multer.diskStorage({
 	},
 });
 
+const memoryStorage = multer.memoryStorage();
+
+const buildFileFilter = (allowedTypes: string[]) => {
+	return (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+		if (allowedTypes.includes(file.mimetype)) {
+			cb(null, true);
+		} else {
+			cb(new ValidationError({ file: ["Tipo de archivo no permitido"] }));
+		}
+	};
+};
+
 export class UploadMiddleware {
 	execute = (allowedTypes: string[]) => {
-		const fileFilter = (
-			_req: Request,
-			file: Express.Multer.File,
-			cb: FileFilterCallback
-		) => {
-			if (allowedTypes.includes(file.mimetype)) {
-				cb(null, true);
-			} else {
-				cb(new ValidationError({ file: ["Tipo de archivo no permitido"] }));
-			}
-		};
-
 		return multer({
 			storage,
-			fileFilter,
+			fileFilter: buildFileFilter(allowedTypes),
+			limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+		});
+	};
+
+	executeMemory = (allowedTypes: string[]) => {
+		return multer({
+			storage: memoryStorage,
+			fileFilter: buildFileFilter(allowedTypes),
 			limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 		});
 	};
 
 	static handle(allowedTypes: string[]) {
 		return new this().execute(allowedTypes);
+	}
+
+	static memory(allowedTypes: string[]) {
+		return new this().executeMemory(allowedTypes);
 	}
 }

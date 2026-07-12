@@ -1,6 +1,9 @@
 import { Balance } from "../../domain/balance.entity";
 import { Transaction } from "../../domain/transaction.entity";
-import { TransactionRepository } from "../../domain/Transaction.repository";
+import {
+  DedupTransaction,
+  TransactionRepository,
+} from "../../domain/Transaction.repository";
 import { DatabaseError } from "../../../../infrastructure/api/errors/databaseError";
 import TransactionModel from "./Transaction";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
@@ -147,5 +150,16 @@ export class MongoTransactionRepository implements TransactionRepository {
 
   saveMany = async (transactions: TransactionDTO[]) => {
     await TransactionModel.insertMany(transactions);
+  };
+
+  findForDedup = async (
+    from: Date,
+    to: Date,
+  ): Promise<DedupTransaction[]> => {
+    return await TransactionModel.find({
+      date: { $gte: from, $lte: to },
+    })
+      .select("date value type description")
+      .lean();
   };
 }
