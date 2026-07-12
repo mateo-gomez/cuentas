@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - PDF_PARSER_URL=http://pdf-parser:8000
+    depends_on:
+      - pdf-parser
+
+  pdf-parser:
+    build: ./pdf-parser
+    restart: unless-stopped

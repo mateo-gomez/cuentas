@@ -8,7 +8,9 @@
 	"scripts": {
 		"test": "jest",
 		"test:watch": "jest --watch",
-		"dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/main.ts"
+		"dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/main.ts",
+		"build": "tsc",
+		"start": "node dist/src/main.js"
 	},
 	"author": "",
 	"license": "ISC",
