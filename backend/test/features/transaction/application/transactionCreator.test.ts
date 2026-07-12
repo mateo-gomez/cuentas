@@ -16,6 +16,18 @@ class MockTransactionRepository implements Partial<TransactionRepository> {
 }
 
 describe("TransactionCreator", () => {
+	// Freeze the clock so every `new Date()` in the test and the mock repo
+	// resolves to the same instant. Without this the assertion compares two
+	// independent `new Date()` calls and flakes whenever the millisecond ticks
+	// between them (passes in isolation, fails under load).
+	beforeAll(() => {
+		jest.useFakeTimers().setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	test("TransactionCreator - Creates a new transaction successfully", async () => {
 		// Arrange
 		const newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt"> =
