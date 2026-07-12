@@ -10,12 +10,19 @@ import {
 } from "../../domain/pdfImport/ParsedStatement";
 
 // Render free-tier services spin down when idle; a cold start can take ~50s.
-// The per-attempt timeout must clear that, and we retry with a growing delay
-// so the first (waking) request has time to bring the parser back up.
+// We first poll the cheap /health endpoint until the parser is awake, then send
+// the actual (large) parse request against a warm service.
 const REQUEST_TIMEOUT_MS = 60_000;
 const MAX_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 3_000;
 const RETRYABLE_STATUS_CODES = [502, 503, 504];
+
+// Warm-up: how long to keep trying to wake the parser, how long each probe
+// waits, and the gap between probes. Bounded so the whole call stays well under
+// the upstream proxy's request ceiling.
+const WARMUP_BUDGET_MS = 75_000;
+const HEALTH_TIMEOUT_MS = 8_000;
+const WARMUP_POLL_INTERVAL_MS = 4_000;
 
 const sleep = (ms: number): Promise<void> =>
 	new Promise((resolve) => setTimeout(resolve, ms));
@@ -182,6 +189,8 @@ export class HttpPdfBankParser implements PdfBankParser {
 		filename: string,
 		password?: string,
 	): Promise<ParsedStatement> => {
+		await this.ensureAwake();
+
 		const response = await this.requestWithRetry(pdf, filename, password);
 
 		if (response.status === 422) {
@@ -206,6 +215,35 @@ export class HttpPdfBankParser implements PdfBankParser {
 		const json = await response.json();
 
 		return assertParseResponse(json);
+	};
+
+	// Polls /health with cheap, short requests until the parser answers 200 or
+	// the budget runs out. Wakes a spun-down Render service without hanging a
+	// large upload against a cold container. Never throws: if warm-up fails we
+	// still attempt the parse so it can surface the real error.
+	private ensureAwake = async (): Promise<void> => {
+		const deadline = Date.now() + WARMUP_BUDGET_MS;
+
+		while (Date.now() < deadline) {
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), HEALTH_TIMEOUT_MS);
+
+			try {
+				const response = await fetch(`${this.baseUrl}/health`, {
+					signal: controller.signal,
+				});
+
+				if (response.ok) {
+					return;
+				}
+			} catch {
+				// Service still waking (connection refused / reset / abort) — keep polling.
+			} finally {
+				clearTimeout(timeout);
+			}
+
+			await sleep(WARMUP_POLL_INTERVAL_MS);
+		}
 	};
 
 	private requestWithRetry = async (
