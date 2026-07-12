@@ -9,8 +9,16 @@ import {
 	RawParsedTransaction,
 } from "../../domain/pdfImport/ParsedStatement";
 
-const REQUEST_TIMEOUT_MS = 30_000;
+// Render free-tier services spin down when idle; a cold start can take ~50s.
+// The per-attempt timeout must clear that, and we retry with a growing delay
+// so the first (waking) request has time to bring the parser back up.
+const REQUEST_TIMEOUT_MS = 60_000;
+const MAX_RETRIES = 2;
+const RETRY_BASE_DELAY_MS = 3_000;
 const RETRYABLE_STATUS_CODES = [502, 503, 504];
+
+const sleep = (ms: number): Promise<void> =>
+	new Promise((resolve) => setTimeout(resolve, ms));
 
 interface RawPythonTransaction {
 	date: unknown;
@@ -209,7 +217,9 @@ export class HttpPdfBankParser implements PdfBankParser {
 		try {
 			return await this.doRequest(pdf, filename, password);
 		} catch (error) {
-			if (attempt < 1 && this.isRetryableNetworkError(error)) {
+			if (attempt < MAX_RETRIES && this.isRetryableNetworkError(error)) {
+				// Linear backoff (3s, 6s) to let a sleeping Render service wake.
+				await sleep(RETRY_BASE_DELAY_MS * (attempt + 1));
 				return this.requestWithRetry(pdf, filename, password, attempt + 1);
 			}
 
@@ -259,7 +269,11 @@ export class HttpPdfBankParser implements PdfBankParser {
 	private isRetryableNetworkError = (error: unknown): boolean => {
 		if (error instanceof RetryableHttpError) return true;
 
-		// Connection errors (ECONNREFUSED, fetch failed, abort on timeout, etc.)
+		// A timeout abort means we already waited the full window — retrying would
+		// just stack another 60s wait and risk the upstream proxy limit. Only fast
+		// failures (ECONNREFUSED, fetch failed) are worth retrying to wake Render.
+		if (error instanceof Error && error.name === "AbortError") return false;
+
 		return error instanceof Error;
 	};
 }
