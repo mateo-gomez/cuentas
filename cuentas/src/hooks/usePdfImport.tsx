@@ -10,6 +10,7 @@ type ParseState =
   | { status: "idle" }
   | { status: "parsing" }
   | { status: "parsed"; result: PdfParseResponse }
+  | { status: "password_required"; message: string }
   | { status: "unsupported"; message: string }
   | { status: "error"; message: string }
 
@@ -23,6 +24,8 @@ const UNSUPPORTED_BANK_MESSAGE =
   "No reconocemos el banco de este extracto todavía."
 const TOO_MANY_PAGES_MESSAGE =
   "El extracto tiene demasiadas páginas para procesarlo."
+const PASSWORD_REQUIRED_MESSAGE =
+  "El PDF está protegido con contraseña."
 
 // Handles the two-step PDF import flow: parse (server-held preview) then
 // confirm (persist the reviewed batch). Each step keeps its own state so the
@@ -44,6 +47,14 @@ export const usePdfImport = () => {
 
       if (isApiError(error) && error.statusCode === 422) {
         const code = (error.errors as unknown as { code?: string } | undefined)?.code
+
+        if (code === "password_required") {
+          const message =
+            error instanceof Error ? error.message : PASSWORD_REQUIRED_MESSAGE
+          setParseState({ status: "password_required", message })
+          return null
+        }
+
         const message =
           code === "too_many_pages" ? TOO_MANY_PAGES_MESSAGE : UNSUPPORTED_BANK_MESSAGE
         setParseState({ status: "unsupported", message })

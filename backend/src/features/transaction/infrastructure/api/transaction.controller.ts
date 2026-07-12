@@ -151,9 +151,13 @@ export class TransactionController {
 			});
 		}
 
+		const password =
+			typeof req.body?.password === "string" ? req.body.password : undefined;
+
 		const result = await this.pdfStatementParser.execute(
 			file.buffer,
-			file.originalname
+			file.originalname,
+			password
 		);
 
 		const responseBody = HttpResponse.success(result);

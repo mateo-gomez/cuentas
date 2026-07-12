@@ -3,6 +3,7 @@ import {
   Alert,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native"
@@ -24,6 +25,9 @@ const Import = () => {
   const [selectedFile, setSelectedFile] =
     useState<DocumentPicker.DocumentPickerAsset | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [pdfAsset, setPdfAsset] =
+    useState<DocumentPicker.DocumentPickerAsset | null>(null)
+  const [password, setPassword] = useState("")
   const { parseState, parse } = usePdfImport()
 
   useEffect(() => {
@@ -34,8 +38,27 @@ const Import = () => {
     } else if (parseState.status === "error") {
       Alert.alert("Error", parseState.message)
     }
+    // parseState "password_required" is handled inline in the UI below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parseState])
+
+  const runPdfParse = async (
+    asset: DocumentPicker.DocumentPickerAsset,
+    pdfPassword?: string,
+  ) => {
+    const formData = new FormData()
+    formData.append("file", {
+      uri: asset.uri,
+      name: asset.name,
+      type: asset.mimeType || "application/pdf",
+    } as any)
+
+    if (pdfPassword) {
+      formData.append("password", pdfPassword)
+    }
+
+    await parse(formData)
+  }
 
   const handlePickFile = async () => {
     try {
@@ -97,18 +120,20 @@ const Import = () => {
       }
 
       const file = result.assets[0]
-      const formData = new FormData()
-      formData.append("file", {
-        uri: file.uri,
-        name: file.name,
-        type: file.mimeType || "application/pdf",
-      } as any)
-
-      await parse(formData)
+      setPdfAsset(file)
+      setPassword("")
+      await runPdfParse(file)
     } catch (error) {
       logger.error("Error selecting PDF file", { error })
       Alert.alert("Error", "No se pudo seleccionar el archivo.")
     }
+  }
+
+  const handleSubmitPassword = async () => {
+    if (!pdfAsset || password.trim().length === 0) {
+      return
+    }
+    await runPdfParse(pdfAsset, password.trim())
   }
 
   const parsingPdf = parseState.status === "parsing"
@@ -188,6 +213,35 @@ const Import = () => {
             color={grafito.accent}
             style={styles.loader}
           />
+        ) : null}
+
+        {parseState.status === "password_required" ? (
+          <View style={styles.passwordBox}>
+            <Text style={styles.hint}>
+              {parseState.message} Ingresá la clave para desbloquearlo.
+            </Text>
+            <TextInput
+              style={styles.passwordInput}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Contraseña del PDF"
+              placeholderTextColor={grafito.ink4}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              onSubmitEditing={handleSubmitPassword}
+            />
+            <TouchableOpacity
+              style={[
+                styles.uploadButton,
+                password.trim().length === 0 && styles.uploadButtonDisabled,
+              ]}
+              onPress={handleSubmitPassword}
+              disabled={password.trim().length === 0}
+            >
+              <Text style={styles.uploadButtonText}>Desbloquear y procesar</Text>
+            </TouchableOpacity>
+          </View>
         ) : null}
       </View>
     </View>
@@ -271,6 +325,21 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 8,
+  },
+  passwordBox: {
+    gap: 10,
+    marginTop: 4,
+  },
+  passwordInput: {
+    backgroundColor: grafito.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: grafito.line,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontFamily: grafito.fonts.sans,
+    fontSize: 15,
+    color: grafito.ink,
   },
   divider: {
     height: 1,

@@ -27,8 +27,12 @@ export class PdfStatementParser {
 		private readonly transactionRepository: TransactionRepository,
 	) {}
 
-	execute = async (pdf: Buffer, filename: string): Promise<PdfParseResult> => {
-		const parsed = await this.pdfBankParser.parse(pdf, filename);
+	execute = async (
+		pdf: Buffer,
+		filename: string,
+		password?: string,
+	): Promise<PdfParseResult> => {
+		const parsed = await this.pdfBankParser.parse(pdf, filename, password);
 
 		const duplicateKeys = await this.buildDuplicateKeySet(parsed.rows);
 

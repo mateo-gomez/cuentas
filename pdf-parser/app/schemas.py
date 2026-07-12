@@ -46,6 +46,8 @@ class ParseResponse(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    code: Literal["unrecognized_bank", "too_many_pages", "parse_error"]
+    code: Literal[
+        "unrecognized_bank", "too_many_pages", "parse_error", "password_required"
+    ]
     message: str
     detectedSignatures: Optional[list[str]] = None

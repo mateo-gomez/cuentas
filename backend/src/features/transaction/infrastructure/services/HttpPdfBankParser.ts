@@ -169,13 +169,19 @@ export class HttpPdfBankParser implements PdfBankParser {
 		this.baseUrl = baseUrl;
 	}
 
-	parse = async (pdf: Buffer, filename: string): Promise<ParsedStatement> => {
-		const response = await this.requestWithRetry(pdf, filename);
+	parse = async (
+		pdf: Buffer,
+		filename: string,
+		password?: string,
+	): Promise<ParsedStatement> => {
+		const response = await this.requestWithRetry(pdf, filename, password);
 
 		if (response.status === 422) {
 			const body = await response.json().catch(() => ({}));
 			const code =
-				body?.code === "too_many_pages" ? "too_many_pages" : "unrecognized_bank";
+				body?.code === "too_many_pages" || body?.code === "password_required"
+					? body.code
+					: "unrecognized_bank";
 
 			throw new UnsupportedBankError(
 				body?.message || "El banco de este PDF no está soportado",
@@ -197,13 +203,14 @@ export class HttpPdfBankParser implements PdfBankParser {
 	private requestWithRetry = async (
 		pdf: Buffer,
 		filename: string,
+		password?: string,
 		attempt = 0,
 	): Promise<Response> => {
 		try {
-			return await this.doRequest(pdf, filename);
+			return await this.doRequest(pdf, filename, password);
 		} catch (error) {
 			if (attempt < 1 && this.isRetryableNetworkError(error)) {
-				return this.requestWithRetry(pdf, filename, attempt + 1);
+				return this.requestWithRetry(pdf, filename, password, attempt + 1);
 			}
 
 			throw new InternalError(
@@ -213,7 +220,11 @@ export class HttpPdfBankParser implements PdfBankParser {
 		}
 	};
 
-	private doRequest = async (pdf: Buffer, filename: string): Promise<Response> => {
+	private doRequest = async (
+		pdf: Buffer,
+		filename: string,
+		password?: string,
+	): Promise<Response> => {
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -224,6 +235,10 @@ export class HttpPdfBankParser implements PdfBankParser {
 				new Blob([pdf], { type: "application/pdf" }),
 				filename,
 			);
+
+			if (password) {
+				formData.append("password", password);
+			}
 
 			const response = await fetch(`${this.baseUrl}/parse`, {
 				method: "POST",

@@ -9,7 +9,7 @@ Contract").
 import io
 
 import pdfplumber
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 from app.identify import identify_bank
@@ -21,16 +21,55 @@ MAX_PAGES = 50
 app = FastAPI(title="pdf-parser", version="0.1.0")
 
 
+def _is_password_error(exc: BaseException) -> bool:
+    """Walk the exception chain looking for pdfminer's password/encryption
+    errors. pdfplumber wraps the original in `PdfminerException`, so the real
+    cause can hide in `__cause__`, `__context__`, or `args[0]`."""
+    seen: set[int] = set()
+    current: BaseException | None = exc
+
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+
+        if type(current).__name__ in {"PDFPasswordIncorrect", "PDFEncryptionError"}:
+            return True
+
+        nxt = current.__cause__ or current.__context__
+        if nxt is None and getattr(current, "args", None):
+            first = current.args[0]
+            if isinstance(first, BaseException):
+                nxt = first
+        current = nxt
+
+    return False
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @app.post("/parse", response_model=ParseResponse, responses={422: {"model": ErrorResponse}})
-async def parse_pdf(file: UploadFile) -> ParseResponse | JSONResponse:
+async def parse_pdf(
+    file: UploadFile,
+    password: str | None = Form(default=None),
+) -> ParseResponse | JSONResponse:
     raw_bytes = await file.read()
 
-    with pdfplumber.open(io.BytesIO(raw_bytes)) as pdf:
+    try:
+        pdf = pdfplumber.open(io.BytesIO(raw_bytes), password=password or "")
+    except Exception as exc:  # noqa: BLE001 - inspected below
+        if _is_password_error(exc):
+            return JSONResponse(
+                status_code=422,
+                content=ErrorResponse(
+                    code="password_required",
+                    message="El PDF está protegido con contraseña.",
+                ).model_dump(),
+            )
+        raise HTTPException(status_code=500, detail=f"open_error: {exc}") from exc
+
+    with pdf:
         if len(pdf.pages) > MAX_PAGES:
             return JSONResponse(
                 status_code=422,
