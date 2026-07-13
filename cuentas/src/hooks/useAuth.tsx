@@ -6,7 +6,7 @@ import {
   registerWithEmailAndPassword,
   signOut,
 } from "../services/auth"
-import { useNavigate } from "react-router-native"
+import { useLocation, useNavigate } from "react-router-native"
 import { UserDTO } from "../../types/User"
 import { isApiError, storage } from "../helpers"
 import { createLogger } from "../lib/logger"
@@ -17,12 +17,19 @@ export const useAuth = () => {
   const { user, setUser } = useContext(authContext)
   const [error, setError] = useState("")
   const navigate = useNavigate()
+  const location = useLocation()
 
+  // Redirect to home only on the login/register → authenticated transition.
+  // useAuth is also mounted globally in PrivateRoutes, so an unscoped
+  // `if (user) navigate("/")` would bounce back to home on ANY user update
+  // (e.g. AuthContext hydration from GET /auth/me on the profile screen).
   useEffect(() => {
-    if (user) {
+    const onAuthScreen =
+      location.pathname === "/login" || location.pathname === "/register"
+    if (user && onAuthScreen) {
       navigate("/", { replace: true })
     }
-  }, [user])
+  }, [user, location.pathname])
 
   useEffect(() => {
     checkUserLogged().then((auth) => {
