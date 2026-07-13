@@ -5,6 +5,10 @@ node_modules/
 .atl/
 .idea/
 
+# Skills (managed via skills-lock.json — restore with: npx skills experimental_install)
+.agents/
+.claude/skills/
+
 # Local bank-statement samples — never commit real financial data
 .samples/
 # Defense in depth: no PDF anywhere in the parser service enters git
