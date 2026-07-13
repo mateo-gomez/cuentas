@@ -20,9 +20,15 @@ const RETRYABLE_STATUS_CODES = [502, 503, 504];
 // Warm-up: how long to keep trying to wake the parser, how long each probe
 // waits, and the gap between probes. Bounded so the whole call stays well under
 // the upstream proxy's request ceiling.
-const WARMUP_BUDGET_MS = 75_000;
-const HEALTH_TIMEOUT_MS = 8_000;
-const WARMUP_POLL_INTERVAL_MS = 4_000;
+//
+// A spun-down Render free service only returns 200 once its cold start finishes
+// (30-60s), holding the connection open the whole time — exactly what a browser
+// does. Each probe must therefore hold the connection long enough to cover a
+// full cold start; a short probe that aborts mid-boot never sees the 200 and the
+// service never appears to wake. Keep the per-probe timeout close to the budget.
+const WARMUP_BUDGET_MS = 120_000;
+const HEALTH_TIMEOUT_MS = 90_000;
+const WARMUP_POLL_INTERVAL_MS = 2_000;
 
 const sleep = (ms: number): Promise<void> =>
 	new Promise((resolve) => setTimeout(resolve, ms));

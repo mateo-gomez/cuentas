@@ -23,11 +23,12 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      # Public onrender.com URL (not internal host): a spun-down free-tier
+      # service only wakes on requests through Render's public edge router.
+      # Internal-network requests to a sleeping instance are refused, so the
+      # parser would never wake. Revert to fromService/host on a paid plan.
       - key: PDF_PARSER_URL
-        fromService:
-          name: pdf-parser
-          type: web
-          property: host
+        value: https://pdf-parser-zx6t.onrender.com
       - key: ACCESS_TOKEN_TTL
         value: 15m
       - key: REFRESH_TOKEN_TTL
