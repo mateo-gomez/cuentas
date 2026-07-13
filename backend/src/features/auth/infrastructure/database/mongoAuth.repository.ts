@@ -24,7 +24,10 @@ export class MongoAuthRepository implements AuthRepository {
   // Unlike `login`, this never throws on a missing user — callers decide how
   // to handle the null case (NotFoundError at the use-case layer).
   async getById(userId: string): Promise<User | null> {
-    return UserModel.findById(userId);
+    // .lean() returns a plain object — use-cases spread it to strip the
+    // password, and spreading a Mongoose document copies internals, not the
+    // actual fields (name/email would be lost).
+    return UserModel.findById(userId).lean<User>().exec();
   }
 
   async existsByEmail(email: string): Promise<boolean> {
@@ -32,7 +35,11 @@ export class MongoAuthRepository implements AuthRepository {
   }
 
   async updateProfile(userId: string, data: ProfileUpdateData): Promise<User | null> {
-    return UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true });
+    // .lean() so the use-case can spread the result to strip the password
+    // (a Mongoose document would spread to internals, losing the fields).
+    return UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
+      .lean<User>()
+      .exec();
   }
 
   async updatePassword(userId: string, hashedPassword: string): Promise<void> {
