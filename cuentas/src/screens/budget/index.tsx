@@ -14,6 +14,7 @@ import BottomTabBar from "../../Components/BottomTabBar"
 import grafito from "../../theme"
 import { useBudget } from "../../hooks"
 import { useCategories } from "../../hooks"
+import { useTabBar } from "../../hooks"
 import { formatNumber } from "../../utils"
 
 const now = new Date()
@@ -143,6 +144,7 @@ const CategoryRow = ({
 // ─── Main screen ──────────────────────────────────────────────────────────────
 const BudgetScreen = () => {
   const navigate = useNavigate()
+  const tabBar = useTabBar()
   const insets = useSafeAreaInsets()
   const { status, loading } = useBudget(now.getFullYear(), now.getMonth() + 1)
   const { categories } = useCategories()
@@ -243,13 +245,7 @@ const BudgetScreen = () => {
         </ScrollView>
       )}
 
-      <BottomTabBar
-        activeTab="budget"
-        onPressPlus={() => navigate("/transactions/outcome")}
-        onSelect={(tab) => {
-          if (tab === "home") navigate("/")
-        }}
-      />
+      <BottomTabBar {...tabBar} />
     </View>
   )
 }

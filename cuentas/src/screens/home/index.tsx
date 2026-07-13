@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  DrawerLayoutAndroid,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -14,13 +13,12 @@ import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { OptionsSideBar } from "../../Components"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { AccountPickerModal } from "../../Components/AccountPickerModal"
 import SuggestionChip from "../../Components/SuggestionChip"
 import Transactions from "./Transactions"
 import { useDateRange } from "../../hooks/useDateRange"
-import { useAccounts, useSuggestions } from "../../hooks"
+import { useAccounts, useSuggestions, useTabBar } from "../../hooks"
 import { monthRange } from "../../utils"
 import { createLogger } from "../../lib/logger"
 import { FrequentCombo, TransactionType } from "../../../types"
@@ -61,25 +59,11 @@ const Home = () => {
   const { suggestions } = useSuggestions(selectedAccountId || undefined)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
-  const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
+  const tabBar = useTabBar()
   const listRef = useRef<FlatList | null>(null)
 
   const selectedAccountName =
     accounts.find((account) => account._id === selectedAccountId)?.name ?? "Todo"
-
-  const handlePressMenu = () => {
-    const drawer = drawerRef.current
-    if (!drawer) return
-
-    const isDrawerOpen =
-      "drawerOpened" in drawer.state && drawer.state.drawerOpened
-
-    if (isDrawerOpen) {
-      drawer.closeDrawer()
-    } else {
-      drawer.openDrawer()
-    }
-  }
 
   const visibleStep = steps[visibleIndex] ?? steps[0]
   const visibleMonth = visibleStep?.start
@@ -167,12 +151,6 @@ const Home = () => {
   }
 
   return (
-    <DrawerLayoutAndroid
-      ref={drawerRef}
-      drawerPosition="right"
-      drawerWidth={300}
-      renderNavigationView={OptionsSideBar}
-    >
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Inline header */}
       <View style={styles.header}>
@@ -180,9 +158,6 @@ const Home = () => {
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.searchPill} onPress={() => {}}>
             <Text style={styles.searchPillText}>Buscar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handlePressMenu} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Ionicons name="menu-outline" size={26} color={grafito.ink} />
           </TouchableOpacity>
         </View>
       </View>
@@ -271,13 +246,7 @@ const Home = () => {
       </View>
 
       {/* Bottom tab bar */}
-      <BottomTabBar
-        activeTab="home"
-        onPressPlus={handlePressFab}
-        onSelect={(tab) => {
-          if (tab === "budget") navigate("/budget")
-        }}
-      />
+      <BottomTabBar {...tabBar} onPressPlus={handlePressFab} />
 
       <AccountPickerModal
         visible={accountPickerVisible}
@@ -288,7 +257,6 @@ const Home = () => {
         onClose={() => setAccountPickerVisible(false)}
       />
     </View>
-    </DrawerLayoutAndroid>
   )
 }
 

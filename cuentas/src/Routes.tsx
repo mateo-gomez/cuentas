@@ -20,6 +20,8 @@ import Import from "./screens/import"
 import PdfImportReview from "./screens/pdfImport"
 import BudgetScreen from "./screens/budget"
 import BudgetEdit from "./screens/budget/Edit"
+import Profile from "./screens/profile"
+import Settings from "./screens/profile/Settings"
 
 const DOUBLE_BACK_DELAY = 2000
 
@@ -82,6 +84,8 @@ const Routes = () => {
           <Route path="/import/pdf" element={<PdfImportReview />} />
           <Route path="/budget" element={<BudgetScreen />} />
           <Route path="/budget/edit" element={<BudgetEdit />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/settings" element={<Settings />} />
         </Route>
       </Router>
     </View>

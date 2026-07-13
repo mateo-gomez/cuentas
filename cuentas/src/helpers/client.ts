@@ -14,9 +14,19 @@ export const setSessionExpiredHandler = (handler: (() => void) | null) => {
   onSessionExpired = handler
 }
 
+// Auth endpoints that must never trigger a silent token refresh: the
+// unauthenticated entry points plus refresh/logout would loop or re-fail.
+const NON_RECOVERABLE_AUTH_ENDPOINTS = [
+  "auth/signin",
+  "auth/signup",
+  "auth/refresh",
+  "auth/logout",
+]
+
 enum Method {
   POST = "POST",
   PUT = "PUT",
+  PATCH = "PATCH",
   GET = "GET",
   DELETE = "DELETE",
 }
@@ -115,7 +125,7 @@ const createRequestInit = async (
     headers: defaultHeaders,
   }
 
-  if (method === Method.POST || method === Method.PUT) {
+  if (method === Method.POST || method === Method.PUT || method === Method.PATCH) {
     requestInit.body = isFormData ? data : JSON.stringify(data)
   }
 
@@ -130,7 +140,12 @@ const fetcher = async <T>(
 ): Promise<T> => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
   const url = `${config.apiUrl}/${normalizedEndpoint}`
-  const isAuthEndpoint = normalizedEndpoint.startsWith("auth/")
+  // Unauthenticated auth endpoints (and refresh/logout) must never trigger a
+  // silent refresh — recovering them would loop. Authenticated auth endpoints
+  // like me/change-password are recoverable like any other protected route.
+  const isNonRecoverableAuthEndpoint = NON_RECOVERABLE_AUTH_ENDPOINTS.some(
+    (prefix) => normalizedEndpoint.startsWith(prefix),
+  )
 
   const isSessionError = (status: number) => status === 401 || status === 403
 
@@ -142,8 +157,8 @@ const fetcher = async <T>(
     )
 
     // Access token rejected: silently refresh once and replay the request.
-    // Skip auth/* endpoints so signin/refresh failures never loop.
-    const canRecover = !!token && !isAuthEndpoint
+    // Skip non-recoverable auth endpoints so signin/refresh failures never loop.
+    const canRecover = !!token && !isNonRecoverableAuthEndpoint
     if (!response.ok && isSessionError(response.status) && canRecover) {
       const refreshed = await attemptRefresh()
 
@@ -187,6 +202,8 @@ export const client = {
     fetcher<T>(Method.POST, endpoint, data),
   put: <T>(endpoint: string, data: Record<string, any>) =>
     fetcher<T>(Method.PUT, endpoint, data),
+  patch: <T>(endpoint: string, data: Record<string, any>) =>
+    fetcher<T>(Method.PATCH, endpoint, data),
   delete: <T>(endpoint: string) => fetcher<T>(Method.DELETE, endpoint),
   upload: <T>(
     endpoint: string,

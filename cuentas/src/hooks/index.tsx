@@ -9,3 +9,5 @@ export * from './useSuggestions';
 export * from './useTransaction';
 export * from './useTransactions';
 export * from './usePdfImport';
+export * from './useTabBar';
+export * from './useProfile';

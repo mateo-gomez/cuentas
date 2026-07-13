@@ -3,7 +3,8 @@ import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router-native"
 import grafito from "../../theme"
-import { useAccounts } from "../../hooks"
+import { useAccounts, useTabBar } from "../../hooks"
+import BottomTabBar from "../../Components/BottomTabBar"
 import { Account } from "../../../types"
 import { formatNumber } from "../../utils"
 
@@ -42,6 +43,7 @@ const AccountsList = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const { accounts, loading, error } = useAccounts()
+  const tabBar = useTabBar()
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -78,6 +80,8 @@ const AccountsList = () => {
           renderItem={({ item }) => <AccountRow account={item} />}
         />
       )}
+
+      <BottomTabBar {...tabBar} />
     </View>
   )
 }

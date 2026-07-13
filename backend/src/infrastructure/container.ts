@@ -23,6 +23,9 @@ import { AuthSignup } from "../features/auth/application/authSignup";
 import { AuthService } from "../application/services/auth.service";
 import { AuthRefresh } from "../features/auth/application/authRefresh";
 import { AuthLogout } from "../features/auth/application/authLogout";
+import { GetCurrentUser } from "../features/auth/application/getCurrentUser";
+import { UpdateProfile } from "../features/auth/application/updateProfile";
+import { ChangePassword } from "../features/auth/application/changePassword";
 import { RefreshTokenIssuer } from "../features/auth/application/refreshTokenIssuer";
 import { MongoRefreshTokenRepository } from "../features/auth/infrastructure/database/mongoRefreshToken.repository";
 import { TransactionImporter } from "../features/transaction/application/useCases/TransactionImporter";
@@ -139,6 +142,9 @@ export const container = {
 		refreshTokenIssuer
 	),
 	authLogout: new AuthLogout(authService, refreshTokenRepository),
+	getCurrentUser: new GetCurrentUser(authRepository),
+	updateProfile: new UpdateProfile(authRepository),
+	changePassword: new ChangePassword(authRepository),
 
 	// excelTransactionParser
 	excelTransactionParser: new ExcelTransactionParser(

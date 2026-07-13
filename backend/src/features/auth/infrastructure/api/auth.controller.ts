@@ -4,9 +4,13 @@ import { AuthSignin } from "../../application/authSignin";
 import { AuthSignup } from "../../application/authSignup";
 import { AuthRefresh } from "../../application/authRefresh";
 import { AuthLogout } from "../../application/authLogout";
+import { GetCurrentUser } from "../../application/getCurrentUser";
+import { UpdateProfile } from "../../application/updateProfile";
+import { ChangePassword } from "../../application/changePassword";
 import { catchAsync } from "../../../../application/utils/catchAsync";
 import { UserDefaultsBootstrapper } from "../../../account/application/userDefaultsBootstrapper";
 import { TransactionAccountMigrator } from "../../../transaction/application/useCases/TransactionAccountMigrator";
+import { RequestAuthenticated } from "../../../../infrastructure/api/middlewares/BaseMiddleware";
 
 export class AuthController {
 	constructor(
@@ -20,7 +24,10 @@ export class AuthController {
 		// `signin` and `signup` (signup provisions the brand-new user directly
 		// instead of relying on a follow-up signin call).
 		private readonly userDefaultsBootstrapper: UserDefaultsBootstrapper,
-		private readonly transactionAccountMigrator: TransactionAccountMigrator
+		private readonly transactionAccountMigrator: TransactionAccountMigrator,
+		private readonly getCurrentUser: GetCurrentUser,
+		private readonly updateProfile: UpdateProfile,
+		private readonly changePassword: ChangePassword
 	) {}
 
 	// Provisioning failures (defaults seeding / legacy migration) must not fail
@@ -74,6 +81,37 @@ export class AuthController {
 		await this.provisionUserDefaults(auth.user._id);
 		const responseBody = HttpResponse.success(auth);
 
+		response.status(responseBody.statusCode).json(responseBody);
+	});
+
+	getMe = catchAsync(async (request: RequestAuthenticated, response: Response) => {
+		const userId = request.user!.id;
+
+		const user = await this.getCurrentUser.execute(userId);
+
+		const responseBody = HttpResponse.success(user);
+		response.status(responseBody.statusCode).json(responseBody);
+	});
+
+	updateMe = catchAsync(async (request: RequestAuthenticated, response: Response) => {
+		const userId = request.user!.id;
+		// email is intentionally NOT destructured here — PATCH /auth/me must
+		// never accept or apply an email change.
+		const { name, surename, lastname } = request.body;
+
+		const user = await this.updateProfile.execute(userId, { name, surename, lastname });
+
+		const responseBody = HttpResponse.success(user);
+		response.status(responseBody.statusCode).json(responseBody);
+	});
+
+	changePasswordHandler = catchAsync(async (request: RequestAuthenticated, response: Response) => {
+		const userId = request.user!.id;
+		const { currentPassword, newPassword } = request.body;
+
+		const result = await this.changePassword.execute(userId, currentPassword, newPassword);
+
+		const responseBody = HttpResponse.success(result);
 		response.status(responseBody.statusCode).json(responseBody);
 	});
 }

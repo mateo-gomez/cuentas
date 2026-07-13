@@ -8,3 +8,6 @@ export interface User {
     createdAt: Date;
     updatedAt: Date;
 }
+
+// Sanitized shape returned by GET/PATCH /auth/me — never exposes the password hash.
+export type PublicUser = Omit<User, "password">;

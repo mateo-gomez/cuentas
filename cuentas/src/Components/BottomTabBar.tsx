@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import theme from '../theme';
 
-type Tab = 'home' | 'budget';
+export type Tab = 'home' | 'accounts' | 'budget' | 'profile';
 
 interface Props {
   activeTab: Tab;
@@ -12,19 +12,52 @@ interface Props {
   onPressPlus: () => void;
 }
 
+interface NavTabProps {
+  tab: Tab;
+  activeTab: Tab;
+  icon: keyof typeof Ionicons.glyphMap;
+  activeIcon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onSelect: (tab: Tab) => void;
+}
+
+// Extracted to avoid duplicating the icon+label+active-color markup 4x.
+function NavTab({ tab, activeTab, icon, activeIcon, label, onSelect }: NavTabProps) {
+  const isActive = activeTab === tab;
+  const color = isActive ? theme.ink : theme.ink3;
+
+  return (
+    <TouchableOpacity style={styles.tab} onPress={() => onSelect(tab)}>
+      <Ionicons name={isActive ? activeIcon : icon} size={22} color={color} />
+      <Text numberOfLines={1} style={[styles.label, { color }]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom || 12 }]}>
-      {/* Home tab */}
-      <TouchableOpacity style={styles.tab} onPress={() => onSelect('home')}>
-        <Ionicons name={activeTab === 'home' ? 'home' : 'home-outline'} size={22} color={activeTab === 'home' ? theme.ink : theme.ink3} />
-        <Text style={[styles.label, { color: activeTab === 'home' ? theme.ink : theme.ink3 }]}>Inicio</Text>
-      </TouchableOpacity>
+      <NavTab
+        tab="home"
+        activeTab={activeTab}
+        icon="home-outline"
+        activeIcon="home"
+        label="Inicio"
+        onSelect={onSelect}
+      />
 
-      {/* Empty slot left of FAB */}
-      <View style={styles.tab} />
+      <NavTab
+        tab="accounts"
+        activeTab={activeTab}
+        icon="wallet-outline"
+        activeIcon="wallet"
+        label="Cuentas"
+        onSelect={onSelect}
+      />
 
       {/* FAB */}
       <View style={styles.fabSlot}>
@@ -33,14 +66,23 @@ export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props
         </TouchableOpacity>
       </View>
 
-      {/* Empty slot right of FAB */}
-      <View style={styles.tab} />
+      <NavTab
+        tab="budget"
+        activeTab={activeTab}
+        icon="pie-chart-outline"
+        activeIcon="pie-chart"
+        label="Budget"
+        onSelect={onSelect}
+      />
 
-      {/* Budget tab */}
-      <TouchableOpacity style={styles.tab} onPress={() => onSelect('budget')}>
-        <Ionicons name={activeTab === 'budget' ? 'pie-chart' : 'pie-chart-outline'} size={22} color={activeTab === 'budget' ? theme.ink : theme.ink3} />
-        <Text style={[styles.label, { color: activeTab === 'budget' ? theme.ink : theme.ink3 }]}>Budget</Text>
-      </TouchableOpacity>
+      <NavTab
+        tab="profile"
+        activeTab={activeTab}
+        icon="person-outline"
+        activeIcon="person"
+        label="Perfil"
+        onSelect={onSelect}
+      />
     </View>
   );
 }
