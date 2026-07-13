@@ -7,6 +7,14 @@ export const getAccounts = async (): Promise<Account[]> => {
   return data
 }
 
+export const getDefaultAccount = async (): Promise<Account | null> => {
+  const { data } = await client.get<{ data: Account | null }>(
+    "/accounts/default",
+  )
+
+  return data
+}
+
 export const getAccount = async (
   id: string,
 ): Promise<Account | null | never> => {

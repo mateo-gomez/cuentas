@@ -42,6 +42,7 @@ import { AccountCreator } from "../features/account/application/accountCreator";
 import { AccountUpdater } from "../features/account/application/accountUpdater";
 import { AccountRemover } from "../features/account/application/accountRemover";
 import { AccountBalanceGetter } from "../features/account/application/accountBalanceGetter";
+import { AccountDefaultGetter } from "../features/account/application/accountDefaultGetter";
 import { UserDefaultsBootstrapper } from "../features/account/application/userDefaultsBootstrapper";
 import { TransactionAccountMigrator } from "../features/transaction/application/useCases/TransactionAccountMigrator";
 
@@ -78,6 +79,7 @@ export const container = {
 	accountUpdater: new AccountUpdater(accountRepository),
 	accountRemover: new AccountRemover(accountRepository, transactionRepository),
 	accountBalanceGetter: new AccountBalanceGetter(accountRepository, transactionRepository),
+	accountDefaultGetter: new AccountDefaultGetter(accountRepository),
 
 	// per-user defaults bootstrap + one-time legacy backfill (triggered at signin/signup)
 	userDefaultsBootstrapper: new UserDefaultsBootstrapper(

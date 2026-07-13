@@ -10,6 +10,7 @@ import { AccountGetter } from "../../application/accountGetter";
 import { AccountRemover } from "../../application/accountRemover";
 import { AccountUpdater } from "../../application/accountUpdater";
 import { AccountBalanceGetter } from "../../application/accountBalanceGetter";
+import { AccountDefaultGetter } from "../../application/accountDefaultGetter";
 
 export class AccountController {
   constructor(
@@ -19,7 +20,17 @@ export class AccountController {
     private readonly accountUpdater: AccountUpdater,
     private readonly accountRemover: AccountRemover,
     private readonly accountBalanceGetter: AccountBalanceGetter,
+    private readonly accountDefaultGetter: AccountDefaultGetter,
   ) {}
+
+  getDefaultAccount = catchAsync(async (request: RequestAuthenticated, response: Response) => {
+    const userId = request.user!.id;
+
+    const account = await this.accountDefaultGetter.execute(userId);
+
+    const responseBody = HttpResponse.success(account);
+    response.status(responseBody.statusCode).json(responseBody);
+  });
 
   getAccounts = catchAsync(async (request: RequestAuthenticated, response: Response) => {
     const userId = request.user!.id;

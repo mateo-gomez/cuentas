@@ -9,6 +9,7 @@ const accountController = new AccountController(
   container.accountUpdater,
   container.accountRemover,
   container.accountBalanceGetter,
+  container.accountDefaultGetter,
 );
 
 const router = Router();
@@ -16,6 +17,9 @@ const router = Router();
 router
   .get("/", accountController.getAccounts)
   .post("/", accountController.saveAccount)
+  // MUST stay before "/:id" — Express matches params greedily, so "default"
+  // would otherwise be parsed as an account id.
+  .get("/default", accountController.getDefaultAccount)
   .get("/:id/balance", accountController.getAccountBalance)
   .get("/:id", accountController.getAccount)
   .put("/:id", accountController.updateAccount)

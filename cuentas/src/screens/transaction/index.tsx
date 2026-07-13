@@ -15,7 +15,7 @@ import {
   OverlayLoader,
 } from "../../Components"
 import { useAccounts, useTransaction } from "../../hooks"
-import { createTransaction, getFrequentCombos, updateTransaction } from "../../services"
+import { createTransaction, getDefaultAccount, getFrequentCombos, updateTransaction } from "../../services"
 import { createLogger } from "../../lib/logger"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
@@ -75,16 +75,32 @@ const Transaction = () => {
 
   // Smart defaults (R4): only for the create flow — editing an existing
   // transaction is fully driven by `transaction` above. Account resolution
-  // order: nav state (Home's active account) -> user's first available
-  // account (stand-in for a "default account" endpoint, none is exposed to
-  // the app yet) -> require the picker. Category defaults to the resolved
-  // account's most-used category; empty history stays a safe empty state.
+  // order: nav state (Home's active account) -> the user's server-side default
+  // account (GET /accounts/default) -> first available account -> require the
+  // picker. Category defaults to the resolved account's most-used category;
+  // empty history stays a safe empty state.
   useEffect(() => {
     if (id) return // editing — no smart defaults
     if (accountId) return
     if (accounts.length === 0) return
 
-    setAccountId(accounts[0]._id)
+    let cancelled = false
+
+    getDefaultAccount()
+      .then((defaultAccount) => {
+        if (cancelled) return
+        setAccountId(defaultAccount?._id ?? accounts[0]._id)
+      })
+      .catch(() => {
+        // Endpoint unreachable: fall back to the first account so the create
+        // screen still resolves an account instead of forcing the picker.
+        if (cancelled) return
+        setAccountId(accounts[0]._id)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [id, accountId, accounts])
 
   useEffect(() => {
