@@ -16,7 +16,8 @@ import { OverlayLoader } from "../../Components/OverlayLoader"
 import { ErrorBanner } from "../../Components/ErrorBanner"
 import { ReconciliationBanner } from "../../Components/ReconciliationBanner"
 import { CategoryPickerModal } from "../../Components/CategoryPickerModal"
-import { usePdfImport, useCategories } from "../../hooks"
+import { AccountPickerModal } from "../../Components/AccountPickerModal"
+import { usePdfImport, useCategories, useAccounts } from "../../hooks"
 import { PdfConfirmRow, PdfParseResponse } from "../../../types"
 
 // The parse result travels from the picker screen via router state so we
@@ -48,6 +49,7 @@ const PdfImportReview = () => {
   const insets = useSafeAreaInsets()
   const { confirmState, confirm } = usePdfImport()
   const { categories } = useCategories()
+  const { accounts } = useAccounts()
 
   const state = location.state as LocationState | undefined
   const result = state?.result
@@ -56,6 +58,12 @@ const PdfImportReview = () => {
     result ? buildInitialRows(result) : [],
   )
   const [pickerRowId, setPickerRowId] = useState<string | null>(null)
+  const [accountId, setAccountId] = useState("")
+  const [accountPickerVisible, setAccountPickerVisible] = useState(false)
+
+  const selectedAccountName = accounts.find(
+    (account) => account._id === accountId,
+  )?.name
 
   const includedCount = useMemo(
     () => rows.filter((row) => !row.excluded).length,
@@ -87,11 +95,16 @@ const PdfImportReview = () => {
       return
     }
 
+    if (!accountId) {
+      Alert.alert("Elegí una cuenta para confirmar la importación.")
+      return
+    }
+
     const payload: PdfConfirmRow[] = rows.map(
       ({ possibleDuplicate: _possibleDuplicate, ...row }) => row,
     )
 
-    const confirmResult = await confirm(result.importSessionId, payload)
+    const confirmResult = await confirm(result.importSessionId, payload, accountId)
 
     if (confirmResult) {
       Alert.alert(
@@ -125,6 +138,16 @@ const PdfImportReview = () => {
         <Text style={styles.summaryText}>
           {includedCount} de {rows.length} transacciones seleccionadas
         </Text>
+        <TouchableOpacity
+          style={styles.accountPill}
+          onPress={() => setAccountPickerVisible(true)}
+        >
+          <Ionicons name="wallet-outline" size={14} color={grafito.ink3} />
+          <Text style={styles.accountPillText} numberOfLines={1}>
+            {selectedAccountName ?? "Elegir cuenta"}
+          </Text>
+          <Ionicons name="chevron-down" size={14} color={grafito.ink3} />
+        </TouchableOpacity>
       </View>
 
       {confirmError ? <ErrorBanner message={confirmError} /> : null}
@@ -167,14 +190,22 @@ const PdfImportReview = () => {
         onClose={() => setPickerRowId(null)}
       />
 
+      <AccountPickerModal
+        visible={accountPickerVisible}
+        accounts={accounts}
+        selectedId={accountId || undefined}
+        onSelect={setAccountId}
+        onClose={() => setAccountPickerVisible(false)}
+      />
+
       <TouchableOpacity
         style={[
           styles.confirmButton,
           { marginBottom: insets.bottom + 20 },
-          confirming && styles.confirmButtonDisabled,
+          (confirming || !accountId) && styles.confirmButtonDisabled,
         ]}
         onPress={handleConfirm}
-        disabled={confirming}
+        disabled={confirming || !accountId}
       >
         <Text style={styles.confirmButtonText}>
           {confirming ? "Confirmando..." : "Confirmar importación"}
@@ -217,6 +248,22 @@ const styles = StyleSheet.create({
   summaryStrong: {
     fontWeight: "600",
     color: grafito.ink,
+  },
+  accountPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    alignSelf: "flex-start",
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginTop: 4,
+  },
+  accountPillText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 13,
+    color: grafito.ink3,
   },
   list: {
     paddingHorizontal: 20,

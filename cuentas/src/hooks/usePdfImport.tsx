@@ -69,11 +69,11 @@ export const usePdfImport = () => {
   }, [])
 
   const confirm = useCallback(
-    async (importSessionId: string, rows: PdfConfirmRow[]) => {
+    async (importSessionId: string, rows: PdfConfirmRow[], accountId: string) => {
       setConfirmState({ status: "confirming" })
 
       try {
-        const result = await confirmPdfImport(importSessionId, rows)
+        const result = await confirmPdfImport(importSessionId, rows, accountId)
         setConfirmState({ status: "done", result })
         return result
       } catch (error) {

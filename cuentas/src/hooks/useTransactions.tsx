@@ -5,7 +5,15 @@ import { createLogger } from "../lib/logger"
 
 const logger = createLogger("useTransactions")
 
-export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
+export const useTransactions = ({
+  start,
+  end,
+  accountId,
+}: {
+  start: Date
+  end: Date
+  accountId?: string
+}) => {
   const [transactions, setTransactions] = useState<TransactionAggregate[]>([])
   const [balance, setBalance] = useState({
     balance: 0,
@@ -17,7 +25,7 @@ export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
 
   const load = useCallback(() => {
     setLoading(true)
-    return getTransactions({ start, end })
+    return getTransactions({ start, end, accountId })
       .then(({ transactions, balance }) => {
         setTransactions(transactions)
         setBalance(balance)
@@ -27,7 +35,7 @@ export const useTransactions = ({ start, end }: { start: Date; end: Date }) => {
         setError(err.message)
       })
       .finally(() => setLoading(false))
-  }, [start, end])
+  }, [start, end, accountId])
 
   useEffect(() => {
     load()

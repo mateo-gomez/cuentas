@@ -279,8 +279,20 @@ const row = StyleSheet.create({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const Transactions = ({ start, end }: { start: Date; end: Date }) => {
-  const { transactions, loading, balance, removeTransactions } = useTransactions({ start, end })
+const Transactions = ({
+  start,
+  end,
+  accountId,
+}: {
+  start: Date
+  end: Date
+  accountId?: string
+}) => {
+  const { transactions, loading, balance, removeTransactions } = useTransactions({
+    start,
+    end,
+    accountId,
+  })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
 

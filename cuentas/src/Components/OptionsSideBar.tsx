@@ -22,11 +22,11 @@ const options = [
     icon: "cloud-upload-outline",
     to: "/import",
   },
-  // {
-  //     title: "Cuentas",
-  //     icon: "wallet-outline",
-  //     options: <CategoriesOptions />,
-  // },
+  {
+    title: "Cuentas",
+    icon: "wallet-outline",
+    to: "/accounts",
+  },
   // {
   //     title: "Configuración",
   //     icon: "settings-outline",

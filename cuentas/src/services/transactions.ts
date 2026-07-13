@@ -14,14 +14,18 @@ interface TransactionResponse {
 export const getTransactions = async ({
   start,
   end,
+  accountId,
 }: {
   start: Date
   end: Date
+  accountId?: string
 }): Promise<TransactionResponse> => {
+  const accountQuery = accountId ? `&accountId=${accountId}` : ""
+
   const {
     data: { transactions, balance },
   } = await client.get<{ data: TransactionResponse }>(
-    `/transactions/?start=${start.toJSON()}&end=${end.toJSON()}`,
+    `/transactions/?start=${start.toJSON()}&end=${end.toJSON()}${accountQuery}`,
   )
 
   const data = transactions.map((item) => {

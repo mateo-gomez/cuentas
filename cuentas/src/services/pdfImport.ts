@@ -15,10 +15,11 @@ export const parsePdfStatement = async (
 export const confirmPdfImport = async (
   importSessionId: string,
   rows: PdfConfirmRow[],
+  accountId: string,
 ): Promise<PdfConfirmResult> => {
   const { data } = await client.post<{ data: PdfConfirmResult }>(
     "transactions/import/pdf/confirm",
-    { importSessionId, rows },
+    { importSessionId, rows, accountId },
   )
 
   return data

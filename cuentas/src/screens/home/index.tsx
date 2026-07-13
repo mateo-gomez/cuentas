@@ -15,8 +15,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { OptionsSideBar } from "../../Components"
 import BottomTabBar from "../../Components/BottomTabBar"
+import { AccountPickerModal } from "../../Components/AccountPickerModal"
 import Transactions from "./Transactions"
 import { useDateRange } from "../../hooks/useDateRange"
+import { useAccounts } from "../../hooks"
 import { monthRange } from "../../utils"
 import { createLogger } from "../../lib/logger"
 
@@ -48,12 +50,18 @@ const SCREEN_WIDTH = Dimensions.get("screen").width
 
 const Home = () => {
   const { dateRange: totalDateRange } = useDateRange()
+  const { accounts } = useAccounts()
   const [steps, setSteps] = useState(initialSteps)
   const [visibleIndex, setVisibleIndex] = useState(0)
+  const [selectedAccountId, setSelectedAccountId] = useState("")
+  const [accountPickerVisible, setAccountPickerVisible] = useState(false)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
   const listRef = useRef<FlatList | null>(null)
+
+  const selectedAccountName =
+    accounts.find((account) => account._id === selectedAccountId)?.name ?? "Todo"
 
   const handlePressMenu = () => {
     const drawer = drawerRef.current
@@ -168,13 +176,31 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Account filter */}
+      <View style={styles.accountFilterRow}>
+        <TouchableOpacity
+          style={styles.accountPill}
+          onPress={() => setAccountPickerVisible(true)}
+        >
+          <Ionicons name="wallet-outline" size={14} color={grafito.ink3} />
+          <Text style={styles.accountPillText} numberOfLines={1}>
+            {selectedAccountName}
+          </Text>
+          <Ionicons name="chevron-down" size={14} color={grafito.ink3} />
+        </TouchableOpacity>
+      </View>
+
       {/* Paged transaction list */}
       <View style={styles.listContainer}>
         <FlatList
           ref={listRef}
           data={steps}
           renderItem={({ item }) => (
-            <Transactions start={item.start} end={item.end} />
+            <Transactions
+              start={item.start}
+              end={item.end}
+              accountId={selectedAccountId || undefined}
+            />
           )}
           onScrollToIndexFailed={({ index }) => {
             setTimeout(() => {
@@ -212,6 +238,15 @@ const Home = () => {
         onSelect={(tab) => {
           if (tab === "budget") navigate("/budget")
         }}
+      />
+
+      <AccountPickerModal
+        visible={accountPickerVisible}
+        accounts={accounts}
+        selectedId={selectedAccountId || undefined}
+        allowAll
+        onSelect={setSelectedAccountId}
+        onClose={() => setAccountPickerVisible(false)}
       />
     </View>
     </DrawerLayoutAndroid>
@@ -266,6 +301,26 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+  },
+  accountFilterRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingBottom: 8,
+  },
+  accountPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    maxWidth: 220,
+  },
+  accountPillText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 13,
+    color: grafito.ink3,
   },
 })
 

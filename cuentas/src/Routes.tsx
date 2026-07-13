@@ -10,6 +10,8 @@ import Categories from "./screens/transaction/Categories"
 import NumPad from "./screens/transaction/NumPad"
 import Home from "./screens/home"
 import Category from "./screens/category"
+import Account from "./screens/account"
+import AccountsList from "./screens/account/List"
 import Login from "./screens/auth/Login"
 import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
@@ -73,6 +75,9 @@ const Routes = () => {
           ))}
           <Route path="/categories/create" element={<Category />} />
           <Route path="/categories/:id" element={<Category />} />
+          <Route path="/accounts" element={<AccountsList />} />
+          <Route path="/accounts/create" element={<Account />} />
+          <Route path="/accounts/:id" element={<Account />} />
           <Route path="/import" element={<Import />} />
           <Route path="/import/pdf" element={<PdfImportReview />} />
           <Route path="/budget" element={<BudgetScreen />} />
