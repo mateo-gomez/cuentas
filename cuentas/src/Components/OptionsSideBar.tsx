@@ -9,6 +9,7 @@ import { theme } from "../theme"
 import { CategoriesOptions } from "./CategoriesOptions"
 import { StyledText } from "./StyledText"
 import { LogoutOption } from "./LogoutOption"
+import { AppVersion } from "./AppVersion"
 import { Link } from "react-router-native"
 
 const options = [
@@ -78,6 +79,7 @@ export const OptionsSideBar = () => (
     )}
 
     <LogoutOption />
+    <AppVersion />
   </View>
 )
 

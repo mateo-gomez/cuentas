@@ -3,6 +3,9 @@
     "name": "cuentas",
     "slug": "cuentas",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +15,8 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/6ac38539-bccb-406a-a980-557645299656"
     },
     "assetBundlePatterns": [
       "**/*"
