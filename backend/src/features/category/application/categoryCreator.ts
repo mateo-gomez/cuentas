@@ -7,9 +7,10 @@ import { DuplicateError } from "../../../infrastructure/api/errors/duplicateErro
 export class CategoryCreator {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  execute = async (name: string, icon: string): Promise<Category> => {
+  execute = async (userId: string, name: string, icon: string): Promise<Category> => {
     try {
       return await this.categoryRepository.createCategory(
+        userId,
         capitalize(name),
         icon,
       );

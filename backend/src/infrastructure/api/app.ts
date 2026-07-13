@@ -12,6 +12,5 @@ import { container } from "../container";
 	const app = new Api({ listenOptions, middlewares, routes });
 
 	await db.connect();
-	await container.categorySeeder.seed();
 	await app.run();
 })();

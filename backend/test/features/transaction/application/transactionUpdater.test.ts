@@ -9,10 +9,14 @@ const FIXED_DATE = new Date("2024-01-01");
 class PartialMockTransactionRepository
 	implements Partial<TransactionRepository>
 {
-	findOne = (id: string): Promise<Transaction | null> => {
-		if (id === "existingId" || id === "existingWithError") {
+	findOne = (userId: string, id: string): Promise<Transaction | null> => {
+		if (
+			userId === "user-1" &&
+			(id === "existingId" || id === "existingWithError")
+		) {
 			return Promise.resolve({
 				_id: "existingId",
+				userId: "user-1",
 				date: FIXED_DATE,
 				value: 100,
 				account: "account1",
@@ -33,6 +37,7 @@ class PartialMockTransactionRepository
 	};
 
 	updateTransaction = (
+		_userId: string,
 		id: string,
 		updatedTransaction: Partial<Transaction>
 	): Promise<Transaction | null> => {
@@ -59,6 +64,7 @@ describe("TransactionUpdater", () => {
 		);
 		const expectedUpdatedTransaction: Transaction = {
 			_id: "existingId",
+			userId: "user-1",
 			date: FIXED_DATE,
 			value: 200,
 			account: "account1",
@@ -73,13 +79,32 @@ describe("TransactionUpdater", () => {
 			description: "Income transaction",
 			createdAt: FIXED_DATE,
 			updatedAt: new Date("2024-01-02"),
-		};
+		} as Transaction;
 
-		const updatedTransaction = await transactionUpdater.execute("existingId", {
-			value: 200,
-		});
+		const updatedTransaction = await transactionUpdater.execute(
+			"user-1",
+			"existingId",
+			{
+				value: 200,
+			}
+		);
 
 		expect(updatedTransaction).toEqual(expectedUpdatedTransaction);
+	});
+
+	test("Ignores a userId supplied in the update body — keeps the owner", async () => {
+		const transactionRepository = new PartialMockTransactionRepository();
+		const transactionUpdater = new TransactionUpdater(
+			transactionRepository as TransactionRepository
+		);
+
+		const updatedTransaction = await transactionUpdater.execute(
+			"user-1",
+			"existingId",
+			{ value: 200, userId: "attacker" } as Partial<Transaction>
+		);
+
+		expect(updatedTransaction.userId).toBe("user-1");
 	});
 
 	test("Throws NotFoundError when the transaction does not exist", async () => {
@@ -89,7 +114,7 @@ describe("TransactionUpdater", () => {
 		);
 
 		await expect(
-			transactionUpdater.execute("nonExistingId", { value: 200 })
+			transactionUpdater.execute("user-1", "nonExistingId", { value: 200 })
 		).rejects.toThrow(NotFoundError);
 	});
 
@@ -100,7 +125,18 @@ describe("TransactionUpdater", () => {
 		);
 
 		await expect(
-			transactionUpdater.execute("existingWithError", { value: 200 })
+			transactionUpdater.execute("user-1", "existingWithError", { value: 200 })
 		).rejects.toThrow("Error al guardar transacción");
+	});
+
+	test("A cross-user id yields not-found instead of updating another user's transaction", async () => {
+		const transactionRepository = new PartialMockTransactionRepository();
+		const transactionUpdater = new TransactionUpdater(
+			transactionRepository as TransactionRepository
+		);
+
+		await expect(
+			transactionUpdater.execute("attacker", "existingId", { value: 200 })
+		).rejects.toThrow(NotFoundError);
 	});
 });

@@ -28,13 +28,14 @@ export class PdfStatementParser {
 	) {}
 
 	execute = async (
+		userId: string,
 		pdf: Buffer,
 		filename: string,
 		password?: string,
 	): Promise<PdfParseResult> => {
 		const parsed = await this.pdfBankParser.parse(pdf, filename, password);
 
-		const duplicateKeys = await this.buildDuplicateKeySet(parsed.rows);
+		const duplicateKeys = await this.buildDuplicateKeySet(userId, parsed.rows);
 
 		const rows: PreviewRow[] = parsed.rows.map((row) => ({
 			rowId: crypto.randomUUID(),
@@ -62,6 +63,7 @@ export class PdfStatementParser {
 	};
 
 	private buildDuplicateKeySet = async (
+		userId: string,
 		rows: RawParsedTransaction[],
 	): Promise<Set<string>> => {
 		if (rows.length === 0) {
@@ -72,7 +74,11 @@ export class PdfStatementParser {
 		const from = startOfUTCDay(new Date(Math.min(...dates)));
 		const to = endOfUTCDay(new Date(Math.max(...dates)));
 
-		const existing = await this.transactionRepository.findForDedup(from, to);
+		const existing = await this.transactionRepository.findForDedup(
+			userId,
+			from,
+			to,
+		);
 
 		return new Set(
 			existing.map((transaction) =>

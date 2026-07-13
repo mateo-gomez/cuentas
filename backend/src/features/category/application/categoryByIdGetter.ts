@@ -5,8 +5,8 @@ import { NotFoundError } from "../../../application/errors/notFoundError";
 export class CategoryByIdGetter {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  execute = async (id: string): Promise<Category> => {
-    const category = await this.categoryRepository.getById(id);
+  execute = async (userId: string, id: string): Promise<Category> => {
+    const category = await this.categoryRepository.getByIdForUser(userId, id);
 
     if (!category) {
       throw new NotFoundError("Categoría no encontrada", id);

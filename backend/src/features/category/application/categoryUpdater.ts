@@ -10,11 +10,12 @@ export class CategoryUpdater {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   execute = async (
+    userId: string,
     id: string,
     name?: string,
     icon?: string,
   ): Promise<Category> => {
-    const category = await this.categoryRepository.getById(id);
+    const category = await this.categoryRepository.getByIdForUser(userId, id);
 
     if (!category) {
       throw new NotFoundError("Categoría no encontrada", id);
@@ -24,6 +25,7 @@ export class CategoryUpdater {
 
     try {
       categoryUpdated = await this.categoryRepository.updateCategory(
+        userId,
         id,
         capitalize(name || category.name),
         icon || category.icon,

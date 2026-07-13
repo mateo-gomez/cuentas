@@ -17,6 +17,7 @@ const makeTransaction = (
   date,
   value,
   account: "checking",
+  userId: USER_ID,
   category: { _id: categoryId, name: "Cat", icon: "icon", createdAt: new Date(), updatedAt: new Date() },
   type,
   description: "",

@@ -13,7 +13,9 @@ const transactionController = new TransactionController(
 	container.transactionsRemover,
 	container.transactionImporter,
 	container.pdfStatementParser,
-	container.pdfImportConfirmer
+	container.pdfImportConfirmer,
+	container.accountByIdGetter,
+	container.accountRepository
 );
 
 const transactionAggregateController = new TransactionAggregateController(

@@ -153,7 +153,7 @@ test("GroupedTransactionByDayInRangeGetter - Return grouped transactions by day 
 		);
 
 	const transactionAggregates =
-		await groupedTransactionByDayInRangeGetter.execute(startDate, endDate);
+		await groupedTransactionByDayInRangeGetter.execute("user-1", startDate, endDate);
 
 	expect(transactionAggregates).toEqual(expectedTransactionAggregates);
 });

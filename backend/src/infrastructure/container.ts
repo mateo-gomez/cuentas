@@ -3,7 +3,6 @@ import { CategoryCreator } from "../features/category/application/categoryCreato
 import { CategoryGetter } from "../features/category/application/categoryGetter";
 import { CategoryRemover } from "../features/category/application/categoryRemover";
 import { CategoryUpdater } from "../features/category/application/categoryUpdater";
-import { CategorySeeder } from "../features/category/application/CategorySeeder";
 import { TransactionByIdGetter } from "../features/transaction/application/useCases/TransactionByIdGetter";
 import { BalanceGetter } from "../features/transaction/application/useCases/balanceGetter";
 import { BalanceInRangeGetter } from "../features/transaction/application/useCases/balanceInRangeGetter";
@@ -35,6 +34,15 @@ import { PdfStatementParser } from "../features/transaction/application/useCases
 import { PdfImportConfirmer } from "../features/transaction/application/useCases/PdfImportConfirmer";
 import { HttpPdfBankParser } from "../features/transaction/infrastructure/services/HttpPdfBankParser";
 import { InMemoryPreviewStore } from "../features/transaction/infrastructure/services/InMemoryPreviewStore";
+import { MongoAccountRepository } from "../features/account/infrastructure/database/mongoAccount.repository";
+import { AccountByIdGetter } from "../features/account/application/accountByIdGetter";
+import { AccountGetter } from "../features/account/application/accountGetter";
+import { AccountCreator } from "../features/account/application/accountCreator";
+import { AccountUpdater } from "../features/account/application/accountUpdater";
+import { AccountRemover } from "../features/account/application/accountRemover";
+import { AccountBalanceGetter } from "../features/account/application/accountBalanceGetter";
+import { UserDefaultsBootstrapper } from "../features/account/application/userDefaultsBootstrapper";
+import { TransactionAccountMigrator } from "../features/transaction/application/useCases/TransactionAccountMigrator";
 
 const categoryRepository = new MongoCategoryRepository();
 const transactionRepository = new MongoTransactionRepository();
@@ -50,6 +58,7 @@ const budgetRepository = new MongoBudgetRepository();
 const transactionImporter = new TransactionImporter(transactionRepository);
 const httpPdfBankParser = new HttpPdfBankParser();
 const inMemoryPreviewStore = new InMemoryPreviewStore();
+const accountRepository = new MongoAccountRepository();
 
 export const container = {
 	// category
@@ -59,7 +68,25 @@ export const container = {
 	categoryCreator: new CategoryCreator(categoryRepository),
 	categoryUpdater: new CategoryUpdater(categoryRepository),
 	categoryRemover: new CategoryRemover(categoryRepository),
-	categorySeeder: new CategorySeeder(categoryRepository),
+
+	// account
+	accountRepository,
+	accountByIdGetter: new AccountByIdGetter(accountRepository),
+	accountGetter: new AccountGetter(accountRepository),
+	accountCreator: new AccountCreator(accountRepository),
+	accountUpdater: new AccountUpdater(accountRepository),
+	accountRemover: new AccountRemover(accountRepository, transactionRepository),
+	accountBalanceGetter: new AccountBalanceGetter(accountRepository, transactionRepository),
+
+	// per-user defaults bootstrap + one-time legacy backfill (triggered at signin/signup)
+	userDefaultsBootstrapper: new UserDefaultsBootstrapper(
+		accountRepository,
+		categoryRepository
+	),
+	transactionAccountMigrator: new TransactionAccountMigrator(
+		transactionRepository,
+		categoryRepository
+	),
 
 	// transaction
 	transactionRepository,

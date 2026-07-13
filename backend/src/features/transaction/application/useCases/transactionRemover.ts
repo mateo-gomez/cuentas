@@ -6,15 +6,15 @@ import { NotFoundError } from "../../../../application/errors/notFoundError";
 export class TransactionRemover {
 	constructor(private readonly transactionRepository: TransactionRepository) {}
 
-	execute = async (id: string): Promise<void> => {
-		const exists = await this.transactionRepository.exists(id);
+	execute = async (userId: string, id: string): Promise<void> => {
+		const exists = await this.transactionRepository.exists(userId, id);
 
 		if (!exists) {
 			throw new NotFoundError(`Categoría no encontrada`, id);
 		}
 
 		try {
-			await this.transactionRepository.delete(id);
+			await this.transactionRepository.delete(userId, id);
 		} catch (error) {
 			if (error instanceof DatabaseError) {
 				throw new ApplicationError(error.message, error);

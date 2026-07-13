@@ -149,7 +149,7 @@ test("GroupedTransactionByDayGetter - Returns grouped transactions by day succes
 		transactionAggregateService
 	);
 
-	const transactionAggregates = await groupedTransactionByDayGetter.execute();
+	const transactionAggregates = await groupedTransactionByDayGetter.execute("user-1");
 
 	expect(transactionAggregates).toEqual(expectedTransactionAggregates);
 });

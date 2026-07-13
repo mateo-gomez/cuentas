@@ -7,9 +7,10 @@ export class CategoryRemover {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   execute = async (
+    userId: string,
     id: string,
   ): Promise<void> => {
-    const exists = await this.categoryRepository.exists(id);
+    const exists = await this.categoryRepository.existsForUser(userId, id);
 
     if (!exists) {
       throw new NotFoundError("Categoría no encontrada", id);
@@ -17,6 +18,7 @@ export class CategoryRemover {
 
     try {
       await this.categoryRepository.delete(
+        userId,
         id,
       );
     } catch (error) {

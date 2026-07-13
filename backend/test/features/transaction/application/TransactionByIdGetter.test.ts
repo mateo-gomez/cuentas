@@ -6,10 +6,11 @@ import { TransactionByIdGetter } from "../../../../src/features/transaction/appl
 const FIXED_DATE = new Date("2024-01-01");
 
 class MockTransactionRepository implements Partial<TransactionRepository> {
-	findOne = (id: string): Promise<Transaction | null> => {
-		if (id === "1") {
+	findOne = (userId: string, id: string): Promise<Transaction | null> => {
+		if (userId === "user-1" && id === "1") {
 			return Promise.resolve({
 				_id: "1",
+				userId: "user-1",
 				date: FIXED_DATE,
 				value: 100,
 				account: "account1",
@@ -34,6 +35,7 @@ describe("TransactionByIdGetter", () => {
 	test("Returns the transaction when it exists", async () => {
 		const expectedTransaction: Transaction = {
 			_id: "1",
+			userId: "user-1",
 			date: FIXED_DATE,
 			value: 100,
 			account: "account1",
@@ -48,12 +50,12 @@ describe("TransactionByIdGetter", () => {
 			description: "Income transaction",
 			createdAt: FIXED_DATE,
 			updatedAt: FIXED_DATE,
-		};
+		} as Transaction;
 		const transactionByIdGetter = new TransactionByIdGetter(
 			new MockTransactionRepository() as TransactionRepository
 		);
 
-		const transaction = await transactionByIdGetter.execute("1");
+		const transaction = await transactionByIdGetter.execute("user-1", "1");
 
 		expect(transaction).toBeDefined();
 		expect(transaction).not.toBeNull();
@@ -65,7 +67,20 @@ describe("TransactionByIdGetter", () => {
 			new MockTransactionRepository() as TransactionRepository
 		);
 
-		const transaction = await transactionByIdGetter.execute("nonexistentId");
+		const transaction = await transactionByIdGetter.execute(
+			"user-1",
+			"nonexistentId"
+		);
+
+		expect(transaction).toBeNull();
+	});
+
+	test("Returns null for another user's transaction id (cross-user access is not leaked)", async () => {
+		const transactionByIdGetter = new TransactionByIdGetter(
+			new MockTransactionRepository() as TransactionRepository
+		);
+
+		const transaction = await transactionByIdGetter.execute("attacker", "1");
 
 		expect(transaction).toBeNull();
 	});

@@ -7,15 +7,17 @@ describe("CategoryUpdater", () => {
 	test("update category successfully", async () => {
 		const expected = {
 			_id: "1",
+			userId: "user-1",
 			name: "drink",
 			icon: "drink-icon",
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
 		const repositoryMock: Partial<CategoryRepository> = {
-			getById: () =>
+			getByIdForUser: () =>
 				Promise.resolve({
 					_id: "1",
+					userId: "user-1",
 					name: "food",
 					icon: "food-icon",
 					createdAt: new Date(),
@@ -25,16 +27,17 @@ describe("CategoryUpdater", () => {
 		};
 		const useCase = new CategoryUpdater(repositoryMock as CategoryRepository);
 
-		const result = await useCase.execute("1", "drink", "drink-icon");
+		const result = await useCase.execute("user-1", "1", "drink", "drink-icon");
 
 		expect(result).toMatchObject({ _id: "1", name: "drink", icon: "drink-icon" });
 	});
 
 	test("throw ApplicationError when name already exists", async () => {
 		const repositoryMock: Partial<CategoryRepository> = {
-			getById: () =>
+			getByIdForUser: () =>
 				Promise.resolve({
 					_id: "1",
+					userId: "user-1",
 					name: "food",
 					icon: "food-icon",
 					createdAt: new Date(),
@@ -44,7 +47,7 @@ describe("CategoryUpdater", () => {
 		};
 		const useCase = new CategoryUpdater(repositoryMock as CategoryRepository);
 
-		await expect(useCase.execute("1", "drink", "drink-icon")).rejects.toThrow(
+		await expect(useCase.execute("user-1", "1", "drink", "drink-icon")).rejects.toThrow(
 			ApplicationError
 		);
 	});

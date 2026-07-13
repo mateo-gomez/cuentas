@@ -8,8 +8,14 @@ export class GroupedTransactionByDayGetter {
 		private readonly transactionAggregateService: TransactionAggregateService
 	) {}
 
-	execute = async (): Promise<TransactionAggregate[]> => {
-		const transactions = await this.transactionRepository.getAll();
+	execute = async (
+		userId: string,
+		accountId?: string
+	): Promise<TransactionAggregate[]> => {
+		const transactions = await this.transactionRepository.getAll(
+			userId,
+			accountId
+		);
 		const transactionAggregates =
 			this.transactionAggregateService.execute(transactions);
 

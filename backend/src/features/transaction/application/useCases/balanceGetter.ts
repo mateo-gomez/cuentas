@@ -4,9 +4,9 @@ import { TransactionRepository } from "../../domain/Transaction.repository";
 export class BalanceGetter {
 	constructor(private readonly transactionRepository: TransactionRepository) {}
 
-	execute = async (): Promise<Balance> => {
+	execute = async (userId: string, accountId?: string): Promise<Balance> => {
 		const { balance, incomes, expenses } =
-			await this.transactionRepository.sumAll();
+			await this.transactionRepository.sumAll(userId, accountId);
 
 		return {
 			incomes,

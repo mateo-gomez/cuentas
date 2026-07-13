@@ -30,7 +30,11 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 		}
 	};
 
-	validateTransactionRow = async (row: any): Promise<TransactionDTO> => {
+	validateTransactionRow = async (
+		row: any,
+		userId: string,
+		accountId: string
+	): Promise<TransactionDTO> => {
 		const errors: string[] = [];
 
 		const date = this.stringToDate(row.at(0));
@@ -58,9 +62,9 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 			errors.push("categoria inválida");
 
 		// 🔎 Validar si categoría existe en DB
-		let category = await this.categoryRepository.getByName(categoryName);
+		let category = await this.categoryRepository.getByNameForUser(userId, categoryName);
 		if (!category) {
-			category = await this.categoryRepository.createCategory(categoryName, "");
+			category = await this.categoryRepository.createCategory(userId, categoryName, "");
 		}
 
 		const type =
@@ -72,12 +76,16 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 			category: category._id,
 			type,
 			description,
+			userId,
+			accountId,
 		};
 	};
 
 	parse = async (
 		filePath: string,
 		onBatch: (batch: TransactionDTO[]) => Promise<void>,
+		userId: string,
+		accountId: string,
 		batchSize = 100
 	): Promise<void> => {
 		const workbook = XLSX.readFile(filePath);
@@ -102,7 +110,7 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 					isFirstRow = false;
 					continue;
 				}
-				const tx = await this.validateTransactionRow(row);
+				const tx = await this.validateTransactionRow(row, userId, accountId);
 				batch.push(tx);
 
 				if (batch.length >= batchSize) {

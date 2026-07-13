@@ -7,6 +7,7 @@ describe("CategoryGetter", () => {
 		const expected: Category[] = [
 			{
 				_id: "1",
+				userId: "user-1",
 				name: "drink",
 				icon: "drink-icon",
 				createdAt: new Date(),
@@ -14,6 +15,7 @@ describe("CategoryGetter", () => {
 			},
 			{
 				_id: "2",
+				userId: "user-1",
 				name: "food",
 				icon: "food-icon",
 				createdAt: new Date(),
@@ -21,22 +23,22 @@ describe("CategoryGetter", () => {
 			},
 		];
 		const repositoryMock: Partial<CategoryRepository> = {
-			getAll: () => Promise.resolve(expected),
+			getAllForUser: () => Promise.resolve(expected),
 		};
 		const useCase = new CategoryGetter(repositoryMock as CategoryRepository);
 
-		const result = await useCase.execute();
+		const result = await useCase.execute("user-1");
 
 		expect(result).toBe(expected);
 	});
 
 	test("get empty array", async () => {
 		const repositoryMock: Partial<CategoryRepository> = {
-			getAll: () => Promise.resolve([]),
+			getAllForUser: () => Promise.resolve([]),
 		};
 		const useCase = new CategoryGetter(repositoryMock as CategoryRepository);
 
-		const result = await useCase.execute();
+		const result = await useCase.execute("user-1");
 
 		expect(result).toEqual([]);
 	});

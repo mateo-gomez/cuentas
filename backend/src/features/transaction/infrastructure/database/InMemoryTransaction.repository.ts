@@ -14,47 +14,77 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     this.transactions = [];
   }
 
-  exists(id: string): Promise<boolean> {
+  exists(userId: string, id: string): Promise<boolean> {
     return Promise.resolve(
-      this.transactions.some((transaction) => transaction._id === id),
-    );
-  }
-
-  findOne(id: string): Promise<Transaction | null> {
-    return Promise.resolve(
-      this.transactions.find((transaction) => transaction._id === id) || null,
-    );
-  }
-
-  getAll(): Promise<Transaction[]> {
-    return Promise.resolve(this.transactions);
-  }
-
-  getBetweenDates(startDate: Date, endDate: Date): Promise<Transaction[]> {
-    return Promise.resolve(
-      this.transactions.filter((transaction) =>
-        transaction.date >= startDate && transaction.date <= endDate
+      this.transactions.some(
+        (transaction) => transaction._id === id && transaction.userId === userId,
       ),
     );
   }
 
-  sumAll(): Promise<Balance> {
-    const incomes = this.transactions.reduce((acc, transaction) => {
+  findOne(userId: string, id: string): Promise<Transaction | null> {
+    return Promise.resolve(
+      this.transactions.find(
+        (transaction) => transaction._id === id && transaction.userId === userId,
+      ) || null,
+    );
+  }
+
+  getAll(userId: string, accountId?: string): Promise<Transaction[]> {
+    return Promise.resolve(
+      this.transactions.filter(
+        (transaction) =>
+          transaction.userId === userId &&
+          (!accountId || transaction.accountId === accountId),
+      ),
+    );
+  }
+
+  getBetweenDates(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    accountId?: string,
+  ): Promise<Transaction[]> {
+    return Promise.resolve(
+      this.transactions.filter(
+        (transaction) =>
+          transaction.userId === userId &&
+          transaction.date >= startDate &&
+          transaction.date <= endDate &&
+          (!accountId || transaction.accountId === accountId),
+      ),
+    );
+  }
+
+  async sumAll(userId: string, accountId?: string): Promise<Balance> {
+    const filteredTransactions = await this.getAll(userId, accountId);
+    const incomes = filteredTransactions.reduce((acc, transaction) => {
       return transaction.type === TransactionType.income
         ? acc + transaction.value
         : acc;
     }, 0);
-    const expenses = this.transactions.reduce((acc, transaction) => {
+    const expenses = filteredTransactions.reduce((acc, transaction) => {
       return transaction.type === TransactionType.expenses
         ? acc + transaction.value
         : acc;
     }, 0);
     const balance = incomes - expenses;
-    return Promise.resolve({ incomes, expenses, balance });
+    return { incomes, expenses, balance };
   }
 
-  async sumBetweenDates(startDate: Date, endDate: Date): Promise<Balance> {
-    const filteredTransactions = await this.getBetweenDates(startDate, endDate);
+  async sumBetweenDates(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    accountId?: string,
+  ): Promise<Balance> {
+    const filteredTransactions = await this.getBetweenDates(
+      userId,
+      startDate,
+      endDate,
+      accountId,
+    );
     const incomes = filteredTransactions.reduce((acc, transaction) => {
       return transaction.type === TransactionType.income
         ? acc + transaction.value
@@ -83,11 +113,14 @@ export class InMemoryTransactionRepository implements TransactionRepository {
   }
 
   async updateTransaction(
+    userId: string,
     id: string,
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ): Promise<Transaction | null> {
     const index = await Promise.resolve(
-      this.transactions.findIndex((transaction) => transaction._id === id),
+      this.transactions.findIndex(
+        (transaction) => transaction._id === id && transaction.userId === userId,
+      ),
     );
     if (index === -1) {
       return null;
@@ -102,16 +135,21 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return updatedTransaction;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(userId: string, id: string): Promise<void> {
     this.transactions = await Promise.resolve(
-      this.transactions.filter((transaction) => transaction._id !== id),
+      this.transactions.filter(
+        (transaction) => !(transaction._id === id && transaction.userId === userId),
+      ),
     );
   }
 
-  async deleteMany(ids: string[]): Promise<number> {
+  async deleteMany(userId: string, ids: string[]): Promise<number> {
     const before = this.transactions.length;
     this.transactions = await Promise.resolve(
-      this.transactions.filter((transaction) => !ids.includes(transaction._id)),
+      this.transactions.filter(
+        (transaction) =>
+          !(ids.includes(transaction._id) && transaction.userId === userId),
+      ),
     );
     return before - this.transactions.length;
   }
@@ -120,10 +158,19 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return Promise.resolve();
   }
 
-  findForDedup(from: Date, to: Date): Promise<DedupTransaction[]> {
+  findForDedup(
+    userId: string,
+    from: Date,
+    to: Date,
+  ): Promise<DedupTransaction[]> {
     return Promise.resolve(
       this.transactions
-        .filter((transaction) => transaction.date >= from && transaction.date <= to)
+        .filter(
+          (transaction) =>
+            transaction.userId === userId &&
+            transaction.date >= from &&
+            transaction.date <= to,
+        )
         .map(({ date, value, type, description }) => ({
           date,
           value,
@@ -133,17 +180,51 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     );
   }
 
-  firstDateRecord(): Promise<{ firstDate: Date } | null> {
-    if (!this.transactions || this.transactions.length === 0) {
+  firstDateRecord(userId: string): Promise<{ firstDate: Date } | null> {
+    const userTransactions = this.transactions.filter(
+      (transaction) => transaction.userId === userId,
+    );
+
+    if (userTransactions.length === 0) {
       return Promise.resolve(null); // No hay registros, devuelve null
     } else {
-      let oldestDate: Date = this.transactions[0].date;
-      for (let i = 1; i < this.transactions.length; i++) {
-        if (this.transactions[i].date < oldestDate) {
-          oldestDate = this.transactions[i].date;
+      let oldestDate: Date = userTransactions[0].date;
+      for (let i = 1; i < userTransactions.length; i++) {
+        if (userTransactions[i].date < oldestDate) {
+          oldestDate = userTransactions[i].date;
         }
       }
       return Promise.resolve({ firstDate: oldestDate });
     }
+  }
+
+  existsForAccount(accountId: string): Promise<boolean> {
+    return Promise.resolve(
+      this.transactions.some((transaction) => transaction.accountId === accountId),
+    );
+  }
+
+  hasOwnerlessTransactions(): Promise<boolean> {
+    return Promise.resolve(
+      this.transactions.some((transaction) => !transaction.accountId),
+    );
+  }
+
+  migrateOwnerlessTransactions(
+    userId: string,
+    defaultAccountId: string,
+  ): Promise<number> {
+    let migrated = 0;
+
+    this.transactions = this.transactions.map((transaction) => {
+      if (!transaction.accountId) {
+        migrated += 1;
+        return { ...transaction, userId, accountId: defaultAccountId };
+      }
+
+      return transaction;
+    });
+
+    return Promise.resolve(migrated);
   }
 }

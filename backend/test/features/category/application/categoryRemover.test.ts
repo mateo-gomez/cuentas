@@ -7,27 +7,27 @@ describe("CategoryRemover", () => {
 		const existsMock = jest.fn().mockResolvedValue(true);
 		const deleteMock = jest.fn().mockResolvedValue(undefined);
 		const repositoryMock = {
-			exists: existsMock,
+			existsForUser: existsMock,
 			delete: deleteMock,
 		} as unknown as CategoryRepository;
 		const useCase = new CategoryRemover(repositoryMock);
 
-		await useCase.execute("1");
+		await useCase.execute("user-1", "1");
 
-		expect(existsMock).toHaveBeenCalledWith("1");
-		expect(deleteMock).toHaveBeenCalledWith("1");
+		expect(existsMock).toHaveBeenCalledWith("user-1", "1");
+		expect(deleteMock).toHaveBeenCalledWith("user-1", "1");
 	});
 
 	test("throw NotFoundError when id does not exist", async () => {
 		const existsMock = jest.fn().mockResolvedValue(false);
 		const deleteMock = jest.fn();
 		const repositoryMock = {
-			exists: existsMock,
+			existsForUser: existsMock,
 			delete: deleteMock,
 		} as unknown as CategoryRepository;
 		const useCase = new CategoryRemover(repositoryMock);
 
-		await expect(useCase.execute("1")).rejects.toThrow(NotFoundError);
+		await expect(useCase.execute("user-1", "1")).rejects.toThrow(NotFoundError);
 		expect(deleteMock).not.toHaveBeenCalled();
 	});
 });

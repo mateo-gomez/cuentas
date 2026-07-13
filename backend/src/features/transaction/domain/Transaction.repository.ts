@@ -8,34 +8,61 @@ export type DedupTransaction = Pick<
 >;
 
 export interface TransactionRepository {
-  exists: (id: string) => Promise<boolean>;
+  exists: (userId: string, id: string) => Promise<boolean>;
 
-  findOne: (id: string) => Promise<Transaction | null>;
+  findOne: (userId: string, id: string) => Promise<Transaction | null>;
 
-  getAll: () => Promise<Transaction[]>;
+  getAll: (userId: string, accountId?: string) => Promise<Transaction[]>;
 
-  getBetweenDates: (startDate: Date, endDate: Date) => Promise<Transaction[]>;
+  getBetweenDates: (
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    accountId?: string,
+  ) => Promise<Transaction[]>;
 
-  sumAll: () => Promise<Balance>;
+  sumAll: (userId: string, accountId?: string) => Promise<Balance>;
 
-  sumBetweenDates: (startDate: Date, endDate: Date) => Promise<Balance>;
+  sumBetweenDates: (
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    accountId?: string,
+  ) => Promise<Balance>;
 
   createTransaction: (
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ) => Promise<Transaction>;
 
   updateTransaction: (
+    userId: string,
     id: string,
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ) => Promise<Transaction | null>;
 
-  delete: (id: string) => Promise<void>;
+  delete: (userId: string, id: string) => Promise<void>;
 
-  deleteMany: (ids: string[]) => Promise<number>;
+  deleteMany: (userId: string, ids: string[]) => Promise<number>;
 
-  firstDateRecord: () => Promise<{ firstDate: Date } | null>;
+  firstDateRecord: (userId: string) => Promise<{ firstDate: Date } | null>;
 
   saveMany: (transactions: TransactionDTO[]) => Promise<void>;
 
-  findForDedup: (from: Date, to: Date) => Promise<DedupTransaction[]>;
+  findForDedup: (
+    userId: string,
+    from: Date,
+    to: Date,
+  ) => Promise<DedupTransaction[]>;
+
+  /** Used by the account delete guard — true if any transaction still references this accountId. */
+  existsForAccount: (accountId: string) => Promise<boolean>;
+
+  /** True if any transaction has no `accountId` (pre-migration legacy data, matches `account:""` and missing `account`). */
+  hasOwnerlessTransactions: () => Promise<boolean>;
+
+  /** One-time backfill: assigns `userId` + `accountId` to every ownerless transaction. Idempotent — matches nothing after the first run. */
+  migrateOwnerlessTransactions: (
+    userId: string,
+    defaultAccountId: string,
+  ) => Promise<number>;
 }

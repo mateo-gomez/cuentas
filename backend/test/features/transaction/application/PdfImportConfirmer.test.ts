@@ -7,6 +7,8 @@ import { TransactionType } from "../../../../src/domain/valueObjects/transaction
 import { PreviewRow } from "../../../../src/features/transaction/application/dto/pdfImportDTO";
 import { ValidationError } from "../../../../src/infrastructure/api/errors/validationError";
 
+const ACCOUNT_ID = "account-1";
+
 const previewRow: PreviewRow = {
 	rowId: "row-1",
 	date: "2026-01-10",
@@ -35,7 +37,9 @@ describe("PdfImportConfirmer", () => {
 	test("rejects when the session does not exist", async () => {
 		const { confirmer } = buildConfirmer();
 
-		await expect(confirmer.execute("missing-session", [])).rejects.toThrow(
+		await expect(confirmer.execute("missing-session", [], "user-1",
+			ACCOUNT_ID,
+		)).rejects.toThrow(
 			ValidationError,
 		);
 	});
@@ -47,7 +51,9 @@ describe("PdfImportConfirmer", () => {
 		await expect(
 			confirmer.execute(importSessionId, [
 				{ ...previewRow, rowId: "unknown-row", categoryName: "food" },
-			]),
+			], "user-1",
+			ACCOUNT_ID,
+		),
 		).rejects.toThrow(ValidationError);
 	});
 
@@ -55,13 +61,15 @@ describe("PdfImportConfirmer", () => {
 		const { confirmer, previewStore, categoryRepository } = buildConfirmer();
 		const importSessionId = previewStore.put([previewRow], "bancolombia", []);
 
-		expect(await categoryRepository.getByName("food")).toBeNull();
+		expect(await categoryRepository.getByNameForUser("user-1", "food")).toBeNull();
 
 		await confirmer.execute(importSessionId, [
 			{ ...previewRow, categoryName: "food" },
-		]);
+		], "user-1",
+			ACCOUNT_ID,
+		);
 
-		expect(await categoryRepository.getByName("food")).not.toBeNull();
+		expect(await categoryRepository.getByNameForUser("user-1", "food")).not.toBeNull();
 	});
 
 	test("clears the session after a successful confirm (single-use)", async () => {
@@ -70,11 +78,15 @@ describe("PdfImportConfirmer", () => {
 
 		await confirmer.execute(importSessionId, [
 			{ ...previewRow, categoryName: "food" },
-		]);
+		], "user-1",
+			ACCOUNT_ID,
+		);
 
 		expect(previewStore.get(importSessionId)).toBeNull();
 		await expect(
-			confirmer.execute(importSessionId, [{ ...previewRow, categoryName: "food" }]),
+			confirmer.execute(importSessionId, [{ ...previewRow, categoryName: "food" }], "user-1",
+			ACCOUNT_ID,
+		),
 		).rejects.toThrow(ValidationError);
 	});
 
@@ -97,11 +109,17 @@ describe("PdfImportConfirmer", () => {
 		const result = await confirmer.execute(importSessionId, [
 			{ ...previewRow, categoryName: "food" },
 			{ ...secondRow, categoryName: "food", excluded: true },
-		]);
+		], "user-1",
+			ACCOUNT_ID,
+		);
 
 		expect(result).toEqual({ persisted: 1, excluded: 1 });
 		expect(saveManySpy).toHaveBeenCalledTimes(1);
 		expect(saveManySpy.mock.calls[0][0]).toHaveLength(1);
+		expect(saveManySpy.mock.calls[0][0][0]).toMatchObject({
+			userId: "user-1",
+			accountId: ACCOUNT_ID,
+		});
 	});
 
 	test("rejects a concurrent second confirm of the same session and persists only once", async () => {
@@ -112,8 +130,12 @@ describe("PdfImportConfirmer", () => {
 		const confirmRows = [{ ...previewRow, categoryName: "food" }];
 
 		const [firstResult, secondResult] = await Promise.allSettled([
-			confirmer.execute(importSessionId, confirmRows),
-			confirmer.execute(importSessionId, confirmRows),
+			confirmer.execute(importSessionId, confirmRows, "user-1",
+			ACCOUNT_ID,
+		),
+			confirmer.execute(importSessionId, confirmRows, "user-1",
+			ACCOUNT_ID,
+		),
 		]);
 
 		const fulfilled = [firstResult, secondResult].filter(
@@ -145,7 +167,9 @@ describe("PdfImportConfirmer", () => {
 				value: 999999,
 				type: TransactionType.income,
 			},
-		]);
+		], "user-1",
+			ACCOUNT_ID,
+		);
 
 		const persisted = saveManySpy.mock.calls[0][0][0];
 
@@ -166,7 +190,9 @@ describe("PdfImportConfirmer", () => {
 					value: -1000,
 					type: TransactionType.income,
 				},
-			]),
+			], "user-1",
+			ACCOUNT_ID,
+		),
 		).rejects.toThrow(ValidationError);
 	});
 });

@@ -15,9 +15,11 @@ export type GroupBy = "year" | "month" | "day" | "week";
 
 export interface Transaction {
 	_id: string;
+	userId?: string;
+	accountId?: string;
 	date: Date;
 	value: number;
-	account: string;
+	account?: string;
 	type: number;
 	category: Category;
 	description: string;
@@ -85,8 +87,12 @@ const getGroupBySentence = (groupBy: GroupBy) => {
 
 const transactionSchema = new Schema(
 	{
+		userId: { type: Types.ObjectId, ref: "User", index: true },
+		accountId: { type: Types.ObjectId, ref: "Account", index: true },
 		date: { type: Date },
 		value: { type: Number, default: 0 },
+		// legacy free-text account label, kept until the migration backfill
+		// (account-management block 5) removes it entirely.
 		account: { type: String },
 		category: { type: Types.ObjectId, ref: "Category", required: true },
 		type: { type: Number, TransactionType },

@@ -20,6 +20,7 @@ const seedTransaction = async (
 	value: number,
 	type: TransactionType,
 	description: string,
+	userId = "user-1",
 ) => {
 	await repository.createTransaction({
 		date,
@@ -28,7 +29,9 @@ const seedTransaction = async (
 		category,
 		type,
 		description,
-	});
+		userId,
+		accountId: "account-1",
+	} as any);
 };
 
 const buildParser = (
@@ -71,13 +74,13 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser, previewStore, repository } = buildParser(parsed);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(result.bankId).toBe("bancolombia");
 		expect(result.rows).toHaveLength(1);
 		expect(result.rows[0].possibleDuplicate).toBe(false);
 		expect(previewStore.get(result.importSessionId)).not.toBeNull();
-		expect(await repository.getAll()).toHaveLength(0);
+		expect(await repository.getAll("user-1")).toHaveLength(0);
 	});
 
 	test("flags a row as possibleDuplicate when it matches an existing transaction's natural key", async () => {
@@ -113,7 +116,7 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser } = buildParser(parsed, repository);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(result.rows[0].possibleDuplicate).toBe(true);
 	});
@@ -153,7 +156,7 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser } = buildParser(parsed, repository);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(result.rows[0].possibleDuplicate).toBe(false);
 	});
@@ -183,7 +186,7 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser, previewStore } = buildParser(parsed, repository);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(result.reconciliation).toEqual(parsed.reconciliation);
 		// Reconciliation is advisory metadata only — it must not block/alter
@@ -228,7 +231,7 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser } = buildParser(parsed, repository);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(result.rows.every((row) => row.possibleDuplicate)).toBe(true);
 	});
@@ -272,7 +275,7 @@ describe("PdfStatementParser", () => {
 		};
 		const { parser } = buildParser(parsed, repository);
 
-		const result = await parser.execute(Buffer.from(""), "statement.pdf");
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		const january = result.rows.find((row) => row.description === "January purchase");
 		const february = result.rows.find((row) => row.description === "February purchase");
@@ -303,7 +306,7 @@ describe("PdfStatementParser", () => {
 			],
 		};
 		const { parser } = buildParser(parsed, repository);
-		await parser.execute(Buffer.from(""), "statement.pdf");
+		await parser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(spy).toHaveBeenCalledTimes(1);
 
@@ -326,8 +329,48 @@ describe("PdfStatementParser", () => {
 			},
 			repository,
 		);
-		await emptyParser.execute(Buffer.from(""), "statement.pdf");
+		await emptyParser.execute("user-1", Buffer.from(""), "statement.pdf");
 
 		expect(spy).not.toHaveBeenCalled();
+	});
+
+	test("dedup ignores another user's same-date/value/description transaction", async () => {
+		const repository = new InMemoryTransactionRepository();
+		// Same date/value/description as the parsed row below, but owned by a different user.
+		await seedTransaction(
+			repository,
+			new Date("2026-04-01T00:00:00.000Z"),
+			1000,
+			TransactionType.expenses,
+			"Shared description",
+			"other-user",
+		);
+
+		const parsed: ParsedStatement = {
+			bankId: "bancolombia",
+			warnings: [],
+			reconciliation: {
+				available: false,
+				reconciled: false,
+				openingBalance: null,
+				closingBalance: null,
+				computedDelta: null,
+				expectedDelta: null,
+				difference: null,
+			},
+			rows: [
+				{
+					date: "2026-04-01",
+					description: "Shared description",
+					value: -1000,
+					type: TransactionType.expenses,
+				},
+			],
+		};
+		const { parser } = buildParser(parsed, repository);
+
+		const result = await parser.execute("user-1", Buffer.from(""), "statement.pdf");
+
+		expect(result.rows[0].possibleDuplicate).toBe(false);
 	});
 });

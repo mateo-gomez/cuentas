@@ -4,6 +4,8 @@ export interface ExcelStreamParser {
 	parse(
 		filePath: string,
 		onBatch: (batch: TransactionDTO[]) => Promise<void>,
-		batchSize: number
+		userId: string,
+		accountId: string,
+		batchSize?: number
 	): Promise<void>;
 }

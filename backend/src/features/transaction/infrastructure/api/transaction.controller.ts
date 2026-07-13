@@ -7,9 +7,12 @@ import { TransactionCreator } from "../../application/useCases/transactionCreato
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
 import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
 import { TransactionUpdater } from "../../application/useCases/transactionUpdater";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { TransactionImporter } from "../../application/useCases/TransactionImporter";
-import { NextFunction } from "../../../../infrastructure/api/middlewares/BaseMiddleware";
+import {
+	NextFunction,
+	RequestAuthenticated,
+} from "../../../../infrastructure/api/middlewares/BaseMiddleware";
 import { catchAsync } from "../../../../application/utils/catchAsync";
 import { ExcelTransactionParser } from "../services/excelTransactionParser";
 import { CategoryClassifier } from "../../application/services/categoryClassifier";
@@ -17,6 +20,8 @@ import { MongoCategoryRepository } from "../../../category/infrastructure/databa
 import { PdfStatementParser } from "../../application/useCases/PdfStatementParser";
 import { PdfImportConfirmer } from "../../application/useCases/PdfImportConfirmer";
 import { ConfirmRow } from "../../application/dto/pdfImportDTO";
+import { AccountByIdGetter } from "../../../account/application/accountByIdGetter";
+import { AccountRepository } from "../../../account/domain/account.repository";
 
 export class TransactionController {
 	constructor(
@@ -27,12 +32,35 @@ export class TransactionController {
 		private readonly transactionsRemover: TransactionsRemover,
 		private readonly transactionImporter: TransactionImporter,
 		private readonly pdfStatementParser: PdfStatementParser,
-		private readonly pdfImportConfirmer: PdfImportConfirmer
+		private readonly pdfImportConfirmer: PdfImportConfirmer,
+		private readonly accountByIdGetter: AccountByIdGetter,
+		private readonly accountRepository: AccountRepository
 	) {}
 
-	getTransaction = catchAsync(async (req: Request, res: Response) => {
+	private resolveOwnedAccountId = async (
+		userId: string,
+		accountId: unknown
+	): Promise<string> => {
+		if (!accountId || typeof accountId !== "string" || !isIdValid(accountId)) {
+			throw new ValidationError().addError(
+				"accountId",
+				"Se requiere una cuenta válida"
+			);
+		}
+
+		const account = await this.accountByIdGetter.execute(userId, accountId);
+
+		if (!account) {
+			throw new ValidationError().addError("accountId", "Cuenta inválida");
+		}
+
+		return accountId;
+	};
+
+	getTransaction = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const { id } = req.params;
-		const transaction = await this.transactionByIdGetter.execute(id);
+		const transaction = await this.transactionByIdGetter.execute(userId, id);
 
 		if (!transaction) {
 			throw new HttpNotFoundError("Transaction", id);
@@ -42,8 +70,11 @@ export class TransactionController {
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
-	saveTransaction = catchAsync(async (req: Request, res: Response) => {
+	saveTransaction = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const body = await req.body;
+
+		const accountId = await this.resolveOwnedAccountId(userId, body.accountId);
 
 		const transaction = await this.transactionCreator.execute({
 			category: body.category,
@@ -51,6 +82,8 @@ export class TransactionController {
 			description: body.description,
 			type: body.type,
 			account: "",
+			userId,
+			accountId,
 			value: body.value,
 		});
 
@@ -58,7 +91,8 @@ export class TransactionController {
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
-	updateTransaction = catchAsync(async (req: Request, res: Response) => {
+	updateTransaction = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const { id } = req.params;
 		const body = await req.body;
 
@@ -66,12 +100,15 @@ export class TransactionController {
 			throw new ValidationError().addError("id", `El id ${id} is inválido`);
 		}
 
-		const transaction = await this.transactionUpdater.execute(id, {
+		const accountId = await this.resolveOwnedAccountId(userId, body.accountId);
+
+		const transaction = await this.transactionUpdater.execute(userId, id, {
 			category: body.category,
 			date: body.date,
 			description: body.description,
 			type: body.type,
-			account: body.account,
+			userId,
+			accountId,
 			value: body.value,
 		});
 
@@ -79,20 +116,22 @@ export class TransactionController {
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
-	deleteTransaction = catchAsync(async (req: Request, res: Response) => {
+	deleteTransaction = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const { id } = req.params;
 
 		if (!isIdValid(id)) {
 			throw new ValidationError().addError("id", `El id ${id} is inválido`);
 		}
 
-		await this.transactionRemover.execute(id);
+		await this.transactionRemover.execute(userId, id);
 
 		const responseBody = HttpResponse.success();
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
-	deleteTransactions = catchAsync(async (req: Request, res: Response) => {
+	deleteTransactions = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const { ids } = req.body as { ids: unknown };
 
 		if (!Array.isArray(ids) || ids.length === 0) {
@@ -111,6 +150,7 @@ export class TransactionController {
 		}
 
 		const deletedCount = await this.transactionsRemover.execute(
+			userId,
 			ids as string[]
 		);
 
@@ -119,13 +159,26 @@ export class TransactionController {
 	});
 
 	import = catchAsync(
-		async (req: Request, res: Response, next: NextFunction) => {
+		async (req: RequestAuthenticated, res: Response, next: NextFunction) => {
+			const userId = req.user!.id;
 			const { file } = req;
 
 			if (!file) {
 				throw new ValidationError({
-					file: ["No se proporcionó un archivo"],
+					file: ["No se proporcionó un archivo"],
 				});
+			}
+
+			// Excel importer is out of scope for account selection (R6 non-goal);
+			// minimally wire it to the user's default "Sin asignar" account so
+			// TransactionDTO's required accountId stays satisfied.
+			const defaultAccount = await this.accountRepository.getDefaultForUser(userId);
+
+			if (!defaultAccount) {
+				throw new ValidationError().addError(
+					"account",
+					"No se encontró la cuenta por defecto del usuario"
+				);
 			}
 
 			const excelTransactionParser = new ExcelTransactionParser(
@@ -134,7 +187,9 @@ export class TransactionController {
 			);
 			await excelTransactionParser.parse(
 				file.path,
-				this.transactionImporter.execute
+				this.transactionImporter.execute,
+				userId,
+				defaultAccount._id
 			);
 
 			const responseBody = HttpResponse.success();
@@ -142,7 +197,8 @@ export class TransactionController {
 		}
 	);
 
-	parsePdf = catchAsync(async (req: Request, res: Response) => {
+	parsePdf = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
 		const { file } = req;
 
 		if (!file) {
@@ -155,6 +211,7 @@ export class TransactionController {
 			typeof req.body?.password === "string" ? req.body.password : undefined;
 
 		const result = await this.pdfStatementParser.execute(
+			userId,
 			file.buffer,
 			file.originalname,
 			password
@@ -164,10 +221,12 @@ export class TransactionController {
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
-	confirmPdfImport = catchAsync(async (req: Request, res: Response) => {
-		const { importSessionId, rows } = req.body as {
+	confirmPdfImport = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+		const { importSessionId, rows, accountId } = req.body as {
 			importSessionId: string;
 			rows: ConfirmRow[];
+			accountId?: unknown;
 		};
 
 		if (!importSessionId || typeof importSessionId !== "string") {
@@ -180,7 +239,15 @@ export class TransactionController {
 			throw new ValidationError({ rows: ["Se requiere una lista de filas"] });
 		}
 
-		const result = await this.pdfImportConfirmer.execute(importSessionId, rows);
+		// One account per import batch (R9) — not per row.
+		const ownedAccountId = await this.resolveOwnedAccountId(userId, accountId);
+
+		const result = await this.pdfImportConfirmer.execute(
+			importSessionId,
+			rows,
+			userId,
+			ownedAccountId
+		);
 
 		const responseBody = HttpResponse.success(result);
 		res.status(responseBody.statusCode).json(responseBody);

@@ -5,13 +5,13 @@ import { BalanceGetter } from "../../../../src/features/transaction/application/
 class PartialMockTransactionRepository
 	implements Partial<TransactionRepository>
 {
-	sumAll = (): Promise<Balance> => {
+	sumAll = jest.fn((): Promise<Balance> => {
 		return Promise.resolve({
 			incomes: 5000,
 			expenses: 3000,
 			balance: 2000,
 		});
-	};
+	});
 }
 
 test("BalanceGetter - Returns balance successfully", async () => {
@@ -25,7 +25,19 @@ test("BalanceGetter - Returns balance successfully", async () => {
 		transactionRepository as TransactionRepository
 	);
 
-	const balance = await balanceGetter.execute();
+	const balance = await balanceGetter.execute("user-1");
 
 	expect(balance).toEqual(expectedBalance);
+	expect(transactionRepository.sumAll).toHaveBeenCalledWith("user-1", undefined);
+});
+
+test("BalanceGetter - forwards accountId for per-account balance", async () => {
+	const transactionRepository = new PartialMockTransactionRepository();
+	const balanceGetter = new BalanceGetter(
+		transactionRepository as TransactionRepository
+	);
+
+	await balanceGetter.execute("user-1", "account-1");
+
+	expect(transactionRepository.sumAll).toHaveBeenCalledWith("user-1", "account-1");
 });

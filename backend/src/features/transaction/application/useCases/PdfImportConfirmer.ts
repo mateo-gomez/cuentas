@@ -1,7 +1,7 @@
 import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
 import { ValidationError } from "../../../../infrastructure/api/errors/validationError";
 import { CategoryRepository } from "../../../category/domain/category.repository";
-import { DEFAULT_CATEGORY_NAME } from "../../../category/application/CategorySeeder";
+import { DEFAULT_CATEGORY_NAME } from "../../../category/domain/defaultCategories";
 import { PreviewStore } from "../../domain/pdfImport/PreviewStore";
 import { ConfirmResult, ConfirmRow } from "../dto/pdfImportDTO";
 import { TransactionDTO } from "../dto/transactionDTO";
@@ -17,6 +17,8 @@ export class PdfImportConfirmer {
 	execute = async (
 		importSessionId: string,
 		rows: ConfirmRow[],
+		userId: string,
+		accountId: string,
 	): Promise<ConfirmResult> => {
 		const previewPeek = this.previewStore.get(importSessionId);
 
@@ -49,7 +51,7 @@ export class PdfImportConfirmer {
 
 		const dtos: TransactionDTO[] = [];
 		for (const row of included) {
-			const category = await this.resolveCategory(row.categoryName);
+			const category = await this.resolveCategory(row.categoryName, userId);
 			const previewRow = previewRowsById.get(row.rowId);
 
 			if (!previewRow) {
@@ -64,6 +66,8 @@ export class PdfImportConfirmer {
 				value: Math.abs(previewRow.value),
 				category: category,
 				type: previewRow.type,
+				userId,
+				accountId,
 			});
 		}
 
@@ -72,15 +76,15 @@ export class PdfImportConfirmer {
 		return { persisted: dtos.length, excluded: rows.length - included.length };
 	};
 
-	private resolveCategory = async (categoryName: string): Promise<string> => {
+	private resolveCategory = async (categoryName: string, userId: string): Promise<string> => {
 		// Empty category (parser doesn't classify) falls back to the default.
 		// get-or-create keeps this resilient to a deleted default category.
 		const name = categoryName?.trim() || DEFAULT_CATEGORY_NAME;
 
-		let category = await this.categoryRepository.getByName(name);
+		let category = await this.categoryRepository.getByNameForUser(userId, name);
 
 		if (!category) {
-			category = await this.categoryRepository.createCategory(name, "");
+			category = await this.categoryRepository.createCategory(userId, name, "");
 		}
 
 		return category._id;

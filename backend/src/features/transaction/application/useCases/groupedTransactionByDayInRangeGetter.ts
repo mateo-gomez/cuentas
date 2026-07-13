@@ -9,12 +9,16 @@ export class GroupedTransactionByDayInRangeGetter {
 	) {}
 
 	execute = async (
+		userId: string,
 		startDate: Date,
-		endDate: Date
+		endDate: Date,
+		accountId?: string
 	): Promise<TransactionAggregate[]> => {
 		const transactions = await this.transactionRepository.getBetweenDates(
+			userId,
 			startDate,
-			endDate
+			endDate,
+			accountId
 		);
 		const transactionAggregates =
 			this.transactionAggregateService.execute(transactions);

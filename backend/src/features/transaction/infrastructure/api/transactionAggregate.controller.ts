@@ -5,8 +5,9 @@ import { GroupedTransactionByDayInRangeGetter } from "../../application/useCases
 import { TransactionAggregate } from "../../domain/transaction.aggregate";
 import { Balance } from "../../domain/balance.entity";
 import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { catchAsync } from "../../../../application/utils/catchAsync";
+import { RequestAuthenticated } from "../../../../infrastructure/api/middlewares/BaseMiddleware";
 
 export class TransactionAggregateController {
 	constructor(
@@ -16,8 +17,13 @@ export class TransactionAggregateController {
 		private readonly balanceGetter: BalanceGetter
 	) {}
 
-	getAllTransactions = catchAsync(async (req: Request, res: Response) => {
-		const { start, end } = req.query;
+	getAllTransactions = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+		const { start, end, accountId } = req.query;
+		const accountFilter =
+			typeof accountId === "string" && accountId.length > 0
+				? accountId
+				: undefined;
 
 		let transactionAggregates!: TransactionAggregate[];
 		let balance!: Balance;
@@ -28,14 +34,21 @@ export class TransactionAggregateController {
 
 			transactionAggregates =
 				await this.groupedTransactionByDayInRangeGetter.execute(
+					userId,
 					startDate,
-					endDate
+					endDate,
+					accountFilter
 				);
-			balance = await this.balanceInRangeGetter.execute(startDate, endDate);
+			balance = await this.balanceInRangeGetter.execute(
+				userId,
+				startDate,
+				endDate,
+				accountFilter
+			);
 		} else {
 			transactionAggregates =
-				await this.groupedTransactionByDayGetter.execute();
-			balance = await this.balanceGetter.execute();
+				await this.groupedTransactionByDayGetter.execute(userId, accountFilter);
+			balance = await this.balanceGetter.execute(userId, accountFilter);
 		}
 
 		const responseBody = HttpResponse.success({

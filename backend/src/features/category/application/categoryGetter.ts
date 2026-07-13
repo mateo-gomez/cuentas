@@ -4,7 +4,7 @@ import { CategoryRepository } from "../domain/category.repository";
 export class CategoryGetter {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  execute = async (): Promise<Category[]> => {
-    return await this.categoryRepository.getAll();
+  execute = async (userId: string): Promise<Category[]> => {
+    return await this.categoryRepository.getAllForUser(userId);
   };
 }

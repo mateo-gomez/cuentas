@@ -27,7 +27,7 @@ test("BalanceInRangeGetter - Returns balance in a range of dates successfully", 
 		transactionRepository as unknown as TransactionRepository
 	);
 
-	const balance = await balanceInRangeGetter.execute(startDate, endDate);
+	const balance = await balanceInRangeGetter.execute("user-1", startDate, endDate);
 
 	expect(balance).toEqual(expectedBalance);
 });

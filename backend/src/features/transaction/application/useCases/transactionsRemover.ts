@@ -5,11 +5,11 @@ import { ApplicationError } from "../../../../application/errors/applicationErro
 export class TransactionsRemover {
 	constructor(private readonly transactionRepository: TransactionRepository) {}
 
-	execute = async (ids: string[]): Promise<number> => {
+	execute = async (userId: string, ids: string[]): Promise<number> => {
 		const uniqueIds = [...new Set(ids)];
 
 		try {
-			return await this.transactionRepository.deleteMany(uniqueIds);
+			return await this.transactionRepository.deleteMany(userId, uniqueIds);
 		} catch (error) {
 			if (error instanceof DatabaseError) {
 				throw new ApplicationError(error.message, error);

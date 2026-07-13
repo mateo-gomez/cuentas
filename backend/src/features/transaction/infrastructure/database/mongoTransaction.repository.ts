@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Balance } from "../../domain/balance.entity";
 import { Transaction } from "../../domain/transaction.entity";
 import {
@@ -8,40 +9,67 @@ import { DatabaseError } from "../../../../infrastructure/api/errors/databaseErr
 import TransactionModel from "./Transaction";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
 
+// Aggregation pipelines ($match) bypass mongoose's automatic query-cast, so
+// userId/accountId must be cast to ObjectId explicitly here (unlike `find`,
+// which casts based on the schema type).
+const toObjectId = (id: string) => new Types.ObjectId(id);
+
 export class MongoTransactionRepository implements TransactionRepository {
-  exists = async (id: string): Promise<boolean> => {
-    const exists = await TransactionModel.exists({ _id: id });
+  exists = async (userId: string, id: string): Promise<boolean> => {
+    const exists = await TransactionModel.exists({ _id: id, userId });
 
     return exists !== null;
   };
 
-  findOne = async (id: string): Promise<Transaction | null> => {
-    return await TransactionModel.findOne({ _id: id })
+  findOne = async (
+    userId: string,
+    id: string,
+  ): Promise<Transaction | null> => {
+    const doc = await TransactionModel.findOne({ _id: id, userId })
       .populate("category")
       .lean();
+    return doc as unknown as Transaction | null;
   };
 
-  getAll = async (): Promise<Transaction[]> => {
-    return await TransactionModel.find()
-      .sort({ date: "desc" })
-      .populate("category")
-      .lean();
-  };
-
-  getBetweenDates = async (
-    startDate: Date,
-    endDate: Date,
+  getAll = async (
+    userId: string,
+    accountId?: string,
   ): Promise<Transaction[]> => {
-    return await TransactionModel.find({
-      date: { $gte: startDate, $lte: endDate },
+    const docs = await TransactionModel.find({
+      userId,
+      ...(accountId ? { accountId } : {}),
     })
       .sort({ date: "desc" })
       .populate("category")
       .lean();
+    return docs as unknown as Transaction[];
   };
 
-  sumAll = async (): Promise<Balance> => {
+  getBetweenDates = async (
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    accountId?: string,
+  ): Promise<Transaction[]> => {
+    const docs = await TransactionModel.find({
+      userId,
+      date: { $gte: startDate, $lte: endDate },
+      ...(accountId ? { accountId } : {}),
+    })
+      .sort({ date: "desc" })
+      .populate("category")
+      .lean();
+    return docs as unknown as Transaction[];
+  };
+
+  sumAll = async (userId: string, accountId?: string): Promise<Balance> => {
     const [balance] = await TransactionModel.aggregate<Balance | undefined>([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          ...(accountId ? { accountId: toObjectId(accountId) } : {}),
+        },
+      },
       {
         $group: {
           _id: null,
@@ -73,13 +101,17 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   sumBetweenDates = async (
+    userId: string,
     startDate: Date,
     endDate: Date,
+    accountId?: string,
   ): Promise<Balance> => {
     const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
         $match: {
+          userId: toObjectId(userId),
           date: { $gte: startDate, $lte: endDate },
+          ...(accountId ? { accountId: toObjectId(accountId) } : {}),
         },
       },
       {
@@ -115,40 +147,48 @@ export class MongoTransactionRepository implements TransactionRepository {
   createTransaction = async (
     newTransaction: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ): Promise<Transaction> => {
-    return await TransactionModel.create(newTransaction);
+    const doc = await TransactionModel.create(newTransaction);
+    return doc as unknown as Transaction;
   };
 
   updateTransaction = async (
+    userId: string,
     id: string,
     transactionData: Omit<Transaction, "_id" | "createdAt" | "updatedAt">,
   ): Promise<Transaction | null> => {
-    const transaction = await TransactionModel.findByIdAndUpdate(
-      { _id: id },
+    const transaction = await TransactionModel.findOneAndUpdate(
+      { _id: id, userId },
       transactionData,
       { returnDocument: "after", lean: true },
     ).lean();
 
-    return transaction;
+    return transaction as unknown as Transaction | null;
   };
 
-  delete = async (id: string): Promise<void> => {
-    const { deletedCount } = await TransactionModel.deleteOne({ _id: id });
+  delete = async (userId: string, id: string): Promise<void> => {
+    const { deletedCount } = await TransactionModel.deleteOne({
+      _id: id,
+      userId,
+    });
 
     if (deletedCount === 0) {
       throw new DatabaseError(`Error eliminando transacción ${id}`);
     }
   };
 
-  deleteMany = async (ids: string[]): Promise<number> => {
+  deleteMany = async (userId: string, ids: string[]): Promise<number> => {
     const { deletedCount } = await TransactionModel.deleteMany({
       _id: { $in: ids },
+      userId,
     });
 
     return deletedCount;
   };
 
-  firstDateRecord = async (): Promise<{ firstDate: Date } | null> => {
-    const transaction = await TransactionModel.findOne()
+  firstDateRecord = async (
+    userId: string,
+  ): Promise<{ firstDate: Date } | null> => {
+    const transaction = await TransactionModel.findOne({ userId })
       .sort({ date: "asc" })
       .select("date")
       .lean();
@@ -163,13 +203,41 @@ export class MongoTransactionRepository implements TransactionRepository {
   };
 
   findForDedup = async (
+    userId: string,
     from: Date,
     to: Date,
   ): Promise<DedupTransaction[]> => {
     return await TransactionModel.find({
+      userId,
       date: { $gte: from, $lte: to },
     })
       .select("date value type description")
       .lean();
+  };
+
+  existsForAccount = async (accountId: string): Promise<boolean> => {
+    const exists = await TransactionModel.exists({ accountId });
+
+    return exists !== null;
+  };
+
+  hasOwnerlessTransactions = async (): Promise<boolean> => {
+    const exists = await TransactionModel.exists({
+      accountId: { $exists: false },
+    });
+
+    return exists !== null;
+  };
+
+  migrateOwnerlessTransactions = async (
+    userId: string,
+    defaultAccountId: string,
+  ): Promise<number> => {
+    const { modifiedCount } = await TransactionModel.updateMany(
+      { accountId: { $exists: false } },
+      { $set: { accountId: defaultAccountId, userId } },
+    );
+
+    return modifiedCount;
   };
 }

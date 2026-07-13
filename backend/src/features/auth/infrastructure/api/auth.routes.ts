@@ -6,7 +6,9 @@ const authController = new AuthController(
 	container.authSignin,
 	container.authSignup,
 	container.authRefresh,
-	container.authLogout
+	container.authLogout,
+	container.userDefaultsBootstrapper,
+	container.transactionAccountMigrator
 );
 
 const router = Router();

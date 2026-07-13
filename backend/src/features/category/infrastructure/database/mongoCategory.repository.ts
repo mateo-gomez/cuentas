@@ -5,27 +5,31 @@ import CategoryModel from "./Category";
 import { DuplicateError } from "../../../../infrastructure/api/errors/duplicateError";
 
 export class MongoCategoryRepository implements CategoryRepository {
-	exists = async (id: string): Promise<boolean> => {
-		const exists = await CategoryModel.exists({ _id: id });
+	existsForUser = async (userId: string, id: string): Promise<boolean> => {
+		const exists = await CategoryModel.exists({ _id: id, userId });
 
 		return exists !== null;
 	};
 
-	getById = async (id: string): Promise<Category | null> => {
-		return await CategoryModel.findById(id).lean();
+	getByIdForUser = async (userId: string, id: string): Promise<Category | null> => {
+		const doc = await CategoryModel.findOne({ _id: id, userId }).lean();
+		return doc as unknown as Category | null;
 	};
 
-	getByName = async (name: string): Promise<Category | null> => {
-		return await CategoryModel.findOne({ name }).lean();
+	getByNameForUser = async (userId: string, name: string): Promise<Category | null> => {
+		const doc = await CategoryModel.findOne({ userId, name }).lean();
+		return doc as unknown as Category | null;
 	};
 
-	getAll = async (): Promise<Category[]> => {
-		return await CategoryModel.find().lean();
+	getAllForUser = async (userId: string): Promise<Category[]> => {
+		const docs = await CategoryModel.find({ userId }).lean();
+		return docs as unknown as Category[];
 	};
 
-	createCategory = async (name: string, icon: string): Promise<Category> => {
+	createCategory = async (userId: string, name: string, icon: string): Promise<Category> => {
 		try {
-			return await CategoryModel.create({ name, icon });
+			const doc = await CategoryModel.create({ userId, name, icon });
+			return doc as unknown as Category;
 		} catch (error) {
 			const e = error as { name?: string; code?: number } & Error;
 			if (e.name === "MongoServerError" && e.code === 11000) {
@@ -40,13 +44,14 @@ export class MongoCategoryRepository implements CategoryRepository {
 	};
 
 	updateCategory = async (
+		userId: string,
 		id: string,
 		name: string,
 		icon: string
 	): Promise<Category | null> => {
 		try {
-			const category = await CategoryModel.findByIdAndUpdate(
-				id,
+			const category = await CategoryModel.findOneAndUpdate(
+				{ _id: id, userId },
 				{ name, icon },
 				{
 					returnDocument: "after",
@@ -54,7 +59,7 @@ export class MongoCategoryRepository implements CategoryRepository {
 				}
 			);
 
-			return category;
+			return category as unknown as Category | null;
 		} catch (error) {
 			const e = error as { name?: string; code?: number } & Error;
 			if (e.name === "MongoServerError" && e.code === 11000) {
@@ -68,11 +73,26 @@ export class MongoCategoryRepository implements CategoryRepository {
 		}
 	};
 
-	delete = async (id: string): Promise<void> => {
-		const { deletedCount } = await CategoryModel.deleteOne({ _id: id });
+	delete = async (userId: string, id: string): Promise<void> => {
+		const { deletedCount } = await CategoryModel.deleteOne({ _id: id, userId });
 
 		if (deletedCount === 0) {
 			throw new DatabaseError(`Category ${id} not deleted`);
 		}
+	};
+
+	hasOwnerlessCategories = async (): Promise<boolean> => {
+		const exists = await CategoryModel.exists({ userId: { $exists: false } });
+
+		return exists !== null;
+	};
+
+	migrateOwnerlessCategories = async (userId: string): Promise<number> => {
+		const { modifiedCount } = await CategoryModel.updateMany(
+			{ userId: { $exists: false } },
+			{ $set: { userId } },
+		);
+
+		return modifiedCount;
 	};
 }

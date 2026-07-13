@@ -27,7 +27,7 @@ export class BudgetGetter {
 
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 0, 23, 59, 59, 999);
-    const transactions = await this.transactionRepository.getBetweenDates(start, end);
+    const transactions = await this.transactionRepository.getBetweenDates(userId, start, end);
 
     const expenses = transactions.filter((t) => t.type === TransactionType.expenses);
 
