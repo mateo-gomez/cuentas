@@ -6,6 +6,7 @@ import {
 } from "../../domain/Transaction.repository";
 import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
+import { FrequentComboDTO } from "../../application/dto/frequentComboDTO";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
   private transactions: Transaction[];
@@ -226,5 +227,59 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     });
 
     return Promise.resolve(migrated);
+  }
+
+  getFrequentCombos(
+    userId: string,
+    accountId?: string,
+    limit = 5,
+  ): Promise<FrequentComboDTO[]> {
+    const scoped = this.transactions.filter(
+      (transaction) =>
+        transaction.userId === userId &&
+        (!accountId || transaction.accountId === accountId) &&
+        !!transaction.category,
+    );
+
+    const groups = new Map<
+      string,
+      { combo: FrequentComboDTO; count: number }
+    >();
+
+    for (const transaction of scoped) {
+      const key = [
+        transaction.description,
+        transaction.category._id,
+        transaction.accountId,
+        transaction.type,
+      ].join("|");
+
+      const existing = groups.get(key);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        groups.set(key, {
+          count: 1,
+          combo: {
+            description: transaction.description,
+            type: transaction.type,
+            accountId: transaction.accountId,
+            category: {
+              _id: transaction.category._id,
+              name: transaction.category.name,
+              icon: transaction.category.icon,
+            },
+            count: 1,
+          },
+        });
+      }
+    }
+
+    const sorted = Array.from(groups.values())
+      .sort((a, b) => b.count - a.count)
+      .map(({ combo, count }) => ({ ...combo, count }))
+      .slice(0, limit);
+
+    return Promise.resolve(sorted);
   }
 }

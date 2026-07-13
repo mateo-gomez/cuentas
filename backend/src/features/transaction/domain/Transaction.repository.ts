@@ -1,4 +1,5 @@
 import { TransactionDTO } from "../application/dto/transactionDTO";
+import { FrequentComboDTO } from "../application/dto/frequentComboDTO";
 import { Balance } from "./balance.entity";
 import { Transaction } from "./transaction.entity";
 
@@ -65,4 +66,16 @@ export interface TransactionRepository {
     userId: string,
     defaultAccountId: string,
   ) => Promise<number>;
+
+  /**
+   * Top-N most frequent (description, category, type) combos for a user,
+   * optionally scoped to an accountId. Skips combos whose category has been
+   * deleted. Used by smart defaults (Slice 2) and Home suggestion chips
+   * (Slice 3).
+   */
+  getFrequentCombos: (
+    userId: string,
+    accountId?: string,
+    limit?: number,
+  ) => Promise<FrequentComboDTO[]>;
 }

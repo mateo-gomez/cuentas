@@ -1,5 +1,6 @@
 import {
   Balance,
+  FrequentCombo,
   Transaction,
   TransactionAggregate,
   TransactionDTO,
@@ -78,4 +79,23 @@ export const importTransactions = async (formData: FormData) => {
   const response = await client.upload("transactions/import", formData)
 
   return response
+}
+
+export const getFrequentCombos = async ({
+  accountId,
+  limit,
+}: {
+  accountId?: string
+  limit?: number
+} = {}): Promise<FrequentCombo[]> => {
+  const params = new URLSearchParams()
+  if (accountId) params.append("accountId", accountId)
+  if (limit) params.append("limit", String(limit))
+  const query = params.toString() ? `?${params.toString()}` : ""
+
+  const { data } = await client.get<{ data: FrequentCombo[] }>(
+    `/transactions/frequent${query}`,
+  )
+
+  return data
 }

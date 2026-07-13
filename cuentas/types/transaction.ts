@@ -22,6 +22,7 @@ export interface Transaction {
   date: Date
   value: number
   account: string
+  accountId?: string
   category: Category
   type: TransactionType
   description: string
@@ -36,4 +37,17 @@ export interface TransactionDTO {
   description: string
   category: string
   type: number
+  accountId: string
+}
+
+export interface FrequentCombo {
+  description: string
+  type: TransactionType
+  accountId: string
+  category: {
+    _id: string
+    name: string
+    icon: string
+  }
+  count: number
 }

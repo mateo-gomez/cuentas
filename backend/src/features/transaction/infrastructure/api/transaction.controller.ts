@@ -22,6 +22,9 @@ import { PdfImportConfirmer } from "../../application/useCases/PdfImportConfirme
 import { ConfirmRow } from "../../application/dto/pdfImportDTO";
 import { AccountByIdGetter } from "../../../account/application/accountByIdGetter";
 import { AccountRepository } from "../../../account/domain/account.repository";
+import { FrequentCombosGetter } from "../../application/useCases/FrequentCombosGetter";
+
+const MAX_FREQUENT_LIMIT = 20;
 
 export class TransactionController {
 	constructor(
@@ -34,7 +37,8 @@ export class TransactionController {
 		private readonly pdfStatementParser: PdfStatementParser,
 		private readonly pdfImportConfirmer: PdfImportConfirmer,
 		private readonly accountByIdGetter: AccountByIdGetter,
-		private readonly accountRepository: AccountRepository
+		private readonly accountRepository: AccountRepository,
+		private readonly frequentCombosGetter: FrequentCombosGetter
 	) {}
 
 	private resolveOwnedAccountId = async (
@@ -250,6 +254,40 @@ export class TransactionController {
 		);
 
 		const responseBody = HttpResponse.success(result);
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	getFrequent = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+
+		const rawAccountId = req.query.accountId;
+		let accountId: string | undefined;
+		if (typeof rawAccountId === "string" && rawAccountId.length > 0) {
+			if (!isIdValid(rawAccountId)) {
+				throw new ValidationError().addError(
+					"accountId",
+					"Se requiere una cuenta válida"
+				);
+			}
+			accountId = rawAccountId;
+		}
+
+		const rawLimit = req.query.limit;
+		let limit: number | undefined;
+		if (typeof rawLimit === "string" && rawLimit.length > 0) {
+			const parsedLimit = Number(rawLimit);
+			if (!Number.isInteger(parsedLimit) || parsedLimit <= 0) {
+				throw new ValidationError().addError(
+					"limit",
+					"El límite debe ser un número entero positivo"
+				);
+			}
+			limit = Math.min(parsedLimit, MAX_FREQUENT_LIMIT);
+		}
+
+		const combos = await this.frequentCombosGetter.execute(userId, accountId, limit);
+
+		const responseBody = HttpResponse.success(combos);
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 }

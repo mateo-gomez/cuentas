@@ -8,6 +8,7 @@ import {
 import { DatabaseError } from "../../../../infrastructure/api/errors/databaseError";
 import TransactionModel from "./Transaction";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
+import { FrequentComboDTO } from "../../application/dto/frequentComboDTO";
 
 // Aggregation pipelines ($match) bypass mongoose's automatic query-cast, so
 // userId/accountId must be cast to ObjectId explicitly here (unlike `find`,
@@ -239,5 +240,61 @@ export class MongoTransactionRepository implements TransactionRepository {
     );
 
     return modifiedCount;
+  };
+
+  getFrequentCombos = async (
+    userId: string,
+    accountId?: string,
+    limit = 5,
+  ): Promise<FrequentComboDTO[]> => {
+    const combos = await TransactionModel.aggregate<FrequentComboDTO>([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          ...(accountId ? { accountId: toObjectId(accountId) } : {}),
+        },
+      },
+      {
+        $group: {
+          _id: {
+            category: "$category",
+            accountId: "$accountId",
+            description: "$description",
+            // TransactionType enum: expenses = 0, income = 1 — passed raw,
+            // never inverted, so expense/income combos are never merged.
+            type: "$type",
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id.category",
+          foreignField: "_id",
+          as: "cat",
+        },
+      },
+      // Null-safe: skip combos whose category has since been deleted.
+      { $match: { cat: { $ne: [] } } },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 0,
+          description: "$_id.description",
+          type: "$_id.type",
+          accountId: "$_id.accountId",
+          category: {
+            _id: { $arrayElemAt: ["$cat._id", 0] },
+            name: { $arrayElemAt: ["$cat.name", 0] },
+            icon: { $arrayElemAt: ["$cat.icon", 0] },
+          },
+          count: 1,
+        },
+      },
+    ]);
+
+    return combos;
   };
 }

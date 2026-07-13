@@ -4,6 +4,7 @@ import { CategoryGetter } from "../features/category/application/categoryGetter"
 import { CategoryRemover } from "../features/category/application/categoryRemover";
 import { CategoryUpdater } from "../features/category/application/categoryUpdater";
 import { TransactionByIdGetter } from "../features/transaction/application/useCases/TransactionByIdGetter";
+import { FrequentCombosGetter } from "../features/transaction/application/useCases/FrequentCombosGetter";
 import { BalanceGetter } from "../features/transaction/application/useCases/balanceGetter";
 import { BalanceInRangeGetter } from "../features/transaction/application/useCases/balanceInRangeGetter";
 import { GroupedTransactionByDayGetter } from "../features/transaction/application/useCases/groupedTransactionByDayGetter";
@@ -91,6 +92,7 @@ export const container = {
 	// transaction
 	transactionRepository,
 	transactionByIdGetter: new TransactionByIdGetter(transactionRepository),
+	frequentCombosGetter: new FrequentCombosGetter(transactionRepository),
 	transactionCreator: new TransactionCreator(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),

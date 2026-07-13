@@ -48,6 +48,7 @@ const buildController = () => {
 		{} as any,
 		accountByIdGetter,
 		accountRepository,
+		{ execute: async () => [] } as any,
 	);
 
 	return { controller, accountCreator, transactionRepository };
@@ -142,6 +143,7 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 			{} as any,
 			accountByIdGetter,
 			accountRepository,
+			{ execute: async () => [] } as any,
 		);
 
 		const createdTransaction = await transactionCreator.execute({
@@ -255,5 +257,123 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 		});
 
 		expect(await transactionRepository.exists("owner", ownerTransaction._id)).toBe(false);
+	});
+});
+
+describe("TransactionController — getFrequent", () => {
+	test("returns an empty array when there is no history, never crashes", async () => {
+		const { controller } = buildController();
+
+		const { statusCode, body } = await invoke(controller.getFrequent, {
+			user: { id: "user-1" },
+			query: {},
+		});
+
+		expect(statusCode).toBeLessThan(300);
+		expect(body.data).toEqual([]);
+	});
+
+	test("delegates userId, accountId, and limit to the use case", async () => {
+		const transactionRepository = new InMemoryTransactionRepository();
+		const accountRepository = new InMemoryAccountRepository();
+		const accountByIdGetter = new AccountByIdGetter(accountRepository);
+		const frequentCombosGetter = {
+			execute: jest.fn().mockResolvedValue([]),
+		};
+
+		const controller = new TransactionController(
+			{ execute: async () => null } as any,
+			{ execute: async () => {} } as any,
+			{ execute: async () => { throw new Error("not used"); } } as any,
+			{ execute: async () => {} } as any,
+			{ execute: async () => 0 } as any,
+			{ execute: async () => {} } as any,
+			{} as any,
+			{} as any,
+			accountByIdGetter,
+			accountRepository,
+			frequentCombosGetter as any,
+		);
+
+		const accountId = new mongoose.Types.ObjectId().toString();
+
+		await invoke(controller.getFrequent, {
+			user: { id: "user-1" },
+			query: { accountId, limit: "3" },
+		});
+
+		expect(frequentCombosGetter.execute).toHaveBeenCalledWith(
+			"user-1",
+			accountId,
+			3,
+		);
+	});
+
+	test("rejects malformed accountId with a validation error", async () => {
+		const { controller } = buildController();
+
+		await expect(
+			invoke(controller.getFrequent, {
+				user: { id: "user-1" },
+				query: { accountId: "not-an-object-id" },
+			}),
+		).rejects.toThrow();
+	});
+
+	test("rejects non-numeric limit with a validation error", async () => {
+		const { controller } = buildController();
+
+		await expect(
+			invoke(controller.getFrequent, {
+				user: { id: "user-1" },
+				query: { limit: "abc" },
+			}),
+		).rejects.toThrow();
+	});
+
+	test("rejects negative limit with a validation error", async () => {
+		const { controller } = buildController();
+
+		await expect(
+			invoke(controller.getFrequent, {
+				user: { id: "user-1" },
+				query: { limit: "-1" },
+			}),
+		).rejects.toThrow();
+	});
+
+	test("clamps a limit above the max to MAX_FREQUENT_LIMIT", async () => {
+		const transactionRepository = new InMemoryTransactionRepository();
+		const accountRepository = new InMemoryAccountRepository();
+		const accountByIdGetter = new AccountByIdGetter(accountRepository);
+		const frequentCombosGetter = {
+			execute: jest.fn().mockResolvedValue([]),
+		};
+
+		const controller = new TransactionController(
+			{ execute: async () => null } as any,
+			{ execute: async () => {} } as any,
+			{ execute: async () => { throw new Error("not used"); } } as any,
+			{ execute: async () => {} } as any,
+			{ execute: async () => 0 } as any,
+			{ execute: async () => {} } as any,
+			{} as any,
+			{} as any,
+			accountByIdGetter,
+			accountRepository,
+			frequentCombosGetter as any,
+		);
+
+		const { statusCode } = await invoke(controller.getFrequent, {
+			user: { id: "user-1" },
+			query: { limit: "9999" },
+		});
+
+		expect(statusCode).toBeLessThan(300);
+		expect(frequentCombosGetter.execute).toHaveBeenCalledWith(
+			"user-1",
+			undefined,
+			20,
+		);
 	});
 });

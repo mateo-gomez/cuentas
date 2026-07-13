@@ -15,7 +15,8 @@ const transactionController = new TransactionController(
 	container.pdfStatementParser,
 	container.pdfImportConfirmer,
 	container.accountByIdGetter,
-	container.accountRepository
+	container.accountRepository,
+	container.frequentCombosGetter
 );
 
 const transactionAggregateController = new TransactionAggregateController(
@@ -31,6 +32,9 @@ const router = Router();
 
 router
 	.get("/dates", datesController.dateRange)
+	// MUST stay before "/:id" — Express matches params greedily, so "frequent"
+	// would otherwise be parsed as a transaction id.
+	.get("/frequent", transactionController.getFrequent)
 	.get("/", transactionAggregateController.getAllTransactions)
 	.get("/:id", transactionController.getTransaction)
 	.post("/bulk-delete", transactionController.deleteTransactions)

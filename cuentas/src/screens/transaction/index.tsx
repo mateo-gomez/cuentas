@@ -8,20 +8,21 @@ import {
 } from "react-native"
 import grafito from "../../theme"
 import { formatNumber } from "../../utils"
-import { Outlet, useNavigate, useParams } from "react-router-native"
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-native"
 import { Category, TransactionDTO } from "../../../types"
 import {
   ErrorBanner,
   OverlayLoader,
 } from "../../Components"
-import { useTransaction } from "../../hooks"
-import { createTransaction, updateTransaction } from "../../services"
+import { useAccounts, useTransaction } from "../../hooks"
+import { createTransaction, getFrequentCombos, updateTransaction } from "../../services"
 import { createLogger } from "../../lib/logger"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
 import { Ionicons } from "@expo/vector-icons"
 import { formatDate } from "../../utils"
 import CategoryChip from "../../Components/CategoryChip"
+import AccountChip from "../../Components/AccountChip"
 
 const logger = createLogger("Transaction")
 
@@ -30,12 +31,25 @@ const initialDate = new Date()
 const Transaction = () => {
   const { type, id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const insets = useSafeAreaInsets()
   const { transaction, loading } = useTransaction(id)
+  const navState = (location.state ?? {}) as {
+    accountId?: string
+    category?: Category
+    description?: string
+  }
+  const { accounts } = useAccounts()
   const [transactionValue, setTransactionValue] = useState(0)
-  const [description, setDescription] = useState("")
+  const [description, setDescription] = useState(navState.description ?? "")
   const [date, setDate] = useState(initialDate)
   const [submitError, setSubmitError] = useState("")
+  const [accountId, setAccountId] = useState<string | undefined>(
+    navState.accountId,
+  )
+  const [category, setCategory] = useState<Category | undefined>(
+    navState.category,
+  )
   const [transactionType, setTransactionType] = useState<"expense" | "income">(
     type === "income" ? "income" : "expense",
   )
@@ -50,8 +64,50 @@ const Transaction = () => {
       setTransactionValue(transaction.value)
       setDescription(transaction.description)
       setDate(transaction.date)
+      if (transaction.accountId) {
+        setAccountId(transaction.accountId)
+      }
+      if (transaction.category) {
+        setCategory(transaction.category)
+      }
     }
   }, [transaction])
+
+  // Smart defaults (R4): only for the create flow — editing an existing
+  // transaction is fully driven by `transaction` above. Account resolution
+  // order: nav state (Home's active account) -> user's first available
+  // account (stand-in for a "default account" endpoint, none is exposed to
+  // the app yet) -> require the picker. Category defaults to the resolved
+  // account's most-used category; empty history stays a safe empty state.
+  useEffect(() => {
+    if (id) return // editing — no smart defaults
+    if (accountId) return
+    if (accounts.length === 0) return
+
+    setAccountId(accounts[0]._id)
+  }, [id, accountId, accounts])
+
+  useEffect(() => {
+    if (id) return
+    if (category) return
+    if (!accountId) return
+
+    let cancelled = false
+
+    getFrequentCombos({ accountId, limit: 1 })
+      .then((combos) => {
+        if (cancelled || combos.length === 0) return
+        setCategory(combos[0].category as unknown as Category)
+      })
+      .catch(() => {
+        // New user / empty history: stay in the neutral "Sin categoría"
+        // state, never crash the create screen.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [id, accountId, category])
 
   const handlePressNumpad = (val: number) => {
     setTransactionValue(val)
@@ -59,6 +115,12 @@ const Transaction = () => {
 
   const handleSubmit = async (transaction: TransactionDTO) => {
     setSubmitError("")
+
+    if (!transaction.accountId) {
+      setSubmitError("Elegí una cuenta antes de guardar")
+      return
+    }
+
     try {
       if (transaction.id) {
         await updateTransaction(transaction)
@@ -79,19 +141,22 @@ const Transaction = () => {
       value: transactionValue,
       description,
       date,
-      category: transaction?.category?._id,
+      category: category?._id,
       type: transactionType === "income" ? 1 : 0,
+      accountId: accountId ?? "",
     })
   }
 
-  const handleSelectCategory = (category: Category) => {
+  const handleSelectCategory = (selectedCategory: Category) => {
+    setCategory(selectedCategory)
     handleSubmit({
       id,
       value: transactionValue,
       description,
       date,
-      category: category._id,
+      category: selectedCategory._id,
       type: transactionType === "income" ? 1 : 0,
+      accountId: accountId ?? "",
     })
   }
 
@@ -142,7 +207,7 @@ const Transaction = () => {
     })
   }
 
-  const currentCategory = transaction?.category
+  const currentCategory = category
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -234,6 +299,10 @@ const Transaction = () => {
             {formatDate(date)}
           </Text>
         </TouchableOpacity>
+
+        <View style={styles.metaCol}>
+          <AccountChip accountId={accountId} onSelect={setAccountId} />
+        </View>
       </View>
 
       {/* ── Nested route (NumPad / Categories) ── */}
@@ -243,7 +312,7 @@ const Transaction = () => {
             handlePressNumpad,
             handleSelectCategory,
             isValidTransactionValue,
-            categoryId: transaction?.category?._id,
+            categoryId: category?._id,
           }}
         />
       </View>

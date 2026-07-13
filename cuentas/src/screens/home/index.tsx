@@ -2,6 +2,7 @@ import {
   Dimensions,
   DrawerLayoutAndroid,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,11 +17,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { OptionsSideBar } from "../../Components"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { AccountPickerModal } from "../../Components/AccountPickerModal"
+import SuggestionChip from "../../Components/SuggestionChip"
 import Transactions from "./Transactions"
 import { useDateRange } from "../../hooks/useDateRange"
-import { useAccounts } from "../../hooks"
+import { useAccounts, useSuggestions } from "../../hooks"
 import { monthRange } from "../../utils"
 import { createLogger } from "../../lib/logger"
+import { FrequentCombo, TransactionType } from "../../../types"
 
 const logger = createLogger("Home")
 
@@ -55,6 +58,7 @@ const Home = () => {
   const [visibleIndex, setVisibleIndex] = useState(0)
   const [selectedAccountId, setSelectedAccountId] = useState("")
   const [accountPickerVisible, setAccountPickerVisible] = useState(false)
+  const { suggestions } = useSuggestions(selectedAccountId || undefined)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const drawerRef = useRef<DrawerLayoutAndroid | null>(null)
@@ -119,6 +123,24 @@ const Home = () => {
 
       setSteps((prevStates) => [newPage, ...prevStates])
     }
+  }
+
+  const handlePressFab = () => {
+    navigate("/transactions/outcome", {
+      state: { accountId: selectedAccountId || undefined },
+    })
+  }
+
+  const handleSelectSuggestion = (combo: FrequentCombo) => {
+    const routeType = combo.type === TransactionType.income ? "income" : "outcome"
+
+    navigate(`/transactions/${routeType}`, {
+      state: {
+        accountId: selectedAccountId || combo.accountId,
+        category: combo.category,
+        description: combo.description,
+      },
+    })
   }
 
   const scrollToMonth = (index: number) => {
@@ -190,6 +212,23 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Suggestion chips (frequent combos for the active account) */}
+      {suggestions.length > 0 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.suggestionsRow}
+        >
+          {suggestions.map((combo) => (
+            <SuggestionChip
+              key={`${combo.description}-${combo.category._id}-${combo.type}`}
+              combo={combo}
+              onPress={handleSelectSuggestion}
+            />
+          ))}
+        </ScrollView>
+      ) : null}
+
       {/* Paged transaction list */}
       <View style={styles.listContainer}>
         <FlatList
@@ -234,7 +273,7 @@ const Home = () => {
       {/* Bottom tab bar */}
       <BottomTabBar
         activeTab="home"
-        onPressPlus={() => navigate("/transactions/outcome")}
+        onPressPlus={handlePressFab}
         onSelect={(tab) => {
           if (tab === "budget") navigate("/budget")
         }}
@@ -321,6 +360,12 @@ const styles = StyleSheet.create({
     fontFamily: grafito.fonts.sans,
     fontSize: 13,
     color: grafito.ink3,
+  },
+  suggestionsRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 8,
   },
 })
 
