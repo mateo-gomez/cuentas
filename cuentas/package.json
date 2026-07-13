@@ -12,10 +12,12 @@
     "format": "prettier --write .",
     "ts": "tsc",
     "test": "jest",
-    "build:beta": "eas build --android --profile beta --platform android",
+    "build:preview": "eas build --profile preview --platform android",
+    "build:beta": "eas build --profile beta --platform android",
     "build:production": "eas build --profile production --platform android",
     "submit:beta": "eas submit --android --profile beta",
-    "submit:production": "eas submit --android --profile production"
+    "submit:production": "eas submit --android --profile production",
+    "ota": "bash ./scripts/ota-update.sh"
   },
   "jest": {
     "preset": "jest-expo",
