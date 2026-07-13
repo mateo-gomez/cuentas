@@ -171,7 +171,22 @@ const fetcher = async <T>(
       }
     }
 
-    const result: T = await response.json()
+    // Some responses (404/502 pages, Render cold-start HTML) are not JSON.
+    // Parse defensively so callers get a clean error instead of a raw
+    // "Unexpected character: <" SyntaxError.
+    const raw = await response.text()
+    let result: T
+    try {
+      result = raw ? (JSON.parse(raw) as T) : ({} as T)
+    } catch {
+      if (!response.ok) {
+        throw new ApiError(
+          "El servidor no está disponible en este momento",
+          response.status,
+        )
+      }
+      throw new ApiError("Respuesta inesperada del servidor", response.status)
+    }
 
     if (!response.ok) {
       // Refresh could not recover the session → force the user back to login.

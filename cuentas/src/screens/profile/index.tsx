@@ -163,6 +163,10 @@ const Profile = () => {
 
       <ErrorBanner message={loading ? "" : error} />
 
+      {/* Spacer pushes the tab bar to the bottom — the fixed-height sections
+          above don't fill the screen on their own. */}
+      <View style={styles.spacer} />
+
       <BottomTabBar {...tabBar} />
     </View>
   )
@@ -172,6 +176,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: grafito.bg,
+  },
+  spacer: {
+    flex: 1,
   },
   header: {
     flexDirection: "row",
