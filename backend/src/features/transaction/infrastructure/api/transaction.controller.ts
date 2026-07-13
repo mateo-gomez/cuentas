@@ -23,6 +23,8 @@ import { ConfirmRow } from "../../application/dto/pdfImportDTO";
 import { AccountByIdGetter } from "../../../account/application/accountByIdGetter";
 import { AccountRepository } from "../../../account/domain/account.repository";
 import { FrequentCombosGetter } from "../../application/useCases/FrequentCombosGetter";
+import { CategoryRepository } from "../../../category/domain/category.repository";
+import { Transaction } from "../../domain/transaction.entity";
 
 const MAX_FREQUENT_LIMIT = 20;
 
@@ -38,8 +40,34 @@ export class TransactionController {
 		private readonly pdfImportConfirmer: PdfImportConfirmer,
 		private readonly accountByIdGetter: AccountByIdGetter,
 		private readonly accountRepository: AccountRepository,
-		private readonly frequentCombosGetter: FrequentCombosGetter
+		private readonly frequentCombosGetter: FrequentCombosGetter,
+		private readonly categoryRepository: CategoryRepository
 	) {}
+
+	// Categories are optional ("Sin categoría"). When one is supplied, re-validate
+	// that it is a well-formed id AND still belongs to the caller — the client may
+	// send a stale category id (renamed/deleted between suggestion caching and tap),
+	// and persisting an orphaned ref would surface as a null category on read.
+	private resolveOwnedCategoryId = async (
+		userId: string,
+		category: unknown
+	): Promise<string | undefined> => {
+		if (category === undefined || category === null || category === "") {
+			return undefined;
+		}
+
+		if (typeof category !== "string" || !isIdValid(category)) {
+			throw new ValidationError().addError("category", "Categoría inválida");
+		}
+
+		const exists = await this.categoryRepository.existsForUser(userId, category);
+
+		if (!exists) {
+			throw new ValidationError().addError("category", "Categoría inválida");
+		}
+
+		return category;
+	};
 
 	private resolveOwnedAccountId = async (
 		userId: string,
@@ -79,9 +107,12 @@ export class TransactionController {
 		const body = await req.body;
 
 		const accountId = await this.resolveOwnedAccountId(userId, body.accountId);
+		const category = await this.resolveOwnedCategoryId(userId, body.category);
 
 		const transaction = await this.transactionCreator.execute({
-			category: body.category,
+			// Write path carries the category id; `Transaction.category` types the
+			// populated read shape, so the ref id is cast through here.
+			category: category as unknown as Transaction["category"],
 			date: body.date,
 			description: body.description,
 			type: body.type,
@@ -105,9 +136,11 @@ export class TransactionController {
 		}
 
 		const accountId = await this.resolveOwnedAccountId(userId, body.accountId);
+		const category = await this.resolveOwnedCategoryId(userId, body.category);
 
 		const transaction = await this.transactionUpdater.execute(userId, id, {
-			category: body.category,
+			// See saveTransaction: id on the write path, populated shape on read.
+			category: category as unknown as Transaction["category"],
 			date: body.date,
 			description: body.description,
 			type: body.type,

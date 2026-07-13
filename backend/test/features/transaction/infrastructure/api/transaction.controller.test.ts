@@ -30,12 +30,17 @@ const invoke = (
 	});
 };
 
+// A well-formed category id that belongs to the caller (existsForUser stub
+// below returns true), so the create-success path clears category validation.
+const OWNED_CATEGORY_ID = new mongoose.Types.ObjectId().toString();
+
 const buildController = () => {
 	const transactionRepository = new InMemoryTransactionRepository();
 	const accountRepository = new InMemoryAccountRepository();
 	const accountCreator = new AccountCreator(accountRepository);
 	const accountByIdGetter = new AccountByIdGetter(accountRepository);
 	const transactionCreator = new TransactionCreator(transactionRepository);
+	const categoryRepository = { existsForUser: async () => true } as any;
 
 	const controller = new TransactionController(
 		{ execute: async () => null } as any,
@@ -49,6 +54,7 @@ const buildController = () => {
 		accountByIdGetter,
 		accountRepository,
 		{ execute: async () => [] } as any,
+		categoryRepository,
 	);
 
 	return { controller, accountCreator, transactionRepository };
@@ -100,7 +106,7 @@ describe("TransactionController — accountId ownership validation", () => {
 		const { statusCode, body } = await invoke(controller.saveTransaction, {
 			user: { id: "user-1" },
 			body: {
-				category: "cat-1",
+				category: OWNED_CATEGORY_ID,
 				date: new Date(),
 				description: "x",
 				type: TransactionType.expenses,
@@ -111,6 +117,90 @@ describe("TransactionController — accountId ownership validation", () => {
 
 		expect(statusCode).toBeLessThan(300);
 		expect(body.data).toMatchObject({ userId: "user-1", accountId: account._id });
+	});
+});
+
+describe("TransactionController — category ownership validation", () => {
+	const buildWithCategoryStub = (existsForUser: (u: string, id: string) => Promise<boolean>) => {
+		const transactionRepository = new InMemoryTransactionRepository();
+		const accountRepository = new InMemoryAccountRepository();
+		const accountCreator = new AccountCreator(accountRepository);
+		const accountByIdGetter = new AccountByIdGetter(accountRepository);
+		const transactionCreator = new TransactionCreator(transactionRepository);
+
+		const controller = new TransactionController(
+			{ execute: async () => null } as any,
+			transactionCreator,
+			{ execute: async () => { throw new Error("not used"); } } as any,
+			{ execute: async () => {} } as any,
+			{ execute: async () => 0 } as any,
+			{ execute: async () => {} } as any,
+			{} as any,
+			{} as any,
+			accountByIdGetter,
+			accountRepository,
+			{ execute: async () => [] } as any,
+			{ existsForUser } as any,
+		);
+
+		return { controller, accountCreator };
+	};
+
+	test("rejects a malformed category id before it reaches the repository", async () => {
+		const { controller, accountCreator } = buildWithCategoryStub(async () => true);
+		const account = await accountCreator.execute("user-1", {
+			name: "Checking", type: "bank", openingBalance: 0,
+		});
+
+		await expect(
+			invoke(controller.saveTransaction, {
+				user: { id: "user-1" },
+				body: {
+					category: "not-an-object-id",
+					date: new Date(), description: "x", type: TransactionType.expenses,
+					value: 10, accountId: account._id,
+				},
+			}),
+		).rejects.toThrow();
+	});
+
+	test("rejects a well-formed category id that does not belong to the caller", async () => {
+		const { controller, accountCreator } = buildWithCategoryStub(async () => false);
+		const account = await accountCreator.execute("user-1", {
+			name: "Checking", type: "bank", openingBalance: 0,
+		});
+
+		await expect(
+			invoke(controller.saveTransaction, {
+				user: { id: "user-1" },
+				body: {
+					category: new mongoose.Types.ObjectId().toString(),
+					date: new Date(), description: "x", type: TransactionType.expenses,
+					value: 10, accountId: account._id,
+				},
+			}),
+		).rejects.toThrow();
+	});
+
+	test("allows an omitted category (creates with no category)", async () => {
+		const existsForUser = jest.fn(async () => false);
+		const { controller, accountCreator } = buildWithCategoryStub(existsForUser);
+		const account = await accountCreator.execute("user-1", {
+			name: "Checking", type: "bank", openingBalance: 0,
+		});
+
+		const { statusCode, body } = await invoke(controller.saveTransaction, {
+			user: { id: "user-1" },
+			body: {
+				date: new Date(), description: "x", type: TransactionType.expenses,
+				value: 10, accountId: account._id,
+			},
+		});
+
+		expect(statusCode).toBeLessThan(300);
+		expect(body.data.category).toBeUndefined();
+		// No category supplied → ownership check is skipped entirely.
+		expect(existsForUser).not.toHaveBeenCalled();
 	});
 });
 
@@ -144,6 +234,7 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 			accountByIdGetter,
 			accountRepository,
 			{ execute: async () => [] } as any,
+			{ existsForUser: async () => true } as any,
 		);
 
 		const createdTransaction = await transactionCreator.execute({
@@ -293,6 +384,7 @@ describe("TransactionController — getFrequent", () => {
 			accountByIdGetter,
 			accountRepository,
 			frequentCombosGetter as any,
+			{ existsForUser: async () => true } as any,
 		);
 
 		const accountId = new mongoose.Types.ObjectId().toString();
@@ -362,6 +454,7 @@ describe("TransactionController — getFrequent", () => {
 			accountByIdGetter,
 			accountRepository,
 			frequentCombosGetter as any,
+			{ existsForUser: async () => true } as any,
 		);
 
 		const { statusCode } = await invoke(controller.getFrequent, {
