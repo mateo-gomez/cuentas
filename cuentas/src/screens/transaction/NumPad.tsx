@@ -7,17 +7,28 @@ import { Fragment } from "react"
 
 interface NumpadOutletContext {
   handlePressNumpad: (num: number) => void
+  handleSave: () => void
+  hasCategory: boolean
   isValidTransactionValue: () => boolean
 }
 
 const NumPad = () => {
-  const { handlePressNumpad, isValidTransactionValue } =
+  const { handlePressNumpad, handleSave, hasCategory, isValidTransactionValue } =
     useOutletContext<NumpadOutletContext>()
 
   const navigate = useNavigate()
 
-  const handlePressCategories = () => {
+  // Single primary action, context-aware. With a category already resolved
+  // (edit or suggestion chip) this commits directly — thumb stays on the pad,
+  // one tap after the amount. Without a category, it routes to the grid where
+  // selecting one is the terminal action (see handleSelectCategory shortcut).
+  const handlePressPrimary = () => {
     if (!isValidTransactionValue()) return
+
+    if (hasCategory) {
+      handleSave()
+      return
+    }
 
     navigate("categories")
   }
@@ -36,9 +47,11 @@ const NumPad = () => {
 
       <TouchableOpacity
         style={styles.categoryTouchable}
-        onPress={handlePressCategories}
+        onPress={handlePressPrimary}
       >
-        <Text style={styles.categoryText}>Seleccionar categoría</Text>
+        <Text style={styles.categoryText}>
+          {hasCategory ? "Guardar" : "Elegir categoría"}
+        </Text>
       </TouchableOpacity>
     </Fragment>
   )
