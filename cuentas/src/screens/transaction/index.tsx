@@ -164,7 +164,18 @@ const Transaction = () => {
   }
 
   const handleSelectCategory = (selectedCategory: Category) => {
+    const hadCategory = !!category
     setCategory(selectedCategory)
+
+    // Shortcut only for the brand-new create flow (no category yet): picking a
+    // category IS the terminal action, so commit immediately. When a category
+    // already exists (edit or suggestion chip), selecting one only changes the
+    // value and returns to the numpad so the user confirms with Guardar.
+    if (hadCategory) {
+      navigate(-1)
+      return
+    }
+
     handleSubmit({
       id,
       value: transactionValue,
@@ -269,9 +280,9 @@ const Transaction = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveBtnText}>Guardar</Text>
-        </TouchableOpacity>
+        {/* Commit lives on the numpad's primary button (thumb-reachable);
+            this spacer keeps the type toggle visually centered. */}
+        <View style={styles.headerSpacer} />
       </View>
 
       {loading ? <OverlayLoader message="Cargando registro..." /> : null}
@@ -291,33 +302,52 @@ const Transaction = () => {
         onChangeText={handleChangeDescription}
       />
 
-      {/* ── Category + Date row ── */}
-      <View style={styles.metaRow}>
-        <TouchableOpacity style={styles.metaCol}>
-          {currentCategory ? (
-            <>
-              <CategoryChip
-                size="md"
-                categoryId={currentCategory._id}
-                name={currentCategory.name}
-                icon={currentCategory.icon}
-              />
-              <Text style={styles.metaText}>{currentCategory.name}</Text>
-            </>
-          ) : (
-            <Text style={[styles.metaText, { color: grafito.ink4 }]}>Sin categoría</Text>
-          )}
+      {/* ── Meta fields (category · date · account) ── */}
+      <View style={styles.fields}>
+        {/* Category */}
+        <TouchableOpacity style={styles.field} onPress={() => navigate("categories")}>
+          <Text style={styles.fieldLabel}>Categoría</Text>
+          <View style={styles.fieldValue}>
+            {currentCategory ? (
+              <>
+                <CategoryChip
+                  size="sm"
+                  categoryId={currentCategory._id}
+                  name={currentCategory.name}
+                  icon={currentCategory.icon}
+                />
+                <Text style={styles.fieldValueText} numberOfLines={1}>
+                  {currentCategory.name}
+                </Text>
+              </>
+            ) : (
+              <Text style={[styles.fieldValueText, styles.fieldValuePlaceholder]}>
+                Sin categoría
+              </Text>
+            )}
+            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.metaCol} onPress={handleOpenDatePicker}>
-          <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />
-          <Text style={[styles.metaText, { color: grafito.ink3 }]}>
-            {formatDate(date)}
-          </Text>
+        {/* Date */}
+        <TouchableOpacity style={styles.field} onPress={handleOpenDatePicker}>
+          <Text style={styles.fieldLabel}>Fecha</Text>
+          <View style={styles.fieldValue}>
+            <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />
+            <Text style={styles.fieldValueText} numberOfLines={1}>
+              {formatDate(date)}
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+          </View>
         </TouchableOpacity>
 
-        <View style={styles.metaCol}>
-          <AccountChip accountId={accountId} onSelect={setAccountId} />
+        {/* Account */}
+        <View style={[styles.field, styles.fieldLast]}>
+          <Text style={styles.fieldLabel}>Cuenta</Text>
+          <View style={styles.fieldValue}>
+            <AccountChip accountId={accountId} onSelect={setAccountId} />
+            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+          </View>
         </View>
       </View>
 
@@ -327,6 +357,8 @@ const Transaction = () => {
           context={{
             handlePressNumpad,
             handleSelectCategory,
+            handleSave,
+            hasCategory: !!category,
             isValidTransactionValue,
             categoryId: category?._id,
           }}
@@ -378,15 +410,8 @@ const styles = StyleSheet.create({
   toggleOptionTextActive: {
     color: grafito.onAccent,
   },
-  saveBtn: {
-    backgroundColor: grafito.accent,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-  },
-  saveBtnText: {
-    color: grafito.onAccent,
-    fontSize: 15,
+  headerSpacer: {
+    minWidth: 64,
   },
   // Amount
   amountText: {
@@ -410,23 +435,43 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 12,
   },
-  // Meta row
-  metaRow: {
-    flexDirection: "row",
+  // Meta fields — stacked full-width rows so long category/account names
+  // never truncate or collide (previously a cramped 3-column row).
+  fields: {
     marginHorizontal: 16,
     marginTop: 14,
-    gap: 16,
+    borderTopWidth: 1,
+    borderTopColor: grafito.line,
   },
-  metaCol: {
+  field: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: grafito.line,
+  },
+  fieldLast: {
+    borderBottomWidth: 0,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    color: grafito.ink3,
+  },
+  fieldValue: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    flex: 1,
+    flexShrink: 1,
   },
-  metaText: {
+  fieldValueText: {
     fontSize: 14,
-    color: grafito.ink2,
-    marginLeft: 8,
+    color: grafito.ink,
+    flexShrink: 1,
+  },
+  fieldValuePlaceholder: {
+    color: grafito.ink4,
   },
 })
 

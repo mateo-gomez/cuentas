@@ -15,10 +15,11 @@ def transactions(parse_result):
     return parse_result.transactions
 
 
-def test_extracts_only_this_period_purchases(transactions):
-    # 11 "1 de N" purchases. Prior-period installments (k>1) and the
-    # "PAGOS POR PSE" payment (N/A cuotas) are excluded.
-    assert len(transactions) == 11
+def test_imports_every_non_payment_row(transactions):
+    # 14 movement rows charge the period: 11 one-shot purchases plus three
+    # deferred installments (COMPRA DE CARTERA, MERCADO PAGO, MERCADO
+    # PAGO*MERCADOLI). Only the "PAGOS POR PSE" payment (N/A cuotas) is excluded.
+    assert len(transactions) == 14
 
 
 def test_all_rows_are_expenses_with_negative_signed_value(transactions):
@@ -32,14 +33,35 @@ def test_every_row_has_iso_date(transactions):
         assert len(tx.date) == 10 and tx.date[4] == "-" and tx.date[7] == "-"
 
 
-def test_prior_period_installments_are_excluded(transactions):
-    # COMPRA DE CARTERA (7 de 14), MERCADO PAGO (8 de 9), MERCADO PAGO*MERCADOLI
-    # (5 de 6) are ongoing installments from prior months — must be skipped.
+def test_deferred_installments_are_imported_at_period_capital(transactions):
+    # Prior-period installments are now imported, valued at column 5 "Capital
+    # facturado del periodo" (the current month's charge), not the full purchase.
+    cartera = next(t for t in transactions if t.description == "COMPRA DE CARTERA")
+    assert cartera.value == pytest.approx(-278556.16)  # not the $8.235.000 total
+
+
+def test_prior_period_installments_dated_to_period_end(transactions):
+    # A deferred purchase's monthly charge belongs to the current billing
+    # period, so its row is re-dated to the statement's "Hasta 29 abr 2026"
+    # end date, not the original 2025 purchase date.
+    for desc in ("COMPRA DE CARTERA", "MERCADO PAGO", "MERCADO PAGO*MERCADOLI"):
+        row = next(t for t in transactions if t.description == desc)
+        assert row.date == "2026-04-29"
+
+
+def test_current_period_purchases_keep_their_real_date(transactions):
+    # A first-installment purchase (ALKOMPRAR, 1 de 2) happened this period —
+    # its real date is preserved, not moved to the period end.
+    row = next(t for t in transactions if t.description == "ALKOMPRAR MAYORCA")
+    assert row.date == "2026-04-10"
+
+
+def test_multiline_description_is_reconstructed(transactions):
+    # A merchant name wrapped across two visual sub-lines must be rebuilt whole,
+    # never dropped as "Sin descripción".
     descriptions = {t.description for t in transactions}
-    assert "COMPRA DE CARTERA" not in descriptions
-    assert all("MERCADO" not in d for d in descriptions)
-    # And every kept row is dated within the current billing period.
-    assert all(t.date.startswith("2026-04") for t in transactions)
+    assert "MERCADO PAGO*MERCADOLI" in descriptions
+    assert "Sin descripción" not in descriptions
 
 
 def test_payment_row_is_excluded(transactions):
@@ -47,20 +69,27 @@ def test_payment_row_is_excluded(transactions):
     assert not any("PAGOS POR PSE" in d for d in descriptions)
 
 
-def test_known_purchase_row_matches_fixture(transactions):
+def test_installment_purchase_uses_period_capital_not_total(transactions):
+    # ALKOMPRAR MAYORCA is a 1-de-2 purchase: total $1.639.050, but only
+    # $819.525 (column 5) is charged this period.
+    row = next(t for t in transactions if t.description == "ALKOMPRAR MAYORCA")
+    assert row.value == pytest.approx(-819525.00)
+
+
+def test_one_shot_purchase_matches_fixture(transactions):
     row = next(t for t in transactions if t.description == "CLAUDE.AI SUBSCRIPTION")
     assert row.date == "2026-04-04"
     assert row.value == pytest.approx(-75354.07)
 
 
-def test_reconciles_against_declared_consumos_del_mes(parse_result):
-    # The sum of imported purchases equals the statement's declared
-    # "+ Consumos del mes $2.207.660,07" — the credit-card reconciliation oracle.
+def test_reconciles_against_declared_capital_facturado(parse_result):
+    # The sum of imported period-capital charges equals the statement's declared
+    # "+ Capital facturado consumos del mes $1.839.725,55".
     recon = parse_result.reconciliation
     assert recon.available is True
     assert recon.reconciled is True
-    assert recon.computedDelta == pytest.approx(2207660.07)
-    assert recon.expectedDelta == pytest.approx(2207660.07)
+    assert recon.computedDelta == pytest.approx(1839725.55)
+    assert recon.expectedDelta == pytest.approx(1839725.55)
 
 
 def test_category_name_left_empty(transactions):
