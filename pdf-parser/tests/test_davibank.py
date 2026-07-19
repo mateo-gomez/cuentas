@@ -43,9 +43,10 @@ def test_first_period_transaction_matches_known_fixture_row(transactions):
 
 def test_period_row_with_empty_description_is_still_imported(transactions):
     # 07/06/2026 has no merchant description in the sample; the value must
-    # still be captured (anchored on the trailing column structure).
+    # still be captured (anchored on the trailing column structure) and the
+    # missing description backfilled so the row stays importable downstream.
     row = next(t for t in transactions if t.date == "2026-06-07")
-    assert row.description == ""
+    assert row.description == "Sin descripción"
     assert row.value == pytest.approx(-79851.0)
 
 

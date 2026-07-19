@@ -114,14 +114,19 @@ const assertRawTransaction = (row: unknown): RawParsedTransaction => {
 		);
 	}
 
-	if (
-		typeof candidate.description !== "string" ||
-		candidate.description.trim().length === 0
-	) {
+	if (typeof candidate.description !== "string") {
 		throw new InternalError(
 			"El servicio de parseo devolvió una transacción con descripción inválida",
 		);
 	}
+
+	// A missing merchant token is a real purchase the parser couldn't label, not
+	// a corrupt payload — tolerate it with a fallback rather than rejecting the
+	// whole batch over a single unlabeled row.
+	const description =
+		candidate.description.trim().length === 0
+			? "Sin descripción"
+			: candidate.description;
 
 	if (typeof candidate.value !== "number" || !Number.isFinite(candidate.value)) {
 		throw new InternalError(
@@ -137,7 +142,7 @@ const assertRawTransaction = (row: unknown): RawParsedTransaction => {
 
 	return {
 		date: candidate.date,
-		description: candidate.description,
+		description,
 		value: candidate.value,
 		type: toDomainType(candidate.type),
 		categoryName:

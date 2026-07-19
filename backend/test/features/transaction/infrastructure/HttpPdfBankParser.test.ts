@@ -107,12 +107,23 @@ describe("assertParseResponse", () => {
 		).toThrow(InternalError);
 	});
 
-	test("rejects a row with an empty description", () => {
+	test("backfills an empty description instead of rejecting the batch", () => {
+		const result = assertParseResponse({
+			bankId: "bancolombia",
+			transactions: [
+				{ date: "2026-01-10", description: "  ", value: 100, type: "income" },
+			],
+		});
+
+		expect(result.rows[0].description).toBe("Sin descripción");
+	});
+
+	test("rejects a row with a non-string description", () => {
 		expect(() =>
 			assertParseResponse({
 				bankId: "bancolombia",
 				transactions: [
-					{ date: "2026-01-10", description: "  ", value: 100, type: "income" },
+					{ date: "2026-01-10", description: 42, value: 100, type: "income" },
 				],
 			}),
 		).toThrow(InternalError);

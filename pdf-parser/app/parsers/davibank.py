@@ -96,9 +96,11 @@ def _declared_period_total(first_page_text: str) -> float | None:
 def _expense(iso_date: str, description: str, amount: float, raw: str) -> RawTransaction:
     # Every imported row is a card charge: store as a signed EXPENSE (negative
     # magnitude), matching the backend's signed-value dedup convention.
+    # The merchant token can be missing from the PDF text (a real purchase with
+    # no printed description); backfill so the row stays importable.
     return RawTransaction(
         date=iso_date,
-        description=description.strip(),
+        description=description.strip() or "Sin descripción",
         value=-abs(amount),
         type="expenses",
         categoryName="",
