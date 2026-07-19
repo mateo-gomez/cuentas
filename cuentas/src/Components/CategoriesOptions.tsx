@@ -2,7 +2,7 @@ import { FlatList, View } from "react-native"
 import { StyledText } from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 import { theme } from "../theme"
-import { Link } from "react-router-native"
+import Link from "../router/Link"
 import { useCategories } from "../hooks"
 import { CategoryIcon } from "./CategoryIcon"
 

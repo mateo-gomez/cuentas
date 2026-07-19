@@ -6,7 +6,7 @@ import {
   registerWithEmailAndPassword,
   signOut,
 } from "../services/auth"
-import { useLocation, useNavigate } from "react-router-native"
+import { useLocation, useNavigate } from "react-router"
 import { UserDTO } from "../../types/User"
 import { isApiError, storage } from "../helpers"
 import { createLogger } from "../lib/logger"

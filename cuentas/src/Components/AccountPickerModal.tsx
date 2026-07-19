@@ -1,4 +1,12 @@
-import { FlatList, Modal, StyleSheet, TouchableOpacity, View } from "react-native"
+import {
+  FlatList,
+  Modal,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { useEffect, useRef } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import grafito from "../theme"
 import { StyledText } from "./StyledText"
@@ -24,7 +32,48 @@ export const AccountPickerModal = ({
   onSelect,
   onClose,
   allowAll = false,
-}: AccountPickerModalProps) => (
+}: AccountPickerModalProps) => {
+  const sheetRef = useRef<View>(null)
+
+  // On web, move keyboard focus into the sheet when it opens — onto the selected
+  // account if there is one, else the first row — so it's operable without a mouse.
+  useEffect(() => {
+    if (!visible || Platform.OS !== "web") return
+    const id = requestAnimationFrame(() => {
+      const node = sheetRef.current as unknown as HTMLElement | null
+      if (!node) return
+      const target =
+        node.querySelector<HTMLElement>('[data-a11y-account="selected"]') ??
+        node.querySelector<HTMLElement>("[data-a11y-account]")
+      target?.focus()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [visible])
+
+  // Arrow-key navigation between account rows while the sheet is open (web).
+  useEffect(() => {
+    if (!visible || Platform.OS !== "web") return
+    const onKeyDown = (ev: KeyboardEvent) => {
+      if (ev.key !== "ArrowDown" && ev.key !== "ArrowUp") return
+      const node = sheetRef.current as unknown as HTMLElement | null
+      if (!node) return
+      const rows = Array.from(
+        node.querySelectorAll<HTMLElement>("[data-a11y-account]"),
+      )
+      if (rows.length === 0) return
+      ev.preventDefault()
+      const current = rows.indexOf(document.activeElement as HTMLElement)
+      const next =
+        ev.key === "ArrowDown"
+          ? Math.min(current + 1, rows.length - 1)
+          : Math.max(current - 1, 0)
+      rows[next < 0 ? 0 : next]?.focus()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [visible])
+
+  return (
   <Modal
     visible={visible}
     animationType="slide"
@@ -32,7 +81,7 @@ export const AccountPickerModal = ({
     onRequestClose={onClose}
   >
     <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
-      <TouchableOpacity style={styles.sheet} activeOpacity={1}>
+      <TouchableOpacity ref={sheetRef} style={styles.sheet} activeOpacity={1}>
         <View style={styles.header}>
           <StyledText style={styles.title}>Elegir cuenta</StyledText>
           <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -47,6 +96,8 @@ export const AccountPickerModal = ({
           ListHeaderComponent={
             allowAll ? (
               <TouchableOpacity
+                // @ts-expect-error dataSet is a react-native-web prop
+                dataSet={{ a11yAccount: !selectedId ? "selected" : "row" }}
                 style={[styles.row, !selectedId && styles.rowActive]}
                 onPress={() => {
                   onSelect("")
@@ -67,6 +118,8 @@ export const AccountPickerModal = ({
             const active = item._id === selectedId
             return (
               <TouchableOpacity
+                // @ts-expect-error dataSet is a react-native-web prop
+                dataSet={{ a11yAccount: active ? "selected" : "row" }}
                 style={[styles.row, active && styles.rowActive]}
                 onPress={() => {
                   onSelect(item._id)
@@ -91,7 +144,8 @@ export const AccountPickerModal = ({
       </TouchableOpacity>
     </TouchableOpacity>
   </Modal>
-)
+  )
+}
 
 const styles = StyleSheet.create({
   backdrop: {

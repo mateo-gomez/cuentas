@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,10 +11,12 @@ import {
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import grafito from "../../theme"
 import { useEffect, useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
+import { appendPickedFile } from "../../utils/appendPickedFile"
+import { notify } from "../../utils/notify"
 import { importTransactions } from "../../services"
 import { usePdfImport } from "../../hooks"
 import { createLogger } from "../../lib/logger"
@@ -37,9 +38,9 @@ const Import = () => {
     if (parseState.status === "parsed") {
       navigate("/import/pdf", { state: { result: parseState.result } })
     } else if (parseState.status === "unsupported") {
-      Alert.alert("Banco no soportado", parseState.message)
+      notify.error("Banco no soportado", parseState.message)
     } else if (parseState.status === "error") {
-      Alert.alert("Error", parseState.message)
+      notify.error("Error", parseState.message)
     }
     // parseState "password_required" is handled inline in the UI below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,11 +51,7 @@ const Import = () => {
     pdfPassword?: string,
   ) => {
     const formData = new FormData()
-    formData.append("file", {
-      uri: asset.uri,
-      name: asset.name,
-      type: asset.mimeType || "application/pdf",
-    } as any)
+    appendPickedFile(formData, asset, "application/pdf")
 
     if (pdfPassword) {
       formData.append("password", pdfPassword)
@@ -78,34 +75,32 @@ const Import = () => {
       }
     } catch (error) {
       logger.error("Error selecting file", { error })
-      Alert.alert("Error", "No se pudo seleccionar el archivo.")
+      notify.error("Error", "No se pudo seleccionar el archivo.")
     }
   }
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      return Alert.alert("Por favor selecciona un archivo primero.")
+      return notify.error("Por favor selecciona un archivo primero.")
     }
 
     setUploading(true)
 
     const formData = new FormData()
-    formData.append("file", {
-      uri: selectedFile.uri,
-      name: selectedFile.name,
-      type:
-        selectedFile.mimeType ||
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    } as any)
+    appendPickedFile(
+      formData,
+      selectedFile,
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
     try {
       const response = await importTransactions(formData)
 
-      Alert.alert("Éxito", "Archivo subido correctamente.")
+      notify.success("Éxito", "Archivo subido correctamente.")
       setSelectedFile(null)
     } catch (err) {
       logger.error("Error uploading file", { error: err })
-      Alert.alert("Error", err instanceof Error ? err.message : "No se pudo subir el archivo.")
+      notify.error("Error", err instanceof Error ? err.message : "No se pudo subir el archivo.")
     } finally {
       setUploading(false)
     }
@@ -128,7 +123,7 @@ const Import = () => {
       await runPdfParse(file)
     } catch (error) {
       logger.error("Error selecting PDF file", { error })
-      Alert.alert("Error", "No se pudo seleccionar el archivo.")
+      notify.error("Error", "No se pudo seleccionar el archivo.")
     }
   }
 

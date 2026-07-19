@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native"
 import { theme } from "../theme"
 import { StyledText } from "./StyledText"
 import { NumberFormat } from "./NumberFormat"
-import { Link } from "react-router-native"
+import Link from "../router/Link"
 import { TransactionType } from "../../types"
 import { Ionicons } from "@expo/vector-icons"
 

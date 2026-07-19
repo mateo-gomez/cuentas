@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
 import grafito from "../../theme"
 import { useBudget, useCategories } from "../../hooks"

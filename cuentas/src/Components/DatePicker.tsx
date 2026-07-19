@@ -1,4 +1,4 @@
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
+import { openDatePicker } from "../utils/openDatePicker"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { theme } from "../theme"
 import { formatDate } from "../utils"
@@ -8,16 +8,8 @@ import { Ionicons } from "@expo/vector-icons"
 export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
   const dateFormatted = formatDate(date ?? new Date())
 
-  const handleChangeDate = (ev, date) => {
-    onChange(date)
-  }
-
   const handlePress = () => {
-    DateTimePickerAndroid.open({
-      mode: "date",
-      value: date,
-      onChange: handleChangeDate,
-    })
+    openDatePicker({ value: date ?? new Date(), onChange })
   }
 
   const datePickerStyles = [styles.datePickerWrapper, style]

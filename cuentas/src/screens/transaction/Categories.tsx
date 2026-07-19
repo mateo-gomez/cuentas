@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native"
-import { useOutletContext } from "react-router-native"
+import { useOutletContext } from "react-router"
 import CategoryGrid from "../../Components/CategoryGrid"
 import { useCategories } from "../../hooks/useCategories"
 import { Category } from "../../../types"

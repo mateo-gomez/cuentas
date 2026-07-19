@@ -8,7 +8,7 @@ import {
 } from "react-native"
 import Svg, { Circle } from "react-native-svg"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
 import BottomTabBar from "../../Components/BottomTabBar"
 import grafito from "../../theme"

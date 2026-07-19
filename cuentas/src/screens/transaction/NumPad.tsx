@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import VirtualKeyboard from "react-native-virtual-keyboard"
-import { useNavigate, useOutletContext } from "react-router-native"
+import { useNavigate, useOutletContext } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
 import grafito from "../../theme"
 import { Fragment } from "react"

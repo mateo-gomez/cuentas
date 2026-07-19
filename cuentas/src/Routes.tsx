@@ -4,7 +4,7 @@ import {
   Routes as Router,
   useLocation,
   useNavigate,
-} from "react-router-native"
+} from "react-router"
 import Transaction from "./screens/transaction"
 import Categories from "./screens/transaction/Categories"
 import NumPad from "./screens/transaction/NumPad"

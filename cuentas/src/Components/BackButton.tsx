@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import { theme } from "../theme"
 import BackArrowIcon from "./svg/BackArrowIcon"
 

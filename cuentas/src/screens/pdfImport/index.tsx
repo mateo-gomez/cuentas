@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +8,7 @@ import {
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useLocation, useNavigate } from "react-router-native"
+import { useLocation, useNavigate } from "react-router"
 import grafito from "../../theme"
 import { PdfImportRow } from "../../Components/PdfImportRow"
 import { OverlayLoader } from "../../Components/OverlayLoader"
@@ -18,6 +17,7 @@ import { ReconciliationBanner } from "../../Components/ReconciliationBanner"
 import { CategoryPickerModal } from "../../Components/CategoryPickerModal"
 import { AccountPickerModal } from "../../Components/AccountPickerModal"
 import { usePdfImport, useCategories, useAccounts } from "../../hooks"
+import { notify } from "../../utils/notify"
 import { PdfConfirmRow, PdfParseResponse } from "../../../types"
 
 // The parse result travels from the picker screen via router state so we
@@ -91,12 +91,12 @@ const PdfImportReview = () => {
 
   const handleConfirm = async () => {
     if (rows.length === 0) {
-      Alert.alert("No hay transacciones para confirmar.")
+      notify.info("No hay transacciones para confirmar.")
       return
     }
 
     if (!accountId) {
-      Alert.alert("Elegí una cuenta para confirmar la importación.")
+      notify.info("Elegí una cuenta para confirmar la importación.")
       return
     }
 
@@ -107,11 +107,11 @@ const PdfImportReview = () => {
     const confirmResult = await confirm(result.importSessionId, payload, accountId)
 
     if (confirmResult) {
-      Alert.alert(
+      notify.success(
         "Importación completa",
         `Se guardaron ${confirmResult.persisted} transacciones.`,
-        [{ text: "OK", onPress: () => navigate("/", { replace: true }) }],
       )
+      navigate("/", { replace: true })
     }
   }
 

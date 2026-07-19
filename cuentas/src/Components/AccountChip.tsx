@@ -20,7 +20,12 @@ export default function AccountChip({ accountId, onSelect }: Props) {
 
   return (
     <>
-      <TouchableOpacity style={styles.chip} onPress={() => setVisible(true)}>
+      <TouchableOpacity
+        style={styles.chip}
+        onPress={() => setVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={`Cuenta: ${selectedAccount?.name ?? "elegir cuenta"}`}
+      >
         <Ionicons
           name={selectedAccount?.type === "credit" ? "card-outline" : "wallet-outline"}
           size={16}
@@ -29,6 +34,7 @@ export default function AccountChip({ accountId, onSelect }: Props) {
         <Text style={styles.label} numberOfLines={1}>
           {selectedAccount?.name ?? "Elegir cuenta"}
         </Text>
+        <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
       </TouchableOpacity>
 
       <AccountPickerModal
@@ -44,12 +50,16 @@ export default function AccountChip({ accountId, onSelect }: Props) {
 
 const styles = StyleSheet.create({
   chip: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
     gap: 6,
+    paddingVertical: 4,
   },
   label: {
     fontSize: 14,
     color: grafito.ink2,
+    flexShrink: 1,
   },
 })

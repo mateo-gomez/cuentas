@@ -8,7 +8,7 @@ import {
 } from "react-native"
 import grafito from "../../theme"
 import { formatNumber } from "../../utils"
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-native"
+import { Outlet, useLocation, useNavigate, useParams } from "react-router"
 import { Category, TransactionDTO } from "../../../types"
 import {
   ErrorBanner,
@@ -18,7 +18,8 @@ import { useAccounts, useTransaction } from "../../hooks"
 import { createTransaction, getDefaultAccount, getFrequentCombos, updateTransaction } from "../../services"
 import { createLogger } from "../../lib/logger"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker"
+import DateField from "../../Components/DateField/DateField"
+import AmountInput from "../../Components/AmountInput/AmountInput"
 import { Ionicons } from "@expo/vector-icons"
 import { formatDate } from "../../utils"
 import CategoryChip from "../../Components/CategoryChip"
@@ -163,19 +164,10 @@ const Transaction = () => {
     })
   }
 
-  const handleSelectCategory = (selectedCategory: Category) => {
-    const hadCategory = !!category
+  // Set the category and commit in one shot, passing the id directly to avoid
+  // reading the just-set (still stale) category state.
+  const commitWithCategory = (selectedCategory: Category) => {
     setCategory(selectedCategory)
-
-    // Shortcut only for the brand-new create flow (no category yet): picking a
-    // category IS the terminal action, so commit immediately. When a category
-    // already exists (edit or suggestion chip), selecting one only changes the
-    // value and returns to the numpad so the user confirms with Guardar.
-    if (hadCategory) {
-      navigate(-1)
-      return
-    }
-
     handleSubmit({
       id,
       value: transactionValue,
@@ -185,6 +177,22 @@ const Transaction = () => {
       type: transactionType === "income" ? 1 : 0,
       accountId: accountId ?? "",
     })
+  }
+
+  const handleSelectCategory = (selectedCategory: Category) => {
+    const hadCategory = !!category
+
+    // Shortcut only for the brand-new create flow (no category yet): picking a
+    // category IS the terminal action, so commit immediately. When a category
+    // already exists (edit or suggestion chip), selecting one only changes the
+    // value and returns to the numpad so the user confirms with Guardar.
+    if (hadCategory) {
+      setCategory(selectedCategory)
+      navigate(-1)
+      return
+    }
+
+    commitWithCategory(selectedCategory)
   }
 
   const handleChangeDescription = (value: string) => {
@@ -222,16 +230,6 @@ const Transaction = () => {
       handleSave()
     }
     navigate("/")
-  }
-
-  const handleOpenDatePicker = () => {
-    DateTimePickerAndroid.open({
-      mode: "date",
-      value: date,
-      onChange: (_ev, newDate) => {
-        if (newDate) handleChangeDate(newDate)
-      },
-    })
   }
 
   const currentCategory = category
@@ -288,10 +286,12 @@ const Transaction = () => {
       {loading ? <OverlayLoader message="Cargando registro..." /> : null}
       <ErrorBanner message={submitError} />
 
-      {/* ── Amount display ── */}
-      <Text style={[styles.amountText, errors.transactionValue && styles.amountError]}>
-        {formatNumber(transactionValue)}
-      </Text>
+      {/* ── Amount ── */}
+      <AmountInput
+        value={transactionValue}
+        onChange={setTransactionValue}
+        hasError={errors.transactionValue}
+      />
 
       {/* ── Description ── */}
       <TextInput
@@ -330,7 +330,7 @@ const Transaction = () => {
         </TouchableOpacity>
 
         {/* Date */}
-        <TouchableOpacity style={styles.field} onPress={handleOpenDatePicker}>
+        <DateField style={styles.field} value={date} onChange={handleChangeDate}>
           <Text style={styles.fieldLabel}>Fecha</Text>
           <View style={styles.fieldValue}>
             <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />
@@ -339,15 +339,12 @@ const Transaction = () => {
             </Text>
             <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
           </View>
-        </TouchableOpacity>
+        </DateField>
 
         {/* Account */}
         <View style={[styles.field, styles.fieldLast]}>
           <Text style={styles.fieldLabel}>Cuenta</Text>
-          <View style={styles.fieldValue}>
-            <AccountChip accountId={accountId} onSelect={setAccountId} />
-            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
-          </View>
+          <AccountChip accountId={accountId} onSelect={setAccountId} />
         </View>
       </View>
 
@@ -357,10 +354,12 @@ const Transaction = () => {
           context={{
             handlePressNumpad,
             handleSelectCategory,
+            commitWithCategory,
             handleSave,
             hasCategory: !!category,
             isValidTransactionValue,
             categoryId: category?._id,
+            transactionValue,
           }}
         />
       </View>

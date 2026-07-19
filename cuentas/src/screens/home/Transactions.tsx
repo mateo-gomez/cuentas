@@ -1,11 +1,13 @@
-import { Alert, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import grafito from "../../theme"
 import { useTransactions } from "../../hooks"
+import { useConfirm } from "../../contexts/ConfirmContext"
+import { notify } from "../../utils/notify"
 import { formatDate, formatNumber } from "../../utils"
 import { memo, useCallback, useState } from "react"
 import { TransactionAggregate, Transaction, TransactionType } from "../../../types"
 import CategoryChip from "../../Components/CategoryChip"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
 
 const SCREEN_WIDTH = Dimensions.get("screen").width
@@ -293,6 +295,7 @@ const Transactions = ({
     end,
     accountId,
   })
+  const confirm = useConfirm()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
 
@@ -319,23 +322,22 @@ const Transactions = ({
       await removeTransactions(ids)
       clearSelection()
     } catch {
-      Alert.alert("Error", "No se pudieron eliminar las transacciones")
+      notify.error("Error", "No se pudieron eliminar las transacciones")
     } finally {
       setDeleting(false)
     }
   }, [selectedIds, removeTransactions, clearSelection])
 
-  const confirmDelete = useCallback(() => {
+  const confirmDelete = useCallback(async () => {
     const count = selectedIds.size
-    Alert.alert(
-      "Eliminar",
-      `¿Eliminar ${count} ${count === 1 ? "transacción" : "transacciones"}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Eliminar", style: "destructive", onPress: runDelete },
-      ],
-    )
-  }, [selectedIds, runDelete])
+    const ok = await confirm({
+      title: "Eliminar",
+      message: `¿Eliminar ${count} ${count === 1 ? "transacción" : "transacciones"}?`,
+      confirmText: "Eliminar",
+      destructive: true,
+    })
+    if (ok) runDelete()
+  }, [selectedIds, runDelete, confirm])
 
   return (
     <View style={{ flex: 1, width: SCREEN_WIDTH }}>

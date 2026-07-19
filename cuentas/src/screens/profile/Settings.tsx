@@ -5,7 +5,7 @@ import {
 } from "accordion-collapse-react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import grafito from "../../theme"
 import { CategoriesOptions } from "../../Components/CategoriesOptions"

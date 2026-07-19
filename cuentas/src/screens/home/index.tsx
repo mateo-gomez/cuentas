@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import grafito from "../../theme"
 import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
@@ -61,6 +61,17 @@ const Home = () => {
   const insets = useSafeAreaInsets()
   const tabBar = useTabBar()
   const listRef = useRef<FlatList | null>(null)
+
+  // FlatList freezes these after first render; keep stable refs so web
+  // (react-native-web) doesn't throw "Changing onViewableItemsChanged on the fly".
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 51 }).current
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index != null) {
+        setVisibleIndex(viewableItems[0].index)
+      }
+    },
+  ).current
 
   const selectedAccountName =
     accounts.find((account) => account._id === selectedAccountId)?.name ?? "Todo"
@@ -192,6 +203,7 @@ const Home = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          style={styles.suggestions}
           contentContainerStyle={styles.suggestionsRow}
         >
           {suggestions.map((combo) => (
@@ -231,12 +243,8 @@ const Home = () => {
           onEndReached={onEndReached}
           onEndReachedThreshold={1}
           onStartReachedThreshold={1}
-          onViewableItemsChanged={({ viewableItems }) => {
-            if (viewableItems.length > 0 && viewableItems[0].index != null) {
-              setVisibleIndex(viewableItems[0].index)
-            }
-          }}
-          viewabilityConfig={{ itemVisiblePercentThreshold: 51 }}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
           getItemLayout={(_, index) => ({
             length: SCREEN_WIDTH,
             offset: SCREEN_WIDTH * index,
@@ -329,8 +337,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: grafito.ink3,
   },
+  suggestions: {
+    flexGrow: 0,
+  },
   suggestionsRow: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingHorizontal: 20,
     paddingBottom: 8,

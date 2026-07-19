@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import grafito from "../../theme"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-native"
+import { useNavigate, useParams } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { AccountType } from "../../../types"

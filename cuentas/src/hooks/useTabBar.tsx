@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-native"
+import { useLocation, useNavigate } from "react-router"
 import { Tab } from "../Components/BottomTabBar"
 
 const pathToTab = (pathname: string): Tab => {

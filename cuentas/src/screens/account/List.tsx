@@ -1,7 +1,7 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useNavigate } from "react-router-native"
+import { useNavigate } from "react-router"
 import grafito from "../../theme"
 import { useAccounts, useTabBar } from "../../hooks"
 import BottomTabBar from "../../Components/BottomTabBar"
