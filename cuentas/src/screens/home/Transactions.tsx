@@ -1,4 +1,6 @@
 import {
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +21,8 @@ import {
 import CategoryChip from "../../Components/CategoryChip"
 import { useNavigate } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
+
+const isWeb = Platform.OS === "web"
 
 // ─── Hero balance card ────────────────────────────────────────────────────────
 
@@ -139,6 +143,7 @@ interface DayGroupProps {
   selectionMode: boolean
   selectedIds: Set<string>
   onToggleSelect: (id: string) => void
+  onQuickDelete: (id: string) => void
 }
 
 const DayGroup = ({
@@ -146,6 +151,7 @@ const DayGroup = ({
   selectionMode,
   selectedIds,
   onToggleSelect,
+  onQuickDelete,
 }: DayGroupProps) => {
   const dayTotal = group.balance.balance
   const dayLabel = formatDate(new Date(group.minDate), {
@@ -177,6 +183,7 @@ const DayGroup = ({
           selectionMode={selectionMode}
           selected={selectedIds.has(tx._id)}
           onToggleSelect={onToggleSelect}
+          onQuickDelete={onQuickDelete}
         />
       ))}
     </View>
@@ -217,6 +224,7 @@ interface TransactionRowProps {
   selectionMode: boolean
   selected: boolean
   onToggleSelect: (id: string) => void
+  onQuickDelete: (id: string) => void
 }
 
 const TransactionRow = ({
@@ -224,8 +232,10 @@ const TransactionRow = ({
   selectionMode,
   selected,
   onToggleSelect,
+  onQuickDelete,
 }: TransactionRowProps) => {
   const navigate = useNavigate()
+  const [hovered, setHovered] = useState(false)
   const isIncome = transaction.type === TransactionType.income
   const categoryId =
     transaction.category?._id ?? transaction.category?.name ?? "default"
@@ -242,13 +252,21 @@ const TransactionRow = ({
     )
   }
 
+  const showQuickDelete = isWeb && hovered && !selectionMode
+
   return (
-    <TouchableOpacity
-      style={[row.container, selected && row.selected]}
+    <Pressable
+      style={({ pressed }) => [
+        row.container,
+        selected && row.selected,
+        isWeb && hovered && row.hovered,
+        pressed && { opacity: 0.7 },
+      ]}
       onPress={handlePress}
       onLongPress={() => onToggleSelect(transaction._id)}
       delayLongPress={250}
-      activeOpacity={0.7}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
     >
       {selectionMode ? (
         <Ionicons
@@ -256,6 +274,16 @@ const TransactionRow = ({
           size={24}
           color={selected ? grafito.pos : grafito.ink4}
         />
+      ) : isWeb && hovered ? (
+        // Web: hovering reveals a checkbox to start/extend a multi-selection
+        <TouchableOpacity
+          style={row.selectBox}
+          onPress={() => onToggleSelect(transaction._id)}
+          accessibilityLabel="Seleccionar transacción"
+          hitSlop={8}
+        >
+          <Ionicons name="ellipse-outline" size={24} color={grafito.ink4} />
+        </TouchableOpacity>
       ) : (
         <CategoryChip
           categoryId={categoryId}
@@ -279,7 +307,23 @@ const TransactionRow = ({
       >
         {isIncome ? "+" : "-"}${formatNumber(transaction.value)}
       </Text>
-    </TouchableOpacity>
+
+      {/* Web-only quick-delete slot: reserved on web so it never shifts layout */}
+      {isWeb && !selectionMode ? (
+        <View style={row.action}>
+          {showQuickDelete ? (
+            <TouchableOpacity
+              style={row.actionBtn}
+              onPress={() => onQuickDelete(transaction._id)}
+              accessibilityLabel="Eliminar transacción"
+              hitSlop={8}
+            >
+              <Ionicons name="trash-outline" size={16} color={grafito.neg} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      ) : null}
+    </Pressable>
   )
 }
 
@@ -295,8 +339,29 @@ const row = StyleSheet.create({
   selected: {
     backgroundColor: grafito.surface3,
   },
+  hovered: {
+    backgroundColor: grafito.surface3,
+  },
+  selectBox: {
+    width: 40,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   info: {
     flex: 1,
+  },
+  action: {
+    width: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actionBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
   },
   categoryName: {
     fontFamily: "System",
@@ -367,6 +432,24 @@ const Transactions = ({
     }
   }, [selectedIds, removeTransactions, clearSelection])
 
+  const quickDelete = useCallback(
+    async (id: string) => {
+      const ok = await confirm({
+        title: "Eliminar",
+        message: "¿Eliminar esta transacción?",
+        confirmText: "Eliminar",
+        destructive: true,
+      })
+      if (!ok) return
+      try {
+        await removeTransactions([id])
+      } catch {
+        notify.error("Error", "No se pudo eliminar la transacción")
+      }
+    },
+    [confirm, removeTransactions],
+  )
+
   const confirmDelete = useCallback(async () => {
     const count = selectedIds.size
     const ok = await confirm({
@@ -411,6 +494,7 @@ const Transactions = ({
               selectionMode={selectionMode}
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
+              onQuickDelete={quickDelete}
             />
           ))
         )}
