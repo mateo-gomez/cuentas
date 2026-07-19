@@ -8,7 +8,7 @@
     "app:build:production": "cd ./cuentas && npm run build:production",
     "server:dev": "cd ./backend && npm run dev",
     "parser:setup": "cd ./pdf-parser && python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt",
-    "parser:dev": "cd ./pdf-parser && ./.venv/bin/uvicorn app.main:app --reload --port 8000",
+    "parser:dev": "cd ./pdf-parser && ./.venv/bin/uvicorn app.main:app --reload --port 8001",
     "dev": "concurrently -n app,server,parser -c cyan,magenta,yellow \"npm:app:dev\" \"npm:server:dev\" \"npm:parser:dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
