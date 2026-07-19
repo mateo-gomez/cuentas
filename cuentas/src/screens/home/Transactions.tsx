@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,8 +19,6 @@ import {
 import CategoryChip from "../../Components/CategoryChip"
 import { useNavigate } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
-
-const SCREEN_WIDTH = Dimensions.get("screen").width
 
 // ─── Hero balance card ────────────────────────────────────────────────────────
 
@@ -324,10 +321,12 @@ const Transactions = ({
   start,
   end,
   accountId,
+  width,
 }: {
   start: Date
   end: Date
   accountId?: string
+  width: number
 }) => {
   const { transactions, loading, balance, removeTransactions } =
     useTransactions({
@@ -382,7 +381,7 @@ const Transactions = ({
   }, [selectedIds, runDelete, confirm])
 
   return (
-    <View style={{ flex: 1, width: SCREEN_WIDTH }}>
+    <View style={{ flex: 1, width }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: selectionMode ? 80 : 16 }}

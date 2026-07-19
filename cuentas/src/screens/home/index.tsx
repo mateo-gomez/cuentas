@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -57,13 +56,14 @@ const initialSteps = [
   },
 ]
 
-const SCREEN_WIDTH = Dimensions.get("screen").width
-
 const Home = () => {
   const { dateRange: totalDateRange } = useDateRange()
   const { accounts } = useAccounts()
   const [steps, setSteps] = useState(initialSteps)
   const [visibleIndex, setVisibleIndex] = useState(0)
+  // Width of a single paged month. Measured from the list container so the
+  // page matches the desktop content area, not the full browser width.
+  const [pageWidth, setPageWidth] = useState(0)
   const [selectedAccountId, setSelectedAccountId] = useState("")
   const [accountPickerVisible, setAccountPickerVisible] = useState(false)
   const { suggestions } = useSuggestions(selectedAccountId || undefined)
@@ -237,8 +237,13 @@ const Home = () => {
       ) : null}
 
       {/* Paged transaction list */}
-      <View style={styles.listContainer}>
+      <View
+        style={styles.listContainer}
+        onLayout={(e) => setPageWidth(e.nativeEvent.layout.width)}
+      >
+        {pageWidth > 0 ? (
         <FlatList
+          key={pageWidth}
           ref={listRef}
           data={steps}
           renderItem={({ item }) => (
@@ -246,6 +251,7 @@ const Home = () => {
               start={item.start}
               end={item.end}
               accountId={selectedAccountId || undefined}
+              width={pageWidth}
             />
           )}
           onScrollToIndexFailed={({ index }) => {
@@ -266,11 +272,12 @@ const Home = () => {
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
           getItemLayout={(_, index) => ({
-            length: SCREEN_WIDTH,
-            offset: SCREEN_WIDTH * index,
+            length: pageWidth,
+            offset: pageWidth * index,
             index,
           })}
         />
+        ) : null}
       </View>
 
       {/* Bottom tab bar */}
