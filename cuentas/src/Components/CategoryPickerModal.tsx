@@ -35,11 +35,18 @@ export const CategoryPickerModal = ({
     transparent
     onRequestClose={onClose}
   >
-    <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
+    <TouchableOpacity
+      style={styles.backdrop}
+      activeOpacity={1}
+      onPress={onClose}
+    >
       <TouchableOpacity style={styles.sheet} activeOpacity={1}>
         <View style={styles.header}>
           <StyledText style={styles.title}>Elegir categoría</StyledText>
-          <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <TouchableOpacity
+            onPress={onClose}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
             <Ionicons name="close" size={22} color={grafito.ink3} />
           </TouchableOpacity>
         </View>

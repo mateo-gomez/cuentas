@@ -15,7 +15,10 @@ export const useTransaction = (id: string) => {
       getTransaction(id)
         .then(setTransaction)
         .catch((err) => {
-          logger.error("Error loading transaction", { id, error: err?.message ?? err })
+          logger.error("Error loading transaction", {
+            id,
+            error: err?.message ?? err,
+          })
         })
         .finally(() => setLoading(false))
     }

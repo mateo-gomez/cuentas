@@ -61,9 +61,17 @@ const Settings = () => {
             <Collapse key={option.title}>
               <CollapseHeader>
                 <View style={styles.row}>
-                  <Ionicons name={option.icon} size={20} color={grafito.accent} />
+                  <Ionicons
+                    name={option.icon}
+                    size={20}
+                    color={grafito.accent}
+                  />
                   <Text style={styles.rowLabel}>{option.title}</Text>
-                  <Ionicons name="chevron-down" size={16} color={grafito.ink4} />
+                  <Ionicons
+                    name="chevron-down"
+                    size={16}
+                    color={grafito.ink4}
+                  />
                 </View>
               </CollapseHeader>
               <CollapseBody>{option.options}</CollapseBody>
@@ -84,7 +92,9 @@ const Settings = () => {
         {inertOptions.map((option) => (
           <View key={option.title} style={[styles.row, styles.rowDisabled]}>
             <Ionicons name={option.icon} size={20} color={grafito.ink4} />
-            <Text style={[styles.rowLabel, styles.rowLabelDisabled]}>{option.title}</Text>
+            <Text style={[styles.rowLabel, styles.rowLabelDisabled]}>
+              {option.title}
+            </Text>
             <Text style={styles.comingSoon}>Próximamente</Text>
           </View>
         ))}

@@ -25,8 +25,18 @@ const YEAR = now.getFullYear()
 const MONTH = now.getMonth() + 1
 
 const MONTHS_ES = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE",
+  "ENERO",
+  "FEBRERO",
+  "MARZO",
+  "ABRIL",
+  "MAYO",
+  "JUNIO",
+  "JULIO",
+  "AGOSTO",
+  "SEPTIEMBRE",
+  "OCTUBRE",
+  "NOVIEMBRE",
+  "DICIEMBRE",
 ]
 
 const BudgetEdit = () => {
@@ -58,13 +68,20 @@ const BudgetEdit = () => {
       return
     }
 
-    const categoryAllocations: BudgetCategoryAllocation[] = Object.entries(allocations)
+    const categoryAllocations: BudgetCategoryAllocation[] = Object.entries(
+      allocations,
+    )
       .filter(([, v]) => v && !isNaN(parseFloat(v)) && parseFloat(v) > 0)
       .map(([categoryId, v]) => ({ categoryId, allocated: parseFloat(v) }))
 
     try {
       setSaving(true)
-      await saveBudget({ year: YEAR, month: MONTH, total: totalNum, categories: categoryAllocations })
+      await saveBudget({
+        year: YEAR,
+        month: MONTH,
+        total: totalNum,
+        categories: categoryAllocations,
+      })
       navigate("/budget")
     } catch (err: any) {
       logger.error("Error saving budget", { error: err?.message })

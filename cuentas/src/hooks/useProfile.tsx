@@ -1,6 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import { authContext } from "../contexts/AuthContext"
-import { changePassword as changePasswordRequest, getMe, updateMe } from "../services"
+import {
+  changePassword as changePasswordRequest,
+  getMe,
+  updateMe,
+} from "../services"
 import { ProfileUpdateDTO } from "../services/profile"
 import { isApiError } from "../helpers"
 import { createLogger } from "../lib/logger"
@@ -26,11 +30,16 @@ export const useProfile = () => {
       setUser(me)
     } catch (error) {
       if (isApiError(error)) {
-        logger.error("getMe error", { message: error.message, statusCode: error.statusCode })
+        logger.error("getMe error", {
+          message: error.message,
+          statusCode: error.statusCode,
+        })
       } else {
         logger.error("getMe error", { error })
       }
-      setError(error instanceof Error ? error.message : "Error al cargar el perfil")
+      setError(
+        error instanceof Error ? error.message : "Error al cargar el perfil",
+      )
     } finally {
       setLoading(false)
     }
@@ -49,27 +58,42 @@ export const useProfile = () => {
       return updated
     } catch (error) {
       if (isApiError(error)) {
-        logger.error("updateMe error", { message: error.message, statusCode: error.statusCode })
+        logger.error("updateMe error", {
+          message: error.message,
+          statusCode: error.statusCode,
+        })
       } else {
         logger.error("updateMe error", { error })
       }
-      setError(error instanceof Error ? error.message : "Error al guardar el perfil")
+      setError(
+        error instanceof Error ? error.message : "Error al guardar el perfil",
+      )
       throw error
     }
   }
 
-  const changePassword = async (currentPassword: string, newPassword: string) => {
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string,
+  ) => {
     setError("")
 
     try {
       return await changePasswordRequest(currentPassword, newPassword)
     } catch (error) {
       if (isApiError(error)) {
-        logger.error("changePassword error", { message: error.message, statusCode: error.statusCode })
+        logger.error("changePassword error", {
+          message: error.message,
+          statusCode: error.statusCode,
+        })
       } else {
         logger.error("changePassword error", { error })
       }
-      setError(error instanceof Error ? error.message : "Error al cambiar la contraseña")
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Error al cambiar la contraseña",
+      )
       throw error
     }
   }

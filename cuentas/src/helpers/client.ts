@@ -125,7 +125,11 @@ const createRequestInit = async (
     headers: defaultHeaders,
   }
 
-  if (method === Method.POST || method === Method.PUT || method === Method.PATCH) {
+  if (
+    method === Method.POST ||
+    method === Method.PUT ||
+    method === Method.PATCH
+  ) {
     requestInit.body = isFormData ? data : JSON.stringify(data)
   }
 
@@ -195,18 +199,26 @@ const fetcher = async <T>(
         onSessionExpired?.()
       }
 
-      const message = (result && typeof result === "object" && "message" in result
-        ? result.message
-        : "Ha ocurrido un error inesperado") as string
-      const errors = (result && typeof result === "object" && "errors" in result
-        ? result.errors
-        : undefined) as Record<string, string[]> | undefined
+      const message = (
+        result && typeof result === "object" && "message" in result
+          ? result.message
+          : "Ha ocurrido un error inesperado"
+      ) as string
+      const errors = (
+        result && typeof result === "object" && "errors" in result
+          ? result.errors
+          : undefined
+      ) as Record<string, string[]> | undefined
       throw new ApiError(message, response.status, errors)
     }
 
     return result
   } catch (error: any) {
-    logger.error("Error in fetcher", { method, url, error: error?.message ?? error })
+    logger.error("Error in fetcher", {
+      method,
+      url,
+      error: error?.message ?? error,
+    })
     throw error
   }
 }

@@ -7,9 +7,12 @@ import { FrequentCombo } from "../../types"
 // Hash categoryId -> one of 10 tone names — mirrors CategoryChip's getTone so
 // suggestion chips visually match their category color elsewhere in the app.
 function getTone(id: string) {
-  const tones = Object.keys(theme.categoryTones) as Array<keyof typeof theme.categoryTones>
+  const tones = Object.keys(theme.categoryTones) as Array<
+    keyof typeof theme.categoryTones
+  >
   let hash = 0
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
+  for (let i = 0; i < id.length; i++)
+    hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
   return theme.categoryTones[tones[hash % tones.length]]
 }
 

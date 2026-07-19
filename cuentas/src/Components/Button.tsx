@@ -1,4 +1,9 @@
-import { ActivityIndicator, GestureResponderEvent, Pressable, StyleSheet } from "react-native"
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  Pressable,
+  StyleSheet,
+} from "react-native"
 import { theme } from "../theme"
 import { useState } from "react"
 
@@ -9,7 +14,13 @@ interface ButtonProps {
   loading?: boolean
 }
 
-export const Button = ({ onPress, children, disabled, loading, ...rest }: ButtonProps) => {
+export const Button = ({
+  onPress,
+  children,
+  disabled,
+  loading,
+  ...rest
+}: ButtonProps) => {
   const [isPressed, setIsPressed] = useState(false)
 
   const handlePressIn = () => {
@@ -33,7 +44,11 @@ export const Button = ({ onPress, children, disabled, loading, ...rest }: Button
       onPressOut={handlePressOut}
       onPress={handlePress}
       disabled={isDisabled}
-      style={[styles.button, isPressed && styles.buttonPressed, isDisabled && styles.buttonDisabled]}
+      style={[
+        styles.button,
+        isPressed && styles.buttonPressed,
+        isDisabled && styles.buttonDisabled,
+      ]}
       {...rest}
     >
       {loading ? <ActivityIndicator color={theme.colors.white} /> : children}

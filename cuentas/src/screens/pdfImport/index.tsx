@@ -81,7 +81,9 @@ const PdfImportReview = () => {
 
   const updateRow = (rowId: string, changes: Partial<ReviewRow>) => {
     setRows((current) =>
-      current.map((row) => (row.rowId === rowId ? { ...row, ...changes } : row)),
+      current.map((row) =>
+        row.rowId === rowId ? { ...row, ...changes } : row,
+      ),
     )
   }
 
@@ -104,7 +106,11 @@ const PdfImportReview = () => {
       ({ possibleDuplicate: _possibleDuplicate, ...row }) => row,
     )
 
-    const confirmResult = await confirm(result.importSessionId, payload, accountId)
+    const confirmResult = await confirm(
+      result.importSessionId,
+      payload,
+      accountId,
+    )
 
     if (confirmResult) {
       notify.success(
@@ -133,7 +139,8 @@ const PdfImportReview = () => {
 
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
-          Banco detectado: <Text style={styles.summaryStrong}>{result.bankId}</Text>
+          Banco detectado:{" "}
+          <Text style={styles.summaryStrong}>{result.bankId}</Text>
         </Text>
         <Text style={styles.summaryText}>
           {includedCount} de {rows.length} transacciones seleccionadas
@@ -172,7 +179,9 @@ const PdfImportReview = () => {
               updateRow(row.rowId, { description })
             }
             onPressCategory={() => setPickerRowId(row.rowId)}
-            onToggleIncluded={() => updateRow(row.rowId, { excluded: !row.excluded })}
+            onToggleIncluded={() =>
+              updateRow(row.rowId, { excluded: !row.excluded })
+            }
             onRemove={() => removeRow(row.rowId)}
           />
         ))}
@@ -182,7 +191,8 @@ const PdfImportReview = () => {
         visible={pickerRowId !== null}
         categories={categories}
         selectedName={
-          rows.find((row) => row.rowId === pickerRowId)?.categoryName || undefined
+          rows.find((row) => row.rowId === pickerRowId)?.categoryName ||
+          undefined
         }
         onSelect={(categoryName) => {
           if (pickerRowId) updateRow(pickerRowId, { categoryName })
@@ -212,7 +222,9 @@ const PdfImportReview = () => {
         </Text>
       </TouchableOpacity>
 
-      {confirming ? <OverlayLoader message="Guardando transacciones..." /> : null}
+      {confirming ? (
+        <OverlayLoader message="Guardando transacciones..." />
+      ) : null}
     </View>
   )
 }

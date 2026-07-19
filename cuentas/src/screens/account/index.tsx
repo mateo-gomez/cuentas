@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import grafito from "../../theme"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
@@ -40,8 +46,11 @@ const Account = () => {
 
   const handleSubmit = async () => {
     const isCredit = type === "credit"
-    const cutoffDayValid = !isCredit || (cutoffDay && Number(cutoffDay) >= 1 && Number(cutoffDay) <= 31)
-    const dueDayValid = !isCredit || (dueDay && Number(dueDay) >= 1 && Number(dueDay) <= 31)
+    const cutoffDayValid =
+      !isCredit ||
+      (cutoffDay && Number(cutoffDay) >= 1 && Number(cutoffDay) <= 31)
+    const dueDayValid =
+      !isCredit || (dueDay && Number(dueDay) >= 1 && Number(dueDay) <= 31)
 
     if (!name || !cutoffDayValid || !dueDayValid) {
       setErrors({
@@ -142,7 +151,10 @@ const Account = () => {
         {/* Type toggle */}
         <View style={styles.typeToggle}>
           <TouchableOpacity
-            style={[styles.typeOption, type === "bank" && styles.typeOptionActive]}
+            style={[
+              styles.typeOption,
+              type === "bank" && styles.typeOptionActive,
+            ]}
             onPress={() => setType("bank")}
           >
             <Text
@@ -155,7 +167,10 @@ const Account = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.typeOption, type === "credit" && styles.typeOptionActive]}
+            style={[
+              styles.typeOption,
+              type === "credit" && styles.typeOptionActive,
+            ]}
             onPress={() => setType("credit")}
           >
             <Text

@@ -10,12 +10,14 @@ import grafito from "../../theme"
 import { formatNumber } from "../../utils"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router"
 import { Category, TransactionDTO } from "../../../types"
-import {
-  ErrorBanner,
-  OverlayLoader,
-} from "../../Components"
+import { ErrorBanner, OverlayLoader } from "../../Components"
 import { useAccounts, useTransaction } from "../../hooks"
-import { createTransaction, getDefaultAccount, getFrequentCombos, updateTransaction } from "../../services"
+import {
+  createTransaction,
+  getDefaultAccount,
+  getFrequentCombos,
+  updateTransaction,
+} from "../../services"
 import { createLogger } from "../../lib/logger"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import DateField from "../../Components/DateField/DateField"
@@ -148,7 +150,9 @@ const Transaction = () => {
       navigate("/")
     } catch (error) {
       logger.error("Submit transaction failed", { error })
-      setSubmitError(error instanceof Error ? error.message : "Error al guardar")
+      setSubmitError(
+        error instanceof Error ? error.message : "Error al guardar",
+      )
     }
   }
 
@@ -209,7 +213,10 @@ const Transaction = () => {
     setErrors((errors) => ({ ...errors, transactionValue: true }))
   }
 
-  const isDirty = (record: Record<string, unknown> | undefined, reference: Record<string, unknown>) => {
+  const isDirty = (
+    record: Record<string, unknown> | undefined,
+    reference: Record<string, unknown>,
+  ) => {
     if (!record) return false
 
     return Object.entries(reference).some(
@@ -305,7 +312,10 @@ const Transaction = () => {
       {/* ── Meta fields (category · date · account) ── */}
       <View style={styles.fields}>
         {/* Category */}
-        <TouchableOpacity style={styles.field} onPress={() => navigate("categories")}>
+        <TouchableOpacity
+          style={styles.field}
+          onPress={() => navigate("categories")}
+        >
           <Text style={styles.fieldLabel}>Categoría</Text>
           <View style={styles.fieldValue}>
             {currentCategory ? (
@@ -321,7 +331,9 @@ const Transaction = () => {
                 </Text>
               </>
             ) : (
-              <Text style={[styles.fieldValueText, styles.fieldValuePlaceholder]}>
+              <Text
+                style={[styles.fieldValueText, styles.fieldValuePlaceholder]}
+              >
                 Sin categoría
               </Text>
             )}
@@ -330,7 +342,11 @@ const Transaction = () => {
         </TouchableOpacity>
 
         {/* Date */}
-        <DateField style={styles.field} value={date} onChange={handleChangeDate}>
+        <DateField
+          style={styles.field}
+          value={date}
+          onChange={handleChangeDate}
+        >
           <Text style={styles.fieldLabel}>Fecha</Text>
           <View style={styles.fieldValue}>
             <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />

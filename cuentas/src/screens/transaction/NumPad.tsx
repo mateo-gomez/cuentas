@@ -13,8 +13,12 @@ interface NumpadOutletContext {
 }
 
 const NumPad = () => {
-  const { handlePressNumpad, handleSave, hasCategory, isValidTransactionValue } =
-    useOutletContext<NumpadOutletContext>()
+  const {
+    handlePressNumpad,
+    handleSave,
+    hasCategory,
+    isValidTransactionValue,
+  } = useOutletContext<NumpadOutletContext>()
 
   const navigate = useNavigate()
 

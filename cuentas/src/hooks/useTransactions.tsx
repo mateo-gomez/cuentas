@@ -31,7 +31,9 @@ export const useTransactions = ({
         setBalance(balance)
       })
       .catch((err) => {
-        logger.error("Error loading transactions", { error: err?.message ?? err })
+        logger.error("Error loading transactions", {
+          error: err?.message ?? err,
+        })
         setError(err.message)
       })
       .finally(() => setLoading(false))
@@ -49,5 +51,12 @@ export const useTransactions = ({
     [load],
   )
 
-  return { transactions, balance, loading, error, refetch: load, removeTransactions }
+  return {
+    transactions,
+    balance,
+    loading,
+    error,
+    refetch: load,
+    removeTransactions,
+  }
 }

@@ -15,7 +15,7 @@ export const AppVersion = () => {
 
   const otaLabel = Updates.isEmbeddedLaunch
     ? "base"
-    : (Updates.updateId?.slice(0, 8) ?? "—")
+    : Updates.updateId?.slice(0, 8) ?? "—"
 
   return (
     <View style={styles.container}>

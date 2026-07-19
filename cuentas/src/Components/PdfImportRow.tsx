@@ -56,7 +56,9 @@ export const PdfImportRow = ({
           <StyledText style={styles.date}>{date}</StyledText>
           {possibleDuplicate ? (
             <View style={styles.badge}>
-              <StyledText style={styles.badgeText}>Posible duplicado</StyledText>
+              <StyledText style={styles.badgeText}>
+                Posible duplicado
+              </StyledText>
             </View>
           ) : null}
         </View>
@@ -69,9 +71,15 @@ export const PdfImportRow = ({
           placeholderTextColor={grafito.ink4}
         />
 
-        <TouchableOpacity style={styles.categoryPicker} onPress={onPressCategory}>
+        <TouchableOpacity
+          style={styles.categoryPicker}
+          onPress={onPressCategory}
+        >
           <StyledText
-            style={[styles.category, !categoryName && styles.categoryPlaceholder]}
+            style={[
+              styles.category,
+              !categoryName && styles.categoryPlaceholder,
+            ]}
           >
             {categoryName || "Elegir categoría"}
           </StyledText>
@@ -80,7 +88,10 @@ export const PdfImportRow = ({
 
         <StyledText
           selectable
-          style={[styles.value, { color: isIncome ? grafito.pos : grafito.neg }]}
+          style={[
+            styles.value,
+            { color: isIncome ? grafito.pos : grafito.neg },
+          ]}
         >
           {isIncome ? "+" : "-"}
           {formatNumber(Math.abs(value))}

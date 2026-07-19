@@ -58,11 +58,17 @@ export const useAuth = () => {
       }
     } catch (error) {
       if (isApiError(error)) {
-        logger.error("login error", { message: error.message, statusCode: error.statusCode, errors: error.errors })
+        logger.error("login error", {
+          message: error.message,
+          statusCode: error.statusCode,
+          errors: error.errors,
+        })
       } else {
         logger.error("login error", { error })
       }
-      setError(error instanceof Error ? error.message : "Error al iniciar sesión")
+      setError(
+        error instanceof Error ? error.message : "Error al iniciar sesión",
+      )
     }
   }
 
@@ -79,7 +85,11 @@ export const useAuth = () => {
       }
     } catch (error) {
       if (isApiError(error)) {
-        logger.error("register error", { message: error.message, statusCode: error.statusCode, errors: error.errors })
+        logger.error("register error", {
+          message: error.message,
+          statusCode: error.statusCode,
+          errors: error.errors,
+        })
       } else {
         logger.error("register error", { error })
       }

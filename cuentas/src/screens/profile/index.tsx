@@ -1,5 +1,11 @@
 import { useState } from "react"
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
@@ -96,10 +102,17 @@ const Profile = () => {
               onChangeText={setLastname}
             />
             <View style={styles.formActions}>
-              <Button onPress={handleSaveProfile} loading={savingProfile} disabled={savingProfile}>
+              <Button
+                onPress={handleSaveProfile}
+                loading={savingProfile}
+                disabled={savingProfile}
+              >
                 <Text style={styles.buttonLabel}>Guardar</Text>
               </Button>
-              <TouchableOpacity onPress={() => setEditing(false)} style={styles.cancelButton}>
+              <TouchableOpacity
+                onPress={() => setEditing(false)}
+                style={styles.cancelButton}
+              >
                 <Text style={styles.cancelLabel}>Cancelar</Text>
               </TouchableOpacity>
             </View>
@@ -112,7 +125,11 @@ const Profile = () => {
             {/* Email is READ-ONLY by design — no input, no edit affordance. */}
             <Text style={styles.email}>{user?.email}</Text>
             <TouchableOpacity onPress={startEditing} style={styles.editLink}>
-              <Ionicons name="pencil-outline" size={16} color={grafito.accent} />
+              <Ionicons
+                name="pencil-outline"
+                size={16}
+                color={grafito.accent}
+              />
               <Text style={styles.editLinkLabel}>Editar datos</Text>
             </TouchableOpacity>
           </View>
@@ -158,7 +175,9 @@ const Profile = () => {
           </View>
         ) : null}
 
-        {passwordSuccess ? <Text style={styles.success}>{passwordSuccess}</Text> : null}
+        {passwordSuccess ? (
+          <Text style={styles.success}>{passwordSuccess}</Text>
+        ) : null}
       </View>
 
       <ErrorBanner message={loading ? "" : error} />

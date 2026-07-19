@@ -34,7 +34,8 @@ export const ReconciliationBanner = ({
     <View style={styles.mismatchContainer}>
       <StyledText style={styles.mismatchIcon}>⚠</StyledText>
       <StyledText style={styles.mismatchText}>
-        El saldo no concilia con el extracto (diferencia: {difference.toFixed(2)}
+        El saldo no concilia con el extracto (diferencia:{" "}
+        {difference.toFixed(2)}
         ). Podés revisar y confirmar igual.
       </StyledText>
     </View>

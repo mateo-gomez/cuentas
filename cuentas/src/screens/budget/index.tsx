@@ -20,8 +20,18 @@ import { formatNumber } from "../../utils"
 const now = new Date()
 
 const MONTHS_ES = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE",
+  "ENERO",
+  "FEBRERO",
+  "MARZO",
+  "ABRIL",
+  "MAYO",
+  "JUNIO",
+  "JULIO",
+  "AGOSTO",
+  "SEPTIEMBRE",
+  "OCTUBRE",
+  "NOVIEMBRE",
+  "DICIEMBRE",
 ]
 
 // ─── Donut ring via SVG ───────────────────────────────────────────────────────
@@ -77,7 +87,10 @@ const DonutRing = ({
       <View style={styles.donutCenter} pointerEvents="none">
         <Text style={styles.donutEyebrow}>disponible</Text>
         <Text
-          style={[styles.donutAmount, { color: isOver ? grafito.neg : grafito.ink }]}
+          style={[
+            styles.donutAmount,
+            { color: isOver ? grafito.neg : grafito.ink },
+          ]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
@@ -112,7 +125,12 @@ const CategoryRow = ({
   return (
     <View style={styles.catRow}>
       <View style={styles.catTop}>
-        <CategoryChip categoryId={categoryId} name={name} icon={icon} size="sm" />
+        <CategoryChip
+          categoryId={categoryId}
+          name={name}
+          icon={icon}
+          size="sm"
+        />
         <Text style={styles.catName} numberOfLines={1}>
           {name}
         </Text>
@@ -212,12 +230,16 @@ const BudgetScreen = () => {
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statLabel}>GASTADO</Text>
-                <Text style={styles.statValue}>${formatNumber(totalSpent)}</Text>
+                <Text style={styles.statValue}>
+                  ${formatNumber(totalSpent)}
+                </Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Text style={styles.statLabel}>META</Text>
-                <Text style={styles.statValue}>${formatNumber(budget.total)}</Text>
+                <Text style={styles.statValue}>
+                  ${formatNumber(budget.total)}
+                </Text>
               </View>
             </View>
           </View>

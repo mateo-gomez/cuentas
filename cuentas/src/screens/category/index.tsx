@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import grafito from "../../theme"
 import { useEffect, useState } from "react"
 import CategoryGrid from "../../Components/CategoryGrid"

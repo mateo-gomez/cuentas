@@ -24,10 +24,16 @@ export default function AccountChip({ accountId, onSelect }: Props) {
         style={styles.chip}
         onPress={() => setVisible(true)}
         accessibilityRole="button"
-        accessibilityLabel={`Cuenta: ${selectedAccount?.name ?? "elegir cuenta"}`}
+        accessibilityLabel={`Cuenta: ${
+          selectedAccount?.name ?? "elegir cuenta"
+        }`}
       >
         <Ionicons
-          name={selectedAccount?.type === "credit" ? "card-outline" : "wallet-outline"}
+          name={
+            selectedAccount?.type === "credit"
+              ? "card-outline"
+              : "wallet-outline"
+          }
           size={16}
           color={grafito.ink3}
         />

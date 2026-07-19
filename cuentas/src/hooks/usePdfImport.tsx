@@ -24,8 +24,7 @@ const UNSUPPORTED_BANK_MESSAGE =
   "No reconocemos el banco de este extracto todavía."
 const TOO_MANY_PAGES_MESSAGE =
   "El extracto tiene demasiadas páginas para procesarlo."
-const PASSWORD_REQUIRED_MESSAGE =
-  "El PDF está protegido con contraseña."
+const PASSWORD_REQUIRED_MESSAGE = "El PDF está protegido con contraseña."
 
 // Handles the two-step PDF import flow: parse (server-held preview) then
 // confirm (persist the reviewed batch). Each step keeps its own state so the
@@ -33,7 +32,9 @@ const PASSWORD_REQUIRED_MESSAGE =
 // (confirm) without one overwriting the other's status.
 export const usePdfImport = () => {
   const [parseState, setParseState] = useState<ParseState>({ status: "idle" })
-  const [confirmState, setConfirmState] = useState<ConfirmState>({ status: "idle" })
+  const [confirmState, setConfirmState] = useState<ConfirmState>({
+    status: "idle",
+  })
 
   const parse = useCallback(async (formData: FormData) => {
     setParseState({ status: "parsing" })
@@ -46,7 +47,8 @@ export const usePdfImport = () => {
       logger.error("Error parsing PDF statement", { error })
 
       if (isApiError(error) && error.statusCode === 422) {
-        const code = (error.errors as unknown as { code?: string } | undefined)?.code
+        const code = (error.errors as unknown as { code?: string } | undefined)
+          ?.code
 
         if (code === "password_required") {
           const message =
@@ -56,20 +58,28 @@ export const usePdfImport = () => {
         }
 
         const message =
-          code === "too_many_pages" ? TOO_MANY_PAGES_MESSAGE : UNSUPPORTED_BANK_MESSAGE
+          code === "too_many_pages"
+            ? TOO_MANY_PAGES_MESSAGE
+            : UNSUPPORTED_BANK_MESSAGE
         setParseState({ status: "unsupported", message })
         return null
       }
 
       const message =
-        error instanceof Error ? error.message : "No se pudo procesar el archivo."
+        error instanceof Error
+          ? error.message
+          : "No se pudo procesar el archivo."
       setParseState({ status: "error", message })
       return null
     }
   }, [])
 
   const confirm = useCallback(
-    async (importSessionId: string, rows: PdfConfirmRow[], accountId: string) => {
+    async (
+      importSessionId: string,
+      rows: PdfConfirmRow[],
+      accountId: string,
+    ) => {
       setConfirmState({ status: "confirming" })
 
       try {
@@ -79,7 +89,9 @@ export const usePdfImport = () => {
       } catch (error) {
         logger.error("Error confirming PDF import", { error })
         const message =
-          error instanceof Error ? error.message : "No se pudo confirmar la importación."
+          error instanceof Error
+            ? error.message
+            : "No se pudo confirmar la importación."
         setConfirmState({ status: "error", message })
         return null
       }
@@ -88,7 +100,10 @@ export const usePdfImport = () => {
   )
 
   const resetParse = useCallback(() => setParseState({ status: "idle" }), [])
-  const resetConfirm = useCallback(() => setConfirmState({ status: "idle" }), [])
+  const resetConfirm = useCallback(
+    () => setConfirmState({ status: "idle" }),
+    [],
+  )
 
   return { parseState, confirmState, parse, confirm, resetParse, resetConfirm }
 }

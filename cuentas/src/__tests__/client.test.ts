@@ -39,7 +39,10 @@ describe("client fetcher", () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 401,
-        json: async () => ({ statusCode: 401, message: "Invalid email or password" }),
+        json: async () => ({
+          statusCode: 401,
+          message: "Invalid email or password",
+        }),
       })
 
       let caught: unknown
@@ -92,7 +95,9 @@ describe("client fetcher", () => {
       }
 
       expect(isApiError(caught)).toBe(true)
-      expect((caught as ApiError).message).toBe("Ha ocurrido un error inesperado")
+      expect((caught as ApiError).message).toBe(
+        "Ha ocurrido un error inesperado",
+      )
     })
 
     it("propagates network error without wrapping in ApiError", async () => {

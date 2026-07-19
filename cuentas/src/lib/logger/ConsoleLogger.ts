@@ -20,7 +20,10 @@ export class ConsoleLogger implements ILogger {
 
   debug(message: string, context?: Record<string, unknown>): void {
     if (__DEV__) {
-      console.debug(this.format("debug", message), ...(context ? [context] : []))
+      console.debug(
+        this.format("debug", message),
+        ...(context ? [context] : []),
+      )
     }
   }
 

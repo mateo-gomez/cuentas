@@ -28,8 +28,18 @@ const logger = createLogger("Home")
 const now = new Date()
 
 const MONTH_NAMES = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ]
 
 const initialSteps = [
@@ -74,11 +84,14 @@ const Home = () => {
   ).current
 
   const selectedAccountName =
-    accounts.find((account) => account._id === selectedAccountId)?.name ?? "Todo"
+    accounts.find((account) => account._id === selectedAccountId)?.name ??
+    "Todo"
 
   const visibleStep = steps[visibleIndex] ?? steps[0]
   const visibleMonth = visibleStep?.start
-    ? MONTH_NAMES[visibleStep.start.getMonth()] + " " + visibleStep.start.getFullYear()
+    ? MONTH_NAMES[visibleStep.start.getMonth()] +
+      " " +
+      visibleStep.start.getFullYear()
     : ""
 
   const onEndReached = () => {
@@ -127,7 +140,8 @@ const Home = () => {
   }
 
   const handleSelectSuggestion = (combo: FrequentCombo) => {
-    const routeType = combo.type === TransactionType.income ? "income" : "outcome"
+    const routeType =
+      combo.type === TransactionType.income ? "income" : "outcome"
 
     navigate(`/transactions/${routeType}`, {
       state: {
@@ -175,11 +189,17 @@ const Home = () => {
 
       {/* Month switcher */}
       <View style={styles.monthSwitcher}>
-        <TouchableOpacity onPress={goToPrevMonth} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+        <TouchableOpacity
+          onPress={goToPrevMonth}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
           <Ionicons name="chevron-back" size={22} color={grafito.ink3} />
         </TouchableOpacity>
         <Text style={styles.monthLabel}>{visibleMonth}</Text>
-        <TouchableOpacity onPress={goToNextMonth} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+        <TouchableOpacity
+          onPress={goToNextMonth}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
           <Ionicons name="chevron-forward" size={22} color={grafito.ink3} />
         </TouchableOpacity>
       </View>

@@ -36,10 +36,7 @@ export const getAccountBalance = async (
 }
 
 export const createAccount = async (newAccount: AccountDTO) => {
-  const { data } = await client.post<{ data: Account }>(
-    "/accounts",
-    newAccount,
-  )
+  const { data } = await client.post<{ data: Account }>("/accounts", newAccount)
 
   return data
 }

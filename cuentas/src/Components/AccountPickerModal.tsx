@@ -74,76 +74,99 @@ export const AccountPickerModal = ({
   }, [visible])
 
   return (
-  <Modal
-    visible={visible}
-    animationType="slide"
-    transparent
-    onRequestClose={onClose}
-  >
-    <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose}>
-      <TouchableOpacity ref={sheetRef} style={styles.sheet} activeOpacity={1}>
-        <View style={styles.header}>
-          <StyledText style={styles.title}>Elegir cuenta</StyledText>
-          <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="close" size={22} color={grafito.ink3} />
-          </TouchableOpacity>
-        </View>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity
+        style={styles.backdrop}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity ref={sheetRef} style={styles.sheet} activeOpacity={1}>
+          <View style={styles.header}>
+            <StyledText style={styles.title}>Elegir cuenta</StyledText>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="close" size={22} color={grafito.ink3} />
+            </TouchableOpacity>
+          </View>
 
-        <FlatList
-          data={accounts}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            allowAll ? (
-              <TouchableOpacity
-                // @ts-expect-error dataSet is a react-native-web prop
-                dataSet={{ a11yAccount: !selectedId ? "selected" : "row" }}
-                style={[styles.row, !selectedId && styles.rowActive]}
-                onPress={() => {
-                  onSelect("")
-                  onClose()
-                }}
-              >
-                <View style={styles.icon}>
-                  <Ionicons name="layers-outline" size={18} color={grafito.accent} />
-                </View>
-                <StyledText style={styles.rowLabel}>Todo</StyledText>
-                {!selectedId ? (
-                  <Ionicons name="checkmark" size={20} color={grafito.accent} />
-                ) : null}
-              </TouchableOpacity>
-            ) : null
-          }
-          renderItem={({ item }) => {
-            const active = item._id === selectedId
-            return (
-              <TouchableOpacity
-                // @ts-expect-error dataSet is a react-native-web prop
-                dataSet={{ a11yAccount: active ? "selected" : "row" }}
-                style={[styles.row, active && styles.rowActive]}
-                onPress={() => {
-                  onSelect(item._id)
-                  onClose()
-                }}
-              >
-                <View style={styles.icon}>
-                  <Ionicons
-                    name={item.type === "credit" ? "card-outline" : "wallet-outline"}
-                    size={18}
-                    color={grafito.accent}
-                  />
-                </View>
-                <StyledText style={styles.rowLabel}>{item.name}</StyledText>
-                {active ? (
-                  <Ionicons name="checkmark" size={20} color={grafito.accent} />
-                ) : null}
-              </TouchableOpacity>
-            )
-          }}
-        />
+          <FlatList
+            data={accounts}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.list}
+            ListHeaderComponent={
+              allowAll ? (
+                <TouchableOpacity
+                  // @ts-expect-error dataSet is a react-native-web prop
+                  dataSet={{ a11yAccount: !selectedId ? "selected" : "row" }}
+                  style={[styles.row, !selectedId && styles.rowActive]}
+                  onPress={() => {
+                    onSelect("")
+                    onClose()
+                  }}
+                >
+                  <View style={styles.icon}>
+                    <Ionicons
+                      name="layers-outline"
+                      size={18}
+                      color={grafito.accent}
+                    />
+                  </View>
+                  <StyledText style={styles.rowLabel}>Todo</StyledText>
+                  {!selectedId ? (
+                    <Ionicons
+                      name="checkmark"
+                      size={20}
+                      color={grafito.accent}
+                    />
+                  ) : null}
+                </TouchableOpacity>
+              ) : null
+            }
+            renderItem={({ item }) => {
+              const active = item._id === selectedId
+              return (
+                <TouchableOpacity
+                  // @ts-expect-error dataSet is a react-native-web prop
+                  dataSet={{ a11yAccount: active ? "selected" : "row" }}
+                  style={[styles.row, active && styles.rowActive]}
+                  onPress={() => {
+                    onSelect(item._id)
+                    onClose()
+                  }}
+                >
+                  <View style={styles.icon}>
+                    <Ionicons
+                      name={
+                        item.type === "credit"
+                          ? "card-outline"
+                          : "wallet-outline"
+                      }
+                      size={18}
+                      color={grafito.accent}
+                    />
+                  </View>
+                  <StyledText style={styles.rowLabel}>{item.name}</StyledText>
+                  {active ? (
+                    <Ionicons
+                      name="checkmark"
+                      size={20}
+                      color={grafito.accent}
+                    />
+                  ) : null}
+                </TouchableOpacity>
+              )
+            }}
+          />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  </Modal>
+    </Modal>
   )
 }
 

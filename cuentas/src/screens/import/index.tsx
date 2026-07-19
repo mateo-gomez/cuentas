@@ -100,7 +100,10 @@ const Import = () => {
       setSelectedFile(null)
     } catch (err) {
       logger.error("Error uploading file", { error: err })
-      notify.error("Error", err instanceof Error ? err.message : "No se pudo subir el archivo.")
+      notify.error(
+        "Error",
+        err instanceof Error ? err.message : "No se pudo subir el archivo.",
+      )
     } finally {
       setUploading(false)
     }
@@ -159,95 +162,109 @@ const Import = () => {
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
         >
-        <Text style={styles.hint}>
-          Seleccioná un archivo Excel para importar tus transacciones.
-        </Text>
-
-        <TouchableOpacity style={styles.pickButton} onPress={handlePickFile}>
-          <Ionicons name="document-outline" size={20} color={grafito.ink} />
-          <Text style={styles.pickButtonText}>Seleccionar archivo Excel</Text>
-        </TouchableOpacity>
-
-        {selectedFile ? (
-          <View style={styles.fileChip}>
-            <Ionicons name="document-text-outline" size={18} color={grafito.ink3} />
-            <Text style={styles.fileName} numberOfLines={1}>
-              {selectedFile.name}
-            </Text>
-          </View>
-        ) : null}
-
-        <TouchableOpacity
-          style={[styles.uploadButton, uploadDisabled && styles.uploadButtonDisabled]}
-          onPress={handleUpload}
-          disabled={uploadDisabled}
-        >
-          <Text style={styles.uploadButtonText}>
-            {uploading ? "Subiendo..." : "Subir archivo"}
+          <Text style={styles.hint}>
+            Seleccioná un archivo Excel para importar tus transacciones.
           </Text>
-        </TouchableOpacity>
 
-        {uploading ? (
-          <ActivityIndicator
-            size="large"
-            color={grafito.accent}
-            style={styles.loader}
-          />
-        ) : null}
+          <TouchableOpacity style={styles.pickButton} onPress={handlePickFile}>
+            <Ionicons name="document-outline" size={20} color={grafito.ink} />
+            <Text style={styles.pickButtonText}>Seleccionar archivo Excel</Text>
+          </TouchableOpacity>
 
-        <View style={styles.divider} />
+          {selectedFile ? (
+            <View style={styles.fileChip}>
+              <Ionicons
+                name="document-text-outline"
+                size={18}
+                color={grafito.ink3}
+              />
+              <Text style={styles.fileName} numberOfLines={1}>
+                {selectedFile.name}
+              </Text>
+            </View>
+          ) : null}
 
-        <Text style={styles.hint}>
-          O importá un extracto bancario en PDF (Bancolombia, Davibank o Rappi).
-        </Text>
-
-        <TouchableOpacity
-          style={styles.pickButton}
-          onPress={handlePickAndParsePdf}
-          disabled={parsingPdf}
-        >
-          <Ionicons name="document-attach-outline" size={20} color={grafito.ink} />
-          <Text style={styles.pickButtonText}>
-            {parsingPdf ? "Procesando..." : "Seleccionar extracto PDF"}
-          </Text>
-        </TouchableOpacity>
-
-        {parsingPdf ? (
-          <ActivityIndicator
-            size="large"
-            color={grafito.accent}
-            style={styles.loader}
-          />
-        ) : null}
-
-        {parseState.status === "password_required" ? (
-          <View style={styles.passwordBox}>
-            <Text style={styles.hint}>
-              {parseState.message} Ingresá la clave para desbloquearlo.
+          <TouchableOpacity
+            style={[
+              styles.uploadButton,
+              uploadDisabled && styles.uploadButtonDisabled,
+            ]}
+            onPress={handleUpload}
+            disabled={uploadDisabled}
+          >
+            <Text style={styles.uploadButtonText}>
+              {uploading ? "Subiendo..." : "Subir archivo"}
             </Text>
-            <TextInput
-              style={styles.passwordInput}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Contraseña del PDF"
-              placeholderTextColor={grafito.ink4}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              onSubmitEditing={handleSubmitPassword}
+          </TouchableOpacity>
+
+          {uploading ? (
+            <ActivityIndicator
+              size="large"
+              color={grafito.accent}
+              style={styles.loader}
             />
-            <TouchableOpacity
-              style={[
-                styles.uploadButton,
-                password.trim().length === 0 && styles.uploadButtonDisabled,
-              ]}
-              onPress={handleSubmitPassword}
-              disabled={password.trim().length === 0}
-            >
-              <Text style={styles.uploadButtonText}>Desbloquear y procesar</Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
+          ) : null}
+
+          <View style={styles.divider} />
+
+          <Text style={styles.hint}>
+            O importá un extracto bancario en PDF (Bancolombia, Davibank o
+            Rappi).
+          </Text>
+
+          <TouchableOpacity
+            style={styles.pickButton}
+            onPress={handlePickAndParsePdf}
+            disabled={parsingPdf}
+          >
+            <Ionicons
+              name="document-attach-outline"
+              size={20}
+              color={grafito.ink}
+            />
+            <Text style={styles.pickButtonText}>
+              {parsingPdf ? "Procesando..." : "Seleccionar extracto PDF"}
+            </Text>
+          </TouchableOpacity>
+
+          {parsingPdf ? (
+            <ActivityIndicator
+              size="large"
+              color={grafito.accent}
+              style={styles.loader}
+            />
+          ) : null}
+
+          {parseState.status === "password_required" ? (
+            <View style={styles.passwordBox}>
+              <Text style={styles.hint}>
+                {parseState.message} Ingresá la clave para desbloquearlo.
+              </Text>
+              <TextInput
+                style={styles.passwordInput}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Contraseña del PDF"
+                placeholderTextColor={grafito.ink4}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                onSubmitEditing={handleSubmitPassword}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.uploadButton,
+                  password.trim().length === 0 && styles.uploadButtonDisabled,
+                ]}
+                onPress={handleSubmitPassword}
+                disabled={password.trim().length === 0}
+              >
+                <Text style={styles.uploadButtonText}>
+                  Desbloquear y procesar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

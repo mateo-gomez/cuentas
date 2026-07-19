@@ -47,7 +47,14 @@ export default function CategoryGrid({
   }
 
   const onKeyDown = (ev: React.KeyboardEvent) => {
-    const arrows = ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"]
+    const arrows = [
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowDown",
+      "ArrowUp",
+      "Home",
+      "End",
+    ]
     if (!arrows.includes(ev.key)) return
 
     // Which cell has focus right now?
@@ -84,7 +91,12 @@ export default function CategoryGrid({
   }
 
   return (
-    <div role="grid" aria-label="Categorías" style={gridStyle} onKeyDown={onKeyDown}>
+    <div
+      role="grid"
+      aria-label="Categorías"
+      style={gridStyle}
+      onKeyDown={onKeyDown}
+    >
       {categories.map((category, index) => {
         const selected = isSelected(category)
         return (

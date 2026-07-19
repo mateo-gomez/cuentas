@@ -1,11 +1,22 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import grafito from "../../theme"
 import { useTransactions } from "../../hooks"
 import { useConfirm } from "../../contexts/ConfirmContext"
 import { notify } from "../../utils/notify"
 import { formatDate, formatNumber } from "../../utils"
 import { memo, useCallback, useState } from "react"
-import { TransactionAggregate, Transaction, TransactionType } from "../../../types"
+import {
+  TransactionAggregate,
+  Transaction,
+  TransactionType,
+} from "../../../types"
 import CategoryChip from "../../Components/CategoryChip"
 import { useNavigate } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
@@ -23,7 +34,12 @@ interface HeroCardProps {
 const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
   <View style={hero.card}>
     <Text style={hero.eyebrow}>SALDO DEL MES</Text>
-    <Text style={[hero.balanceText, { color: balance < 0 ? grafito.neg : grafito.ink }]}>
+    <Text
+      style={[
+        hero.balanceText,
+        { color: balance < 0 ? grafito.neg : grafito.ink },
+      ]}
+    >
       {balance < 0 ? "-" : ""}${formatNumber(Math.abs(balance))}
     </Text>
 
@@ -38,12 +54,16 @@ const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
     <View style={hero.row}>
       <View style={hero.col}>
         <Text style={hero.colLabel}>↑ Ingresos</Text>
-        <Text style={[hero.colAmount, { color: grafito.pos }]}>${formatNumber(incomes)}</Text>
+        <Text style={[hero.colAmount, { color: grafito.pos }]}>
+          ${formatNumber(incomes)}
+        </Text>
       </View>
       <View style={hero.separator} />
       <View style={hero.col}>
         <Text style={hero.colLabel}>↓ Gastos</Text>
-        <Text style={[hero.colAmount, { color: grafito.neg }]}>${formatNumber(expenses)}</Text>
+        <Text style={[hero.colAmount, { color: grafito.neg }]}>
+          ${formatNumber(expenses)}
+        </Text>
       </View>
     </View>
   </View>
@@ -124,7 +144,12 @@ interface DayGroupProps {
   onToggleSelect: (id: string) => void
 }
 
-const DayGroup = ({ group, selectionMode, selectedIds, onToggleSelect }: DayGroupProps) => {
+const DayGroup = ({
+  group,
+  selectionMode,
+  selectedIds,
+  onToggleSelect,
+}: DayGroupProps) => {
   const dayTotal = group.balance.balance
   const dayLabel = formatDate(new Date(group.minDate), {
     weekday: "short",
@@ -137,7 +162,12 @@ const DayGroup = ({ group, selectionMode, selectedIds, onToggleSelect }: DayGrou
       {/* Day header */}
       <View style={day.header}>
         <Text style={day.dateLabel}>{dayLabel}</Text>
-        <Text style={[day.dayTotal, { color: dayTotal >= 0 ? grafito.pos : grafito.neg }]}>
+        <Text
+          style={[
+            day.dayTotal,
+            { color: dayTotal >= 0 ? grafito.pos : grafito.neg },
+          ]}
+        >
           {dayTotal >= 0 ? "+" : "-"}${formatNumber(Math.abs(dayTotal))}
         </Text>
       </View>
@@ -200,7 +230,8 @@ const TransactionRow = ({
 }: TransactionRowProps) => {
   const navigate = useNavigate()
   const isIncome = transaction.type === TransactionType.income
-  const categoryId = transaction.category?._id ?? transaction.category?.name ?? "default"
+  const categoryId =
+    transaction.category?._id ?? transaction.category?.name ?? "default"
   const categoryName = transaction.category?.name ?? "Sin categoría"
   const categoryIcon = transaction.category?.icon
 
@@ -209,7 +240,9 @@ const TransactionRow = ({
       onToggleSelect(transaction._id)
       return
     }
-    navigate(`/transactions/${TransactionType[transaction.type]}/${transaction._id}`)
+    navigate(
+      `/transactions/${TransactionType[transaction.type]}/${transaction._id}`,
+    )
   }
 
   return (
@@ -235,12 +268,18 @@ const TransactionRow = ({
         />
       )}
       <View style={row.info}>
-        <Text style={row.categoryName} numberOfLines={1}>{categoryName}</Text>
+        <Text style={row.categoryName} numberOfLines={1}>
+          {categoryName}
+        </Text>
         {transaction.description ? (
-          <Text style={row.description} numberOfLines={1}>{transaction.description}</Text>
+          <Text style={row.description} numberOfLines={1}>
+            {transaction.description}
+          </Text>
         ) : null}
       </View>
-      <Text style={[row.amount, { color: isIncome ? grafito.pos : grafito.neg }]}>
+      <Text
+        style={[row.amount, { color: isIncome ? grafito.pos : grafito.neg }]}
+      >
         {isIncome ? "+" : "-"}${formatNumber(transaction.value)}
       </Text>
     </TouchableOpacity>
@@ -290,11 +329,12 @@ const Transactions = ({
   end: Date
   accountId?: string
 }) => {
-  const { transactions, loading, balance, removeTransactions } = useTransactions({
-    start,
-    end,
-    accountId,
-  })
+  const { transactions, loading, balance, removeTransactions } =
+    useTransactions({
+      start,
+      end,
+      accountId,
+    })
   const confirm = useConfirm()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
@@ -332,7 +372,9 @@ const Transactions = ({
     const count = selectedIds.size
     const ok = await confirm({
       title: "Eliminar",
-      message: `¿Eliminar ${count} ${count === 1 ? "transacción" : "transacciones"}?`,
+      message: `¿Eliminar ${count} ${
+        count === 1 ? "transacción" : "transacciones"
+      }?`,
       confirmText: "Eliminar",
       destructive: true,
     })
@@ -378,13 +420,23 @@ const Transactions = ({
       {/* Selection action bar */}
       {selectionMode ? (
         <View style={bar.container}>
-          <TouchableOpacity style={bar.side} onPress={clearSelection} disabled={deleting}>
+          <TouchableOpacity
+            style={bar.side}
+            onPress={clearSelection}
+            disabled={deleting}
+          >
             <Ionicons name="close" size={22} color={grafito.ink3} />
             <Text style={bar.count}>{selectedIds.size}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={bar.deleteBtn} onPress={confirmDelete} disabled={deleting}>
+          <TouchableOpacity
+            style={bar.deleteBtn}
+            onPress={confirmDelete}
+            disabled={deleting}
+          >
             <Ionicons name="trash-outline" size={18} color="#fff" />
-            <Text style={bar.deleteText}>{deleting ? "Eliminando..." : "Eliminar"}</Text>
+            <Text style={bar.deleteText}>
+              {deleting ? "Eliminando..." : "Eliminar"}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : null}
