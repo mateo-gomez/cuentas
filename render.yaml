@@ -33,3 +33,24 @@ services:
         value: 15m
       - key: REFRESH_TOKEN_TTL
         value: 7d
+
+  # Static web build of the Expo app (client-only SPA, react-router-dom).
+  # `expo export --platform web` emits a static bundle to cuentas/dist.
+  - type: web
+    name: cuentas-web
+    runtime: static
+    rootDir: cuentas
+    buildCommand: npm ci && npx expo export --platform web
+    staticPublishPath: dist
+    envVars:
+      # Baked into the bundle at build time — must point at the public backend
+      # URL (https://<backend>.onrender.com), never a LAN IP or localhost.
+      # Set in the Render dashboard; a rebuild is required to change it.
+      - key: EXPO_PUBLIC_API_URL
+        sync: false
+    routes:
+      # SPA fallback: deep links (/import, /transactions/...) must serve
+      # index.html so client-side routing can resolve them.
+      - type: rewrite
+        source: /*
+        destination: /index.html
