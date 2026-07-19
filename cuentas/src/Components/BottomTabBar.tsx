@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsWideWeb } from '../hooks/useIsWideWeb';
 import theme from '../theme';
 
 export type Tab = 'home' | 'accounts' | 'budget' | 'profile';
@@ -38,6 +39,10 @@ function NavTab({ tab, activeTab, icon, activeIcon, label, onSelect }: NavTabPro
 
 export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props) {
   const insets = useSafeAreaInsets();
+  const wide = useIsWideWeb();
+
+  // On desktop web the left sidebar replaces the bottom tab bar.
+  if (wide) return null;
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom || 12 }]}>

@@ -1,10 +1,5 @@
-import { BackHandler, Platform, StyleSheet, ToastAndroid, View } from "react-native"
-import {
-  Route,
-  Routes as Router,
-  useLocation,
-  useNavigate,
-} from "react-router"
+import { BackHandler, Platform, ToastAndroid } from "react-native"
+import { Route, Routes as Router, useLocation, useNavigate } from "react-router"
 import Transaction from "./screens/transaction"
 import Categories from "./screens/transaction/Categories"
 import NumPad from "./screens/transaction/NumPad"
@@ -22,6 +17,7 @@ import BudgetScreen from "./screens/budget"
 import BudgetEdit from "./screens/budget/Edit"
 import Profile from "./screens/profile"
 import Settings from "./screens/profile/Settings"
+import Shell from "./Components/Shell/Shell"
 
 const DOUBLE_BACK_DELAY = 2000
 
@@ -63,7 +59,7 @@ const Routes = () => {
   }, [navigate, location.pathname])
 
   return (
-    <View style={styles.container}>
+    <Shell>
       <Router>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Signup />} />
@@ -88,15 +84,8 @@ const Routes = () => {
           <Route path="/profile/settings" element={<Settings />} />
         </Route>
       </Router>
-    </View>
+    </Shell>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexGrow: 1,
-  },
-})
 
 export default Routes
