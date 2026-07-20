@@ -30,12 +30,16 @@ const navigationOptions = [
     icon: "wallet-outline" as const,
     to: "/accounts",
   },
+  {
+    title: "Tema",
+    icon: "color-palette-outline" as const,
+    to: "/settings/theme",
+  },
 ]
 
 // Non-functional placeholders — out of scope per spec non-goals.
 const inertOptions = [
   { title: "Moneda", icon: "cash-outline" as const },
-  { title: "Tema", icon: "color-palette-outline" as const },
   { title: "Notificaciones", icon: "notifications-outline" as const },
 ]
 

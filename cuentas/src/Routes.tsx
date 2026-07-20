@@ -19,6 +19,7 @@ import BudgetScreen from "./screens/budget"
 import BudgetEdit from "./screens/budget/Edit"
 import Profile from "./screens/profile"
 import Settings from "./screens/profile/Settings"
+import ThemePreview from "./screens/profile/ThemePreview"
 import Shell from "./Components/Shell/Shell"
 
 const DOUBLE_BACK_DELAY = 2000
@@ -87,6 +88,7 @@ const Routes = () => {
           <Route path="/budget/edit" element={<BudgetEdit />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<Profile />} />
+          <Route path="/settings/theme" element={<ThemePreview />} />
         </Route>
       </Router>
     </Shell>

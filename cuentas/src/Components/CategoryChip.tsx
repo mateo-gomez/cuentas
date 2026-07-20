@@ -41,12 +41,15 @@ export default function CategoryChip({
   const tone = getTone(categoryId)
   const cfg = sizeConfig[size]
 
+  // "Ícono color" treatment: a neutral base with the category colour carried
+  // only by the glyph. Keeps per-category identity without the multi-colour
+  // pill in every list row competing with the amounts.
   return (
     <View
       style={[
         styles.chip,
         {
-          backgroundColor: tone.bg,
+          backgroundColor: theme.surface3,
           borderRadius: cfg.radius,
           height: cfg.height,
           paddingHorizontal: cfg.height * 0.35,

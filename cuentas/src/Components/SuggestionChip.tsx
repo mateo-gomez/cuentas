@@ -24,15 +24,13 @@ interface Props {
 export default function SuggestionChip({ combo, onPress }: Props) {
   const tone = getTone(combo.category._id)
 
+  // "Ícono color" treatment: neutral base, category colour carried by the glyph.
   return (
-    <TouchableOpacity
-      style={[styles.chip, { backgroundColor: tone.bg }]}
-      onPress={() => onPress(combo)}
-    >
+    <TouchableOpacity style={styles.chip} onPress={() => onPress(combo)}>
       {combo.category.icon ? (
         <Ionicons name={combo.category.icon as any} size={14} color={tone.fg} />
       ) : null}
-      <Text style={[styles.label, { color: tone.fg }]} numberOfLines={1}>
+      <Text style={styles.label} numberOfLines={1}>
         {combo.description}
       </Text>
     </TouchableOpacity>
@@ -47,10 +45,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    backgroundColor: theme.surface3,
+    borderWidth: 1,
+    borderColor: theme.line,
   },
   label: {
+    fontFamily: theme.weight.medium,
     fontSize: 13,
-    fontWeight: "600",
+    color: theme.ink2,
     maxWidth: 140,
   },
 })
