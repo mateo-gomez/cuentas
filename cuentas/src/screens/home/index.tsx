@@ -94,11 +94,12 @@ const Home = () => {
       visibleStep.start.getFullYear()
     : ""
 
+  // Returns true when a page was appended (older data still available).
   const onEndReached = () => {
     logger.debug("FlatList end reached")
     const currentStep = steps.at(-1)
 
-    if (totalDateRange?.start < currentStep.start) {
+    if (totalDateRange?.start && totalDateRange.start < currentStep.start) {
       const { start, end } = monthRange(
         currentStep.start.getFullYear(),
         currentStep.start.getMonth() - 1,
@@ -111,13 +112,17 @@ const Home = () => {
       }
 
       setSteps((prevStates) => [...prevStates, newPage])
+      return true
     }
+
+    return false
   }
 
+  // Returns true when a page was prepended (newer data still available).
   const onStartReached = () => {
     const currentStep = steps.at(0)
 
-    if (totalDateRange?.end > currentStep.end) {
+    if (totalDateRange?.end && totalDateRange.end > currentStep.end) {
       const { start, end } = monthRange(
         currentStep.start.getFullYear(),
         currentStep.start.getMonth() + 1,
@@ -130,7 +135,10 @@ const Home = () => {
       }
 
       setSteps((prevStates) => [newPage, ...prevStates])
+      return true
     }
+
+    return false
   }
 
   const handlePressFab = () => {
@@ -161,9 +169,8 @@ const Home = () => {
 
   const goToPrevMonth = () => {
     const nextIndex = visibleIndex + 1
-    if (nextIndex >= steps.length) {
-      onEndReached()
-    }
+    // At the oldest loaded page: only advance if there's older data to append.
+    if (nextIndex >= steps.length && !onEndReached()) return
     setVisibleIndex(nextIndex)
     scrollToMonth(nextIndex)
   }
