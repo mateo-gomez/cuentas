@@ -24,7 +24,12 @@ const CategoryList = () => {
     : "Todavía no tenés categorías. Creá la primera."
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.screen,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -51,10 +56,7 @@ const CategoryList = () => {
       {/* ── List — single page-level scroll (reliable on web) ── */}
       <ScrollView
         style={styles.body}
-        contentContainerStyle={[
-          styles.bodyContent,
-          { paddingBottom: insets.bottom + 24 },
-        ]}
+        contentContainerStyle={[styles.bodyContent, { paddingBottom: 24 }]}
         showsVerticalScrollIndicator={false}
       >
         {categories.length === 0 ? (
