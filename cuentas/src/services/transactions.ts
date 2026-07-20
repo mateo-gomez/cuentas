@@ -61,6 +61,21 @@ export const createTransaction = async (
   await client.post("transactions", newTransaction)
 }
 
+export interface TransferDTO {
+  fromAccountId: string
+  toAccountId: string
+  value: number
+  date: Date
+  description?: string
+}
+
+// Creates an account-to-account transfer (e.g. paying a credit card from a
+// bank account). The backend persists it as a linked pair of transactions
+// excluded from global income/expense totals.
+export const createTransfer = async (transfer: TransferDTO): Promise<void> => {
+  await client.post("transactions/transfer", transfer)
+}
+
 export const updateTransaction = async (
   transaction: TransactionDTO,
 ): Promise<void> => {

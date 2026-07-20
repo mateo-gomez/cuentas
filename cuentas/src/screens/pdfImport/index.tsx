@@ -28,6 +28,7 @@ interface LocationState {
 
 interface ReviewRow extends PdfConfirmRow {
   possibleDuplicate: boolean
+  suggestedTransfer: boolean
 }
 
 const buildInitialRows = (result: PdfParseResponse): ReviewRow[] =>
@@ -41,6 +42,11 @@ const buildInitialRows = (result: PdfParseResponse): ReviewRow[] =>
     // Flagged rows default-excluded (Decision 11) — user can re-include.
     excluded: row.possibleDuplicate,
     possibleDuplicate: row.possibleDuplicate,
+    // Auto-flagged card payments default to transfer ON; the user still must
+    // pick a destination card before confirming.
+    suggestedTransfer: row.suggestedTransfer ?? false,
+    isTransfer: row.suggestedTransfer ?? false,
+    transferToAccountId: "",
   }))
 
 const PdfImportReview = () => {
@@ -60,10 +66,27 @@ const PdfImportReview = () => {
   const [pickerRowId, setPickerRowId] = useState<string | null>(null)
   const [accountId, setAccountId] = useState("")
   const [accountPickerVisible, setAccountPickerVisible] = useState(false)
+  // rowId whose transfer-destination picker is open (credit accounts only).
+  const [transferPickerRowId, setTransferPickerRowId] = useState<string | null>(
+    null,
+  )
 
   const selectedAccountName = accounts.find(
     (account) => account._id === accountId,
   )?.name
+
+  // Destination options for a card payment: the user's credit accounts, minus
+  // the account the batch is being imported into (can't transfer to itself).
+  const creditAccounts = useMemo(
+    () =>
+      accounts.filter(
+        (account) => account.type === "credit" && account._id !== accountId,
+      ),
+    [accounts, accountId],
+  )
+
+  const accountNameById = (id?: string) =>
+    id ? accounts.find((account) => account._id === id)?.name : undefined
 
   const includedCount = useMemo(
     () => rows.filter((row) => !row.excluded).length,
@@ -102,8 +125,20 @@ const PdfImportReview = () => {
       return
     }
 
+    const missingTransferTarget = rows.some(
+      (row) => !row.excluded && row.isTransfer && !row.transferToAccountId,
+    )
+    if (missingTransferTarget) {
+      notify.info("Elegí la tarjeta destino de cada transferencia.")
+      return
+    }
+
     const payload: PdfConfirmRow[] = rows.map(
-      ({ possibleDuplicate: _possibleDuplicate, ...row }) => row,
+      ({
+        possibleDuplicate: _possibleDuplicate,
+        suggestedTransfer: _suggestedTransfer,
+        ...row
+      }) => row,
     )
 
     const confirmResult = await confirm(
@@ -175,6 +210,19 @@ const PdfImportReview = () => {
             categoryName={row.categoryName}
             possibleDuplicate={row.possibleDuplicate}
             included={!row.excluded}
+            suggestedTransfer={row.suggestedTransfer}
+            isTransfer={row.isTransfer}
+            transferAccountName={accountNameById(row.transferToAccountId)}
+            onToggleTransfer={() =>
+              updateRow(row.rowId, {
+                isTransfer: !row.isTransfer,
+                // Clearing the flag drops any chosen destination.
+                transferToAccountId: !row.isTransfer
+                  ? row.transferToAccountId
+                  : "",
+              })
+            }
+            onPressTransferAccount={() => setTransferPickerRowId(row.rowId)}
             onChangeDescription={(description) =>
               updateRow(row.rowId, { description })
             }
@@ -206,6 +254,20 @@ const PdfImportReview = () => {
         selectedId={accountId || undefined}
         onSelect={setAccountId}
         onClose={() => setAccountPickerVisible(false)}
+      />
+
+      <AccountPickerModal
+        visible={transferPickerRowId !== null}
+        accounts={creditAccounts}
+        selectedId={
+          rows.find((row) => row.rowId === transferPickerRowId)
+            ?.transferToAccountId || undefined
+        }
+        onSelect={(transferToAccountId) => {
+          if (transferPickerRowId)
+            updateRow(transferPickerRowId, { transferToAccountId })
+        }}
+        onClose={() => setTransferPickerRowId(null)}
       />
 
       <TouchableOpacity

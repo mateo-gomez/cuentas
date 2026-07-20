@@ -4,6 +4,7 @@ import { HttpResponse } from "../../../../infrastructure/api/httpResponse";
 import { HttpNotFoundError } from "../../../../infrastructure/api/errors/httpNotFoundError";
 import { TransactionByIdGetter } from "../../application/useCases/TransactionByIdGetter";
 import { TransactionCreator } from "../../application/useCases/transactionCreator";
+import { CreateTransfer } from "../../application/useCases/CreateTransfer";
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
 import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
 import { TransactionUpdater } from "../../application/useCases/transactionUpdater";
@@ -25,6 +26,10 @@ import { AccountRepository } from "../../../account/domain/account.repository";
 import { FrequentCombosGetter } from "../../application/useCases/FrequentCombosGetter";
 import { CategoryRepository } from "../../../category/domain/category.repository";
 import { Transaction } from "../../domain/transaction.entity";
+import {
+	TRANSFER_CATEGORY_ICON,
+	TRANSFER_CATEGORY_NAME,
+} from "../../../category/domain/defaultCategories";
 
 const MAX_FREQUENT_LIMIT = 20;
 
@@ -32,6 +37,7 @@ export class TransactionController {
 	constructor(
 		private readonly transactionByIdGetter: TransactionByIdGetter,
 		private readonly transactionCreator: TransactionCreator,
+		private readonly createTransfer: CreateTransfer,
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
 		private readonly transactionsRemover: TransactionsRemover,
@@ -89,6 +95,30 @@ export class TransactionController {
 		return accountId;
 	};
 
+	// Both legs of a transfer are tagged with the user's "Transferencias"
+	// category. It is seeded by UserDefaultsBootstrapper, but create it on the
+	// fly if a legacy user is missing it so transfers never fail.
+	private resolveTransferCategoryId = async (
+		userId: string
+	): Promise<string> => {
+		const existing = await this.categoryRepository.getByNameForUser(
+			userId,
+			TRANSFER_CATEGORY_NAME
+		);
+
+		if (existing) {
+			return existing._id;
+		}
+
+		const created = await this.categoryRepository.createCategory(
+			userId,
+			TRANSFER_CATEGORY_NAME,
+			TRANSFER_CATEGORY_ICON
+		);
+
+		return created._id;
+	};
+
 	getTransaction = catchAsync(async (req: RequestAuthenticated, res: Response) => {
 		const userId = req.user!.id;
 		const { id } = req.params;
@@ -123,6 +153,56 @@ export class TransactionController {
 		});
 
 		const responseBody = HttpResponse.success(transaction);
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	saveTransfer = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+		const body = await req.body;
+
+		const fromAccountId = await this.resolveOwnedAccountId(
+			userId,
+			body.fromAccountId
+		);
+		const toAccountId = await this.resolveOwnedAccountId(
+			userId,
+			body.toAccountId
+		);
+
+		if (fromAccountId === toAccountId) {
+			throw new ValidationError().addError(
+				"toAccountId",
+				"La cuenta origen y destino deben ser distintas"
+			);
+		}
+
+		const value = Number(body.value);
+		if (!Number.isFinite(value) || value <= 0) {
+			throw new ValidationError().addError(
+				"value",
+				"El monto debe ser un número positivo"
+			);
+		}
+
+		const date = body.date ? new Date(body.date) : new Date();
+		if (Number.isNaN(date.getTime())) {
+			throw new ValidationError().addError("date", "Fecha inválida");
+		}
+
+		const categoryId = await this.resolveTransferCategoryId(userId);
+
+		const result = await this.createTransfer.execute({
+			userId,
+			fromAccountId,
+			toAccountId,
+			value,
+			date,
+			description:
+				typeof body.description === "string" ? body.description : "",
+			categoryId,
+		});
+
+		const responseBody = HttpResponse.success(result);
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 
@@ -278,6 +358,17 @@ export class TransactionController {
 
 		// One account per import batch (R9) — not per row.
 		const ownedAccountId = await this.resolveOwnedAccountId(userId, accountId);
+
+		// Transfer rows (e.g. card payments) name a destination account. Validate
+		// each distinct target belongs to the caller before persisting.
+		const transferTargets = new Set(
+			rows
+				.filter((row) => row?.isTransfer && !row.excluded)
+				.map((row) => row.transferToAccountId)
+		);
+		for (const target of transferTargets) {
+			await this.resolveOwnedAccountId(userId, target);
+		}
 
 		const result = await this.pdfImportConfirmer.execute(
 			importSessionId,

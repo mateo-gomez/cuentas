@@ -10,6 +10,7 @@ import { BalanceInRangeGetter } from "../features/transaction/application/useCas
 import { GroupedTransactionByDayGetter } from "../features/transaction/application/useCases/groupedTransactionByDayGetter";
 import { GroupedTransactionByDayInRangeGetter } from "../features/transaction/application/useCases/groupedTransactionByDayInRangeGetter";
 import { TransactionCreator } from "../features/transaction/application/useCases/transactionCreator";
+import { CreateTransfer } from "../features/transaction/application/useCases/CreateTransfer";
 import { TransactionRemover } from "../features/transaction/application/useCases/transactionRemover";
 import { TransactionsRemover } from "../features/transaction/application/useCases/transactionsRemover";
 import { TransactionUpdater } from "../features/transaction/application/useCases/transactionUpdater";
@@ -99,6 +100,7 @@ export const container = {
 	transactionByIdGetter: new TransactionByIdGetter(transactionRepository),
 	frequentCombosGetter: new FrequentCombosGetter(transactionRepository),
 	transactionCreator: new TransactionCreator(transactionRepository),
+	createTransfer: new CreateTransfer(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
 	transactionsRemover: new TransactionsRemover(transactionRepository),
@@ -113,7 +115,8 @@ export const container = {
 	pdfImportConfirmer: new PdfImportConfirmer(
 		inMemoryPreviewStore,
 		categoryRepository,
-		transactionImporter
+		transactionImporter,
+		new CreateTransfer(transactionRepository)
 	),
 
 	// grouped transactions

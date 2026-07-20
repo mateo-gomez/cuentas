@@ -63,12 +63,17 @@ export class MongoTransactionRepository implements TransactionRepository {
     return docs as unknown as Transaction[];
   };
 
-  sumAll = async (userId: string, accountId?: string): Promise<Balance> => {
+  sumAll = async (
+    userId: string,
+    accountId?: string,
+    excludeTransfers = false,
+  ): Promise<Balance> => {
     const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
         $match: {
           userId: toObjectId(userId),
           ...(accountId ? { accountId: toObjectId(accountId) } : {}),
+          ...(excludeTransfers ? { isTransfer: { $ne: true } } : {}),
         },
       },
       {
@@ -106,6 +111,7 @@ export class MongoTransactionRepository implements TransactionRepository {
     startDate: Date,
     endDate: Date,
     accountId?: string,
+    excludeTransfers = false,
   ): Promise<Balance> => {
     const [balance] = await TransactionModel.aggregate<Balance | undefined>([
       {
@@ -113,6 +119,7 @@ export class MongoTransactionRepository implements TransactionRepository {
           userId: toObjectId(userId),
           date: { $gte: startDate, $lte: endDate },
           ...(accountId ? { accountId: toObjectId(accountId) } : {}),
+          ...(excludeTransfers ? { isTransfer: { $ne: true } } : {}),
         },
       },
       {
@@ -175,6 +182,18 @@ export class MongoTransactionRepository implements TransactionRepository {
     if (deletedCount === 0) {
       throw new DatabaseError(`Error eliminando transacción ${id}`);
     }
+  };
+
+  deleteByTransferId = async (
+    userId: string,
+    transferId: string,
+  ): Promise<number> => {
+    const { deletedCount } = await TransactionModel.deleteMany({
+      userId,
+      transferId,
+    });
+
+    return deletedCount;
   };
 
   deleteMany = async (userId: string, ids: string[]): Promise<number> => {

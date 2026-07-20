@@ -28,7 +28,12 @@ test("BalanceGetter - Returns balance successfully", async () => {
 	const balance = await balanceGetter.execute("user-1");
 
 	expect(balance).toEqual(expectedBalance);
-	expect(transactionRepository.sumAll).toHaveBeenCalledWith("user-1", undefined);
+	// Global totals exclude transfer legs (excludeTransfers = true).
+	expect(transactionRepository.sumAll).toHaveBeenCalledWith(
+		"user-1",
+		undefined,
+		true
+	);
 });
 
 test("BalanceGetter - forwards accountId for per-account balance", async () => {
@@ -39,5 +44,9 @@ test("BalanceGetter - forwards accountId for per-account balance", async () => {
 
 	await balanceGetter.execute("user-1", "account-1");
 
-	expect(transactionRepository.sumAll).toHaveBeenCalledWith("user-1", "account-1");
+	expect(transactionRepository.sumAll).toHaveBeenCalledWith(
+		"user-1",
+		"account-1",
+		true
+	);
 });

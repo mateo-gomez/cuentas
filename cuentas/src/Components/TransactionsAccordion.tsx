@@ -61,6 +61,7 @@ export const TransactionsAccordion = ({
             categoryName={transaction.category?.name || "No category"}
             description={transaction.description}
             value={transaction.value}
+            isTransfer={transaction.isTransfer}
           />
         ))}
       </CollapseBody>

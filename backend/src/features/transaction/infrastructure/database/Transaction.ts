@@ -23,6 +23,9 @@ export interface Transaction {
 	type: number;
 	category: Category;
 	description: string;
+	isTransfer?: boolean;
+	transferId?: string;
+	counterpartyAccountId?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -97,6 +100,11 @@ const transactionSchema = new Schema(
 		category: { type: Types.ObjectId, ref: "Category", required: true },
 		type: { type: Number, TransactionType },
 		description: { type: String, default: "" },
+		// Transfer legs (account-to-account moves, e.g. paying a credit card).
+		// Excluded from global income/expense totals; `transferId` links the pair.
+		isTransfer: { type: Boolean, default: false },
+		transferId: { type: String, index: true },
+		counterpartyAccountId: { type: Types.ObjectId, ref: "Account" },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	},

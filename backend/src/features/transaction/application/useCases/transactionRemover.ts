@@ -7,14 +7,24 @@ export class TransactionRemover {
 	constructor(private readonly transactionRepository: TransactionRepository) {}
 
 	execute = async (userId: string, id: string): Promise<void> => {
-		const exists = await this.transactionRepository.exists(userId, id);
+		const transaction = await this.transactionRepository.findOne(userId, id);
 
-		if (!exists) {
+		if (!transaction) {
 			throw new NotFoundError(`Categoría no encontrada`, id);
 		}
 
 		try {
-			await this.transactionRepository.delete(userId, id);
+			// Deleting one leg of a transfer must remove both legs, otherwise the
+			// counterparty account keeps a dangling half-transfer that skews its
+			// balance.
+			if (transaction.transferId) {
+				await this.transactionRepository.deleteByTransferId(
+					userId,
+					transaction.transferId
+				);
+			} else {
+				await this.transactionRepository.delete(userId, id);
+			}
 		} catch (error) {
 			if (error instanceof DatabaseError) {
 				throw new ApplicationError(error.message, error);

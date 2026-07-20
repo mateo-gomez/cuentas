@@ -26,6 +26,11 @@ export interface Transaction {
   category: Category
   type: TransactionType
   description: string
+  // One leg of an account-to-account transfer (e.g. paying a credit card).
+  // Excluded from global income/expense totals; still moves each account.
+  isTransfer?: boolean
+  transferId?: string
+  counterpartyAccountId?: string
   createdAt: Date
   updatedAt: Date
 }

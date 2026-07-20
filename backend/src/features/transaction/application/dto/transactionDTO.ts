@@ -13,4 +13,9 @@ export interface TransactionDTO {
 	// import falls back to the user's default "Sin asignar" account (R6).
 	userId: string;
 	accountId: string;
+	// Transfer metadata — set only for the two legs of an account-to-account
+	// transfer. Absent on ordinary income/expense transactions.
+	isTransfer?: boolean;
+	transferId?: string;
+	counterpartyAccountId?: string;
 }

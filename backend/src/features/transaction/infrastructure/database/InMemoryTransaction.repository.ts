@@ -58,8 +58,15 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     );
   }
 
-  async sumAll(userId: string, accountId?: string): Promise<Balance> {
-    const filteredTransactions = await this.getAll(userId, accountId);
+  async sumAll(
+    userId: string,
+    accountId?: string,
+    excludeTransfers = false,
+  ): Promise<Balance> {
+    const all = await this.getAll(userId, accountId);
+    const filteredTransactions = excludeTransfers
+      ? all.filter((transaction) => !transaction.isTransfer)
+      : all;
     const incomes = filteredTransactions.reduce((acc, transaction) => {
       return transaction.type === TransactionType.income
         ? acc + transaction.value
@@ -79,13 +86,17 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     startDate: Date,
     endDate: Date,
     accountId?: string,
+    excludeTransfers = false,
   ): Promise<Balance> {
-    const filteredTransactions = await this.getBetweenDates(
+    const inRange = await this.getBetweenDates(
       userId,
       startDate,
       endDate,
       accountId,
     );
+    const filteredTransactions = excludeTransfers
+      ? inRange.filter((transaction) => !transaction.isTransfer)
+      : inRange;
     const incomes = filteredTransactions.reduce((acc, transaction) => {
       return transaction.type === TransactionType.income
         ? acc + transaction.value
@@ -144,6 +155,21 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     );
   }
 
+  async deleteByTransferId(
+    userId: string,
+    transferId: string,
+  ): Promise<number> {
+    const before = this.transactions.length;
+    this.transactions = this.transactions.filter(
+      (transaction) =>
+        !(
+          transaction.transferId === transferId &&
+          transaction.userId === userId
+        ),
+    );
+    return Promise.resolve(before - this.transactions.length);
+  }
+
   async deleteMany(userId: string, ids: string[]): Promise<number> {
     const before = this.transactions.length;
     this.transactions = await Promise.resolve(
@@ -155,7 +181,18 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return before - this.transactions.length;
   }
 
-  saveMany(_transactions: TransactionDTO[]): Promise<void> {
+  saveMany(transactions: TransactionDTO[]): Promise<void> {
+    for (const dto of transactions) {
+      this.transactions.push({
+        ...dto,
+        // DTO carries the category id as a string; the in-memory store keeps the
+        // populated shape, so wrap it minimally for tests that read it back.
+        category: dto.category as unknown as Transaction["category"],
+        _id: Math.random().toString(36).substr(2, 9),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
     return Promise.resolve();
   }
 

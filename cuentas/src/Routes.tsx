@@ -8,6 +8,7 @@ import Category from "./screens/category"
 import CategoryList from "./screens/category/List"
 import Account from "./screens/account"
 import AccountsList from "./screens/account/List"
+import AccountTransfer from "./screens/account/Transfer"
 import Login from "./screens/auth/Login"
 import PrivateRoutes from "./PrivateRoutes"
 import Signup from "./screens/auth/Signup"
@@ -77,6 +78,8 @@ const Routes = () => {
           <Route path="/categories/:id" element={<Category />} />
           <Route path="/accounts" element={<AccountsList />} />
           <Route path="/accounts/create" element={<Account />} />
+          {/* MUST stay before "/:id" — else "transfer" parses as an account id. */}
+          <Route path="/accounts/transfer" element={<AccountTransfer />} />
           <Route path="/accounts/:id" element={<Account />} />
           <Route path="/import" element={<Import />} />
           <Route path="/import/pdf" element={<PdfImportReview />} />

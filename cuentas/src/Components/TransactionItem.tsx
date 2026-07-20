@@ -12,6 +12,7 @@ interface TransactionItemProps {
   description: string
   value: number
   categoryName: string
+  isTransfer?: boolean
 }
 
 export const TransactionItem = ({
@@ -20,6 +21,7 @@ export const TransactionItem = ({
   description,
   value,
   categoryName,
+  isTransfer,
 }: TransactionItemProps) => {
   return (
     <Link
@@ -28,7 +30,15 @@ export const TransactionItem = ({
     >
       <View style={styles.container}>
         <View>
-          {type ? (
+          {isTransfer ? (
+            // Transfers (e.g. card payments) are neither income nor expense;
+            // show a neutral swap icon so they don't read as a real gain/loss.
+            <Ionicons
+              name="swap-horizontal-outline"
+              color={theme.colors.grey}
+              size={20}
+            />
+          ) : type ? (
             <Ionicons
               name="arrow-up-circle-outline"
               color={theme.colors.greenLight}

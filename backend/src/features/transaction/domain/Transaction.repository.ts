@@ -22,13 +22,24 @@ export interface TransactionRepository {
     accountId?: string,
   ) => Promise<Transaction[]>;
 
-  sumAll: (userId: string, accountId?: string) => Promise<Balance>;
+  /**
+   * @param excludeTransfers when true, transfer legs (`isTransfer`) are left
+   *   out of the income/expense sums — used for global totals that must not
+   *   count account-to-account moves. Per-account balances pass false so the
+   *   move still shifts each account's balance.
+   */
+  sumAll: (
+    userId: string,
+    accountId?: string,
+    excludeTransfers?: boolean,
+  ) => Promise<Balance>;
 
   sumBetweenDates: (
     userId: string,
     startDate: Date,
     endDate: Date,
     accountId?: string,
+    excludeTransfers?: boolean,
   ) => Promise<Balance>;
 
   createTransaction: (
@@ -42,6 +53,9 @@ export interface TransactionRepository {
   ) => Promise<Transaction | null>;
 
   delete: (userId: string, id: string) => Promise<void>;
+
+  /** Deletes both legs of a transfer at once. Returns the number of docs removed. */
+  deleteByTransferId: (userId: string, transferId: string) => Promise<number>;
 
   deleteMany: (userId: string, ids: string[]) => Promise<number>;
 

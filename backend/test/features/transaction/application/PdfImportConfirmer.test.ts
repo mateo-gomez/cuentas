@@ -6,6 +6,7 @@ import { inMemoryCategoryRepository } from "../../../../src/features/category/in
 import { TransactionType } from "../../../../src/domain/valueObjects/transactionType.valueObject";
 import { PreviewRow } from "../../../../src/features/transaction/application/dto/pdfImportDTO";
 import { ValidationError } from "../../../../src/infrastructure/api/errors/validationError";
+import { CreateTransfer } from "../../../../src/features/transaction/application/useCases/CreateTransfer";
 
 const ACCOUNT_ID = "account-1";
 
@@ -24,10 +25,12 @@ const buildConfirmer = () => {
 	const categoryRepository = new inMemoryCategoryRepository();
 	const transactionRepository = new InMemoryTransactionRepository();
 	const transactionImporter = new TransactionImporter(transactionRepository);
+	const createTransfer = new CreateTransfer(transactionRepository);
 	const confirmer = new PdfImportConfirmer(
 		previewStore,
 		categoryRepository,
 		transactionImporter,
+		createTransfer,
 	);
 
 	return { confirmer, previewStore, categoryRepository, transactionRepository, transactionImporter };
@@ -176,6 +179,64 @@ describe("PdfImportConfirmer", () => {
 		expect(persisted.value).toBe(Math.abs(previewRow.value));
 		expect(persisted.type).toBe(previewRow.type);
 		expect(persisted.date).toEqual(new Date(previewRow.date));
+	});
+
+	test("persists a transfer row as a linked pair instead of a plain expense", async () => {
+		const { confirmer, previewStore, transactionRepository } = buildConfirmer();
+		const paymentRow: PreviewRow = {
+			...previewRow,
+			rowId: "pay-1",
+			description: "PAGO TARJETA DE CREDITO",
+			value: -300000,
+			type: TransactionType.expenses,
+			suggestedTransfer: true,
+		};
+		const importSessionId = previewStore.put([paymentRow], "bancolombia", []);
+
+		const result = await confirmer.execute(
+			importSessionId,
+			[
+				{
+					...paymentRow,
+					categoryName: "",
+					isTransfer: true,
+					transferToAccountId: "card-1",
+				},
+			],
+			"user-1",
+			ACCOUNT_ID,
+		);
+
+		expect(result).toEqual({ persisted: 1, excluded: 0 });
+
+		// Two linked legs written: expense on the bank, income on the card.
+		const legs = await transactionRepository.getAll("user-1");
+		expect(legs).toHaveLength(2);
+		expect(legs.every((leg) => leg.isTransfer === true)).toBe(true);
+		expect(legs.some((leg) => leg.accountId === ACCOUNT_ID)).toBe(true);
+		expect(legs.some((leg) => leg.accountId === "card-1")).toBe(true);
+	});
+
+	test("rejects a transfer row missing its destination account", async () => {
+		const { confirmer, previewStore } = buildConfirmer();
+		const paymentRow: PreviewRow = {
+			...previewRow,
+			rowId: "pay-2",
+			description: "PAGO TARJETA",
+			value: -300000,
+			type: TransactionType.expenses,
+			suggestedTransfer: true,
+		};
+		const importSessionId = previewStore.put([paymentRow], "bancolombia", []);
+
+		await expect(
+			confirmer.execute(
+				importSessionId,
+				[{ ...paymentRow, categoryName: "", isTransfer: true }],
+				"user-1",
+				ACCOUNT_ID,
+			),
+		).rejects.toThrow(ValidationError);
 	});
 
 	test("rejects the whole batch when type is inconsistent with the sign of value", async () => {

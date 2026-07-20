@@ -8,6 +8,7 @@ import { Router } from "express";
 const transactionController = new TransactionController(
 	container.transactionByIdGetter,
 	container.transactionCreator,
+	container.createTransfer,
 	container.transactionUpdater,
 	container.transactionRemover,
 	container.transactionsRemover,
@@ -39,6 +40,7 @@ router
 	.get("/", transactionAggregateController.getAllTransactions)
 	.get("/:id", transactionController.getTransaction)
 	.post("/bulk-delete", transactionController.deleteTransactions)
+	.post("/transfer", transactionController.saveTransfer)
 	.post("/", transactionController.saveTransaction)
 	.put("/:id", transactionController.updateTransaction)
 	.delete("/:id", transactionController.deleteTransaction)

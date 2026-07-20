@@ -8,6 +8,9 @@ export interface PdfPreviewRow {
   type: TransactionType
   categoryName?: string
   possibleDuplicate: boolean
+  // Advisory: the description looks like a credit-card payment. The review UI
+  // offers to import it as a transfer to a credit account.
+  suggestedTransfer?: boolean
   rawLine?: string
   warnings?: string[]
 }
@@ -38,6 +41,10 @@ export interface PdfConfirmRow {
   type: TransactionType
   categoryName: string
   excluded?: boolean
+  // When true, persisted as a transfer to `transferToAccountId` (a credit
+  // account) instead of a plain expense.
+  isTransfer?: boolean
+  transferToAccountId?: string
 }
 
 export interface PdfConfirmResult {

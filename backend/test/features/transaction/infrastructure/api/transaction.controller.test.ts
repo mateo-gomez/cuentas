@@ -45,6 +45,7 @@ const buildController = () => {
 	const controller = new TransactionController(
 		{ execute: async () => null } as any,
 		transactionCreator,
+		{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
 		{ execute: async () => { throw new Error("not used"); } } as any,
 		{ execute: async () => {} } as any,
 		{ execute: async () => 0 } as any,
@@ -131,6 +132,7 @@ describe("TransactionController — category ownership validation", () => {
 		const controller = new TransactionController(
 			{ execute: async () => null } as any,
 			transactionCreator,
+			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
@@ -225,6 +227,7 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 		const controller = new TransactionController(
 			transactionByIdGetter,
 			transactionCreator,
+			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
 			transactionUpdater,
 			transactionRemover,
 			transactionsRemover,
@@ -375,6 +378,7 @@ describe("TransactionController — getFrequent", () => {
 		const controller = new TransactionController(
 			{ execute: async () => null } as any,
 			{ execute: async () => {} } as any,
+			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
@@ -445,6 +449,7 @@ describe("TransactionController — getFrequent", () => {
 		const controller = new TransactionController(
 			{ execute: async () => null } as any,
 			{ execute: async () => {} } as any,
+			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
