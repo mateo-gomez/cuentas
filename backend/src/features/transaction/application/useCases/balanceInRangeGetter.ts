@@ -11,11 +11,13 @@ export class BalanceInRangeGetter {
 		accountId?: string
 	): Promise<Balance> => {
 		const { balance, expenses, incomes } =
+			// Range totals for Home — exclude transfer legs (see BalanceGetter).
 			await this.transactionRepository.sumBetweenDates(
 				userId,
 				startDate,
 				endDate,
-				accountId
+				accountId,
+				true
 			);
 
 		return {

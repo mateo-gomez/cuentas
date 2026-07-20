@@ -7,24 +7,43 @@ import { TransactionType } from "../../../../src/domain/valueObjects/transaction
 describe("TransactionRemover", () => {
 	test("Removes an existing transaction successfully", async () => {
 		const deleteMock = jest.fn().mockResolvedValue(undefined);
-		const existsMock = jest.fn().mockResolvedValue(true);
+		const findOneMock = jest.fn().mockResolvedValue({ _id: "existingId" });
 		const transactionRepository = {
-			exists: existsMock,
+			findOne: findOneMock,
 			delete: deleteMock,
 		} as unknown as TransactionRepository;
 		const transactionRemover = new TransactionRemover(transactionRepository);
 
 		await transactionRemover.execute("user-1", "existingId");
 
-		expect(existsMock).toHaveBeenCalledWith("user-1", "existingId");
+		expect(findOneMock).toHaveBeenCalledWith("user-1", "existingId");
 		expect(deleteMock).toHaveBeenCalledWith("user-1", "existingId");
 	});
 
+	test("Deletes both legs when the transaction is a transfer", async () => {
+		const deleteMock = jest.fn().mockResolvedValue(undefined);
+		const deleteByTransferIdMock = jest.fn().mockResolvedValue(2);
+		const findOneMock = jest
+			.fn()
+			.mockResolvedValue({ _id: "legId", transferId: "transfer-1" });
+		const transactionRepository = {
+			findOne: findOneMock,
+			delete: deleteMock,
+			deleteByTransferId: deleteByTransferIdMock,
+		} as unknown as TransactionRepository;
+		const transactionRemover = new TransactionRemover(transactionRepository);
+
+		await transactionRemover.execute("user-1", "legId");
+
+		expect(deleteByTransferIdMock).toHaveBeenCalledWith("user-1", "transfer-1");
+		expect(deleteMock).not.toHaveBeenCalled();
+	});
+
 	test("Throws NotFoundError when the transaction does not exist", async () => {
-		const existsMock = jest.fn().mockResolvedValue(false);
+		const findOneMock = jest.fn().mockResolvedValue(null);
 		const deleteMock = jest.fn();
 		const transactionRepository = {
-			exists: existsMock,
+			findOne: findOneMock,
 			delete: deleteMock,
 		} as unknown as TransactionRepository;
 		const transactionRemover = new TransactionRemover(transactionRepository);
@@ -36,12 +55,12 @@ describe("TransactionRemover", () => {
 	});
 
 	test("Throws an error when deletion fails", async () => {
-		const existsMock = jest.fn().mockResolvedValue(true);
+		const findOneMock = jest.fn().mockResolvedValue({ _id: "existingId" });
 		const deleteMock = jest
 			.fn()
 			.mockRejectedValue(new Error("Failed to delete"));
 		const transactionRepository = {
-			exists: existsMock,
+			findOne: findOneMock,
 			delete: deleteMock,
 		} as unknown as TransactionRepository;
 		const transactionRemover = new TransactionRemover(transactionRepository);

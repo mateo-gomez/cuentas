@@ -14,11 +14,20 @@ export class TransactionAggregateService {
 				const dates = group.data.map((t: Transaction) => t.date.getTime());
 				const minDate = new Date(Math.min(...dates));
 				const maxDate = new Date(Math.max(...dates));
+				// Transfer legs stay in the day's transaction list (so the user sees
+				// the movement) but are excluded from the income/expense summary —
+				// an account-to-account move is neither a real gain nor a real expense.
 				const incomes = group.data
-					.filter((t: Transaction) => t.type === TransactionType.income)
+					.filter(
+						(t: Transaction) =>
+							t.type === TransactionType.income && !t.isTransfer
+					)
 					.reduce((sum: number, t: Transaction) => sum + t.value, 0);
 				const expenses = group.data
-					.filter((t: Transaction) => t.type === TransactionType.expenses)
+					.filter(
+						(t: Transaction) =>
+							t.type === TransactionType.expenses && !t.isTransfer
+					)
 					.reduce((sum: number, t: Transaction) => sum + t.value, 0);
 				const balance = incomes - expenses;
 

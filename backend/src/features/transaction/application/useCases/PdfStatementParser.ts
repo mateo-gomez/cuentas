@@ -1,4 +1,5 @@
 import { TransactionRepository } from "../../domain/Transaction.repository";
+import { TransactionType } from "../../../../domain/valueObjects/transactionType.valueObject";
 import { PdfBankParser } from "../../domain/pdfImport/PdfBankParser";
 import { PreviewStore } from "../../domain/pdfImport/PreviewStore";
 import { RawParsedTransaction, Reconciliation } from "../../domain/pdfImport/ParsedStatement";
@@ -11,6 +12,7 @@ import {
 	signedValueFromStored,
 	startOfUTCDay,
 } from "../services/naturalKey";
+import { isLikelyCardPayment } from "../services/cardPaymentDetection";
 
 export interface PdfParseResult {
 	importSessionId: string;
@@ -47,6 +49,10 @@ export class PdfStatementParser {
 			possibleDuplicate: duplicateKeys.has(
 				naturalKey(dayKeyFromISODate(row.date), row.value, row.description),
 			),
+			// Only outgoing money (expenses) can be a card payment from this account.
+			suggestedTransfer:
+				row.type === TransactionType.expenses &&
+				isLikelyCardPayment(row.description),
 			rawLine: row.rawLine,
 			warnings: row.warnings,
 		}));
