@@ -13,6 +13,13 @@ interface PdfImportRowProps {
   categoryName: string
   possibleDuplicate: boolean
   included: boolean
+  // Transfer (credit-card payment) support. The control is shown when the row
+  // was auto-flagged as a likely card payment or the user turned it on.
+  suggestedTransfer?: boolean
+  isTransfer?: boolean
+  transferAccountName?: string
+  onToggleTransfer?: () => void
+  onPressTransferAccount?: () => void
   onChangeDescription: (description: string) => void
   onPressCategory: () => void
   onToggleIncluded: () => void
@@ -29,12 +36,18 @@ export const PdfImportRow = ({
   categoryName,
   possibleDuplicate,
   included,
+  suggestedTransfer,
+  isTransfer,
+  transferAccountName,
+  onToggleTransfer,
+  onPressTransferAccount,
   onChangeDescription,
   onPressCategory,
   onToggleIncluded,
   onRemove,
 }: PdfImportRowProps) => {
   const isIncome = type === TransactionType.income
+  const showTransferControls = suggestedTransfer || isTransfer
 
   return (
     <View
@@ -96,6 +109,43 @@ export const PdfImportRow = ({
           {isIncome ? "+" : "-"}
           {formatNumber(Math.abs(value))}
         </StyledText>
+
+        {showTransferControls ? (
+          <View style={styles.transferBox}>
+            <TouchableOpacity
+              style={styles.transferToggle}
+              onPress={onToggleTransfer}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            >
+              <Ionicons
+                name={isTransfer ? "checkbox" : "square-outline"}
+                size={18}
+                color={isTransfer ? grafito.accent : grafito.ink4}
+              />
+              <StyledText style={styles.transferLabel}>
+                Pago de tarjeta (transferencia)
+              </StyledText>
+            </TouchableOpacity>
+
+            {isTransfer ? (
+              <TouchableOpacity
+                style={styles.transferAccount}
+                onPress={onPressTransferAccount}
+              >
+                <Ionicons name="card-outline" size={14} color={grafito.ink3} />
+                <StyledText
+                  style={[
+                    styles.transferAccountText,
+                    !transferAccountName && styles.categoryPlaceholder,
+                  ]}
+                >
+                  {transferAccountName || "Elegir tarjeta destino"}
+                </StyledText>
+                <Ionicons name="chevron-down" size={14} color={grafito.ink4} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        ) : null}
       </View>
 
       <TouchableOpacity
@@ -176,5 +226,35 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     marginTop: 4,
+  },
+  transferBox: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: grafito.line,
+    gap: 6,
+  },
+  transferToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  transferLabel: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 13,
+    color: grafito.ink3,
+  },
+  transferAccount: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 2,
+    paddingLeft: 26,
+  },
+  transferAccountText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 13,
+    color: grafito.ink3,
   },
 })
