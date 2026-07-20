@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native"
 import { StyledText } from "./StyledText"
-import { theme } from "../theme"
+import grafito from "../theme"
 
 interface ErrorBannerProps {
   message: string
@@ -22,20 +22,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#FFF0F0",
+    backgroundColor: grafito.negBg,
     borderLeftWidth: 3,
-    borderLeftColor: theme.colors.red,
+    borderLeftColor: grafito.neg,
     borderRadius: 6,
     paddingVertical: 10,
     paddingHorizontal: 14,
     marginTop: 16,
   },
   icon: {
-    color: theme.colors.red,
+    color: grafito.neg,
     fontSize: 14,
   },
   text: {
-    color: "#C0392B",
+    color: grafito.neg,
     fontSize: 14,
     flex: 1,
   },

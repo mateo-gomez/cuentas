@@ -516,7 +516,7 @@ const Transactions = ({
             onPress={confirmDelete}
             disabled={deleting}
           >
-            <Ionicons name="trash-outline" size={18} color="#fff" />
+            <Ionicons name="trash-outline" size={18} color={grafito.onAccent} />
             <Text style={bar.deleteText}>
               {deleting ? "Eliminando..." : "Eliminar"}
             </Text>
@@ -568,7 +568,7 @@ const bar = StyleSheet.create({
   deleteText: {
     fontFamily: "System",
     fontSize: 14,
-    color: "#fff",
+    color: grafito.onAccent,
     fontWeight: "600",
   },
 })
