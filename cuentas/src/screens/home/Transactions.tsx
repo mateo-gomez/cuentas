@@ -12,6 +12,7 @@ import { useTransactions } from "../../hooks"
 import { useConfirm } from "../../contexts/ConfirmContext"
 import { notify } from "../../utils/notify"
 import { formatDate, formatNumber } from "../../utils"
+import { amountColor, amountSign, balanceColor } from "../../utils/amountColor"
 import { memo, useCallback, useState } from "react"
 import {
   TransactionAggregate,
@@ -36,12 +37,9 @@ const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
   <View style={hero.card}>
     <Text style={hero.eyebrow}>SALDO DEL MES</Text>
     <Text
-      style={[
-        hero.balanceText,
-        { color: balance < 0 ? grafito.neg : grafito.ink },
-      ]}
+      style={[hero.balanceText, { color: balanceColor(balance) }]}
     >
-      {balance < 0 ? "-" : ""}${formatNumber(Math.abs(balance))}
+      {balance < 0 ? "−" : ""}${formatNumber(Math.abs(balance))}
     </Text>
 
     {/* Dashed divider */}
@@ -62,7 +60,7 @@ const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
       <View style={hero.separator} />
       <View style={hero.col}>
         <Text style={hero.colLabel}>↓ Gastos</Text>
-        <Text style={[hero.colAmount, { color: grafito.neg }]}>
+        <Text style={[hero.colAmount, { color: grafito.ink }]}>
           ${formatNumber(expenses)}
         </Text>
       </View>
@@ -86,7 +84,7 @@ const hero = StyleSheet.create({
     elevation: 3,
   },
   eyebrow: {
-    fontFamily: "Courier New",
+    fontFamily: grafito.weight.medium,
     fontSize: 11,
     letterSpacing: 0.8,
     color: grafito.ink4,
@@ -94,7 +92,8 @@ const hero = StyleSheet.create({
     marginBottom: 4,
   },
   balanceText: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 48,
     color: grafito.ink,
     lineHeight: 54,
@@ -124,13 +123,14 @@ const hero = StyleSheet.create({
     backgroundColor: grafito.line,
   },
   colLabel: {
-    fontFamily: "System",
+    fontFamily: grafito.fonts.sans,
     fontSize: 11,
     color: grafito.ink4,
     marginBottom: 2,
   },
   colAmount: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 18,
     color: grafito.ink,
   },
@@ -171,7 +171,7 @@ const DayGroup = ({
             { color: dayTotal >= 0 ? grafito.pos : grafito.neg },
           ]}
         >
-          {dayTotal >= 0 ? "+" : "-"}${formatNumber(Math.abs(dayTotal))}
+          {dayTotal >= 0 ? "+" : "−"}${formatNumber(Math.abs(dayTotal))}
         </Text>
       </View>
 
@@ -205,13 +205,14 @@ const day = StyleSheet.create({
     marginBottom: 2,
   },
   dateLabel: {
-    fontFamily: "Courier New",
+    fontFamily: grafito.weight.medium,
     fontSize: 11,
     letterSpacing: 0.5,
     color: grafito.ink4,
   },
   dayTotal: {
-    fontFamily: "System",
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 13,
     color: grafito.ink3,
   },
@@ -303,9 +304,13 @@ const TransactionRow = ({
         ) : null}
       </View>
       <Text
-        style={[row.amount, { color: isIncome ? grafito.pos : grafito.neg }]}
+        style={[
+          row.amount,
+          { color: amountColor(isIncome ? "income" : "expense") },
+        ]}
       >
-        {isIncome ? "+" : "-"}${formatNumber(transaction.value)}
+        {amountSign(isIncome ? "income" : "expense")}$
+        {formatNumber(transaction.value)}
       </Text>
 
       {/* Web-only quick-delete slot: reserved on web so it never shifts layout */}
@@ -364,18 +369,19 @@ const row = StyleSheet.create({
     justifyContent: "center",
   },
   categoryName: {
-    fontFamily: "System",
+    fontFamily: grafito.weight.medium,
     fontSize: 14,
     color: grafito.ink2,
   },
   description: {
-    fontFamily: "System",
+    fontFamily: grafito.fonts.sans,
     fontSize: 12,
     color: grafito.ink4,
     marginTop: 1,
   },
   amount: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 15,
   },
 })
@@ -552,7 +558,7 @@ const bar = StyleSheet.create({
     gap: 8,
   },
   count: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.weight.semibold,
     fontSize: 16,
     color: grafito.ink,
   },
@@ -566,10 +572,9 @@ const bar = StyleSheet.create({
     paddingVertical: 8,
   },
   deleteText: {
-    fontFamily: "System",
+    fontFamily: grafito.weight.semibold,
     fontSize: 14,
     color: grafito.onAccent,
-    fontWeight: "600",
   },
 })
 
@@ -581,7 +586,7 @@ const empty = StyleSheet.create({
     paddingTop: 40,
   },
   text: {
-    fontFamily: "System",
+    fontFamily: grafito.fonts.sans,
     fontSize: 14,
     color: grafito.ink4,
   },

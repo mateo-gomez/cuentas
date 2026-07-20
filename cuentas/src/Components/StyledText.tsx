@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TextProps } from "react-native"
-import { theme } from "../theme"
+import { theme, weight } from "../theme"
 import { PropsWithChildren } from "react"
 
 export type FontWeight =
@@ -27,10 +27,11 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.body,
     color: theme.colors.textPrimary,
     fontFamily: theme.fonts.main,
-    fontWeight: theme.fontWeights.normal as FontWeight,
     textAlignVertical: "center",
   },
-  bold: { fontWeight: theme.fontWeights.bold as FontWeight },
+  // Switch the family (Inter ships a real 700), never fake weight on top of
+  // a 400 family — that produces faux-bold and looks muddy.
+  bold: { fontFamily: weight.bold },
   subheading: { fontSize: theme.fontSizes.subheading },
   heading: { fontSize: theme.fontSizes.heading },
   small: { fontSize: theme.fontSizes.small },

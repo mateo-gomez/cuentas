@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons"
 import grafito from "../theme"
 import { StyledText } from "./StyledText"
 import { formatNumber } from "../utils"
+import { amountColor, amountSign } from "../utils/amountColor"
 import { TransactionType } from "../../types"
 
 interface PdfImportRowProps {
@@ -103,10 +104,10 @@ export const PdfImportRow = ({
           selectable
           style={[
             styles.value,
-            { color: isIncome ? grafito.pos : grafito.neg },
+            { color: amountColor(isIncome ? "income" : "expense") },
           ]}
         >
-          {isIncome ? "+" : "-"}
+          {amountSign(isIncome ? "income" : "expense")}
           {formatNumber(Math.abs(value))}
         </StyledText>
 
@@ -222,9 +223,9 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   value: {
-    fontFamily: grafito.fonts.mono,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 15,
-    fontWeight: "600",
     marginTop: 4,
   },
   transferBox: {

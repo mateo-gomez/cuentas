@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   headerTitle: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.weight.semibold,
     fontSize: 22,
     color: grafito.ink,
   },
@@ -370,9 +370,8 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   monthLabel: {
-    fontFamily: "Georgia",
+    fontFamily: grafito.weight.bold,
     fontSize: 34,
-    fontWeight: "700",
     color: grafito.ink,
   },
   listContainer: {

@@ -38,7 +38,8 @@ const AmountInput = ({ value, onChange, hasError }: AmountInputProps) => {
         onChange(Number(raw) || 0)
       }}
       style={{
-        fontFamily: grafito.fonts.serif,
+        fontFamily: grafito.weight.bold,
+        fontVariantNumeric: "tabular-nums",
         fontSize: 64,
         color: hasError ? grafito.neg : grafito.ink,
         textAlign: "center",

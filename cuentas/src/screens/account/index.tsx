@@ -335,7 +335,8 @@ const styles = StyleSheet.create({
     color: grafito.ink,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 15,
   },
 })

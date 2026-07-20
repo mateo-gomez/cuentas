@@ -17,7 +17,8 @@ const AmountInput = ({ value, hasError }: AmountInputProps) => (
 
 const styles = StyleSheet.create({
   amount: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: grafito.weight.bold,
+    ...grafito.numeric,
     fontSize: 64,
     color: grafito.ink,
     textAlign: "center",

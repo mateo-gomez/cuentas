@@ -94,7 +94,7 @@ const DonutRing = ({
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          {isOver ? "-" : ""}${formatNumber(Math.abs(available))}
+          {isOver ? "−" : ""}${formatNumber(Math.abs(available))}
         </Text>
       </View>
     </View>
@@ -136,7 +136,7 @@ const CategoryRow = ({
         </Text>
         <Text style={[styles.catRemaining, { color: remainingColor }]}>
           {isOver
-            ? `-$${formatNumber(Math.abs(remaining))}`
+            ? `−$${formatNumber(Math.abs(remaining))}`
             : allocated > 0
             ? `$${formatNumber(remaining)}`
             : "Sin límite"}
@@ -388,7 +388,8 @@ const styles = StyleSheet.create({
     textTransform: "lowercase",
   },
   donutAmount: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 22,
     color: grafito.ink,
     marginTop: 1,
@@ -411,7 +412,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   statValue: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 16,
     color: grafito.ink,
   },
@@ -440,7 +442,8 @@ const styles = StyleSheet.create({
   },
   catRemaining: {
     fontSize: 13,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
   },
   catBarTrack: {
     height: 4,

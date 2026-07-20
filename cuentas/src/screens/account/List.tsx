@@ -13,6 +13,7 @@ import { useAccounts, useTabBar } from "../../hooks"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { Account } from "../../../types"
 import { formatNumber } from "../../utils"
+import { balanceColor } from "../../utils/amountColor"
 
 const AccountRow = ({ account }: { account: Account }) => {
   const navigate = useNavigate()
@@ -37,8 +38,14 @@ const AccountRow = ({ account }: { account: Account }) => {
           {account.type === "credit" ? "Tarjeta de crédito" : "Cuenta bancaria"}
         </Text>
       </View>
-      <Text style={styles.rowBalance}>
-        ${formatNumber(account.openingBalance)}
+      <Text
+        style={[
+          styles.rowBalance,
+          { color: balanceColor(account.openingBalance) },
+        ]}
+      >
+        {account.openingBalance < 0 ? "−" : ""}$
+        {formatNumber(Math.abs(account.openingBalance))}
       </Text>
       <Ionicons name="chevron-forward" size={18} color={grafito.ink4} />
     </TouchableOpacity>
@@ -188,7 +195,8 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   rowBalance: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: grafito.amountFamily,
+    ...grafito.numeric,
     fontSize: 15,
     color: grafito.ink,
   },
