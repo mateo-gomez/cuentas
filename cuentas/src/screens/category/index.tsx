@@ -1,4 +1,5 @@
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -6,8 +7,8 @@ import {
   View,
 } from "react-native"
 import grafito from "../../theme"
-import { useEffect, useState } from "react"
-import CategoryGrid from "../../Components/CategoryGrid"
+import { useEffect, useMemo, useState } from "react"
+import CategoryChip from "../../Components/CategoryChip"
 import { categoryIcons } from "../../constants/"
 import { useNavigate, useParams } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
@@ -33,10 +34,17 @@ const Category = () => {
   const { id } = useParams()
   const { category, loading, error } = useCategory(id)
   const [name, setName] = useState("")
+  const [iconQuery, setIconQuery] = useState("")
   const [errors, setErrors] = useState({
     name: null,
     icon: null,
   })
+
+  const filteredIcons = useMemo(() => {
+    const q = iconQuery.trim().toLowerCase()
+    if (!q) return availableCategories
+    return availableCategories.filter((c) => c.icon.includes(q))
+  }, [iconQuery])
 
   const { selected: categorySelected, setSelected: setCategorySelected } =
     useSelect<CategoryType>(category)
@@ -78,7 +86,7 @@ const Category = () => {
         await createCategory(categoryData)
       }
 
-      navigate("/")
+      navigate("/categories")
     } catch (error) {
       logger.error("Submit category failed", { message: error.message })
 
@@ -92,7 +100,7 @@ const Category = () => {
     try {
       await deleteCategory(id)
 
-      navigate("/")
+      navigate("/categories")
     } catch (error) {
       throw error
     }
@@ -128,8 +136,18 @@ const Category = () => {
         </View>
       </View>
 
-      {/* ── Body ───────────────────────────────────────────────────────────── */}
-      <View style={styles.container}>
+      {/* ── Fixed top: preview + name + icon search stay visible while the
+          icon grid below scrolls on its own ── */}
+      <View style={styles.fixedTop}>
+        <View style={styles.preview}>
+          <CategoryChip
+            size="lg"
+            categoryId={categorySelected?.icon ?? name ?? "preview"}
+            name={name}
+            icon={categorySelected?.icon}
+          />
+        </View>
+
         <TextInput
           textAlign="center"
           numberOfLines={1}
@@ -141,25 +159,78 @@ const Category = () => {
           value={name}
         />
 
-        {error ? (
-          <Text style={styles.message}>
-            Ha ocurrido un error al cargar las categorías
-          </Text>
-        ) : null}
-
-        {loading ? <Text style={styles.message}>Cargando...</Text> : null}
-
         {!loading && !error ? (
-          <CategoryGrid
-            style={styles.grid}
-            categories={availableCategories}
-            onSelect={handleSelectCategory}
-            isSelected={(category) =>
-              !!categorySelected && category.icon === categorySelected.icon
-            }
-          />
+          <View style={styles.search}>
+            <Ionicons name="search" size={16} color={grafito.ink4} />
+            <TextInput
+              placeholder="Buscar ícono"
+              placeholderTextColor={grafito.ink5}
+              style={styles.searchInput}
+              onChangeText={setIconQuery}
+              value={iconQuery}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            {iconQuery ? (
+              <TouchableOpacity
+                onPress={() => setIconQuery("")}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="close-circle" size={16} color={grafito.ink4} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
         ) : null}
       </View>
+
+      {error ? (
+        <Text style={styles.message}>
+          Ha ocurrido un error al cargar las categorías
+        </Text>
+      ) : null}
+
+      {loading ? <Text style={styles.message}>Cargando...</Text> : null}
+
+      {/* ── Icon grid: the only scrollable region ── */}
+      {!loading && !error ? (
+        <ScrollView
+          style={styles.gridScroll}
+          contentContainerStyle={[
+            styles.gridContent,
+            { paddingBottom: insets.bottom + 24 },
+          ]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.grid}>
+            {filteredIcons.map((cat) => {
+              const selected =
+                !!categorySelected && cat.icon === categorySelected.icon
+              return (
+                <TouchableOpacity
+                  key={cat._id}
+                  style={[styles.card, selected && styles.cardSelected]}
+                  onPress={() => handleSelectCategory(cat)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={cat.icon}
+                >
+                  <CategoryChip
+                    size="lg"
+                    categoryId={cat._id}
+                    name={cat.name}
+                    icon={cat.icon}
+                  />
+                </TouchableOpacity>
+              )
+            })}
+
+            {filteredIcons.length === 0 ? (
+              <Text style={styles.message}>Ningún ícono coincide</Text>
+            ) : null}
+          </View>
+        </ScrollView>
+      ) : null}
     </View>
   )
 }
@@ -201,9 +272,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: grafito.onAccent,
   },
-  container: {
-    flex: 1,
+  fixedTop: {
     paddingHorizontal: 20,
+  },
+  gridScroll: {
+    flex: 1,
+  },
+  gridContent: {
+    paddingHorizontal: 20,
+    paddingTop: 4,
+  },
+  preview: {
+    alignItems: "center",
+    marginTop: 16,
   },
   nameInput: {
     backgroundColor: grafito.surface,
@@ -212,10 +293,28 @@ const styles = StyleSheet.create({
     borderColor: grafito.line,
     color: grafito.ink,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     fontFamily: grafito.fonts.serif,
     fontSize: 26,
-    marginVertical: 20,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  search: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: grafito.surface3,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: grafito.fonts.sans,
+    fontSize: 15,
+    color: grafito.ink,
+    padding: 0,
   },
   error: {
     borderColor: grafito.neg,
@@ -225,10 +324,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: grafito.ink3,
     textAlign: "center",
-    marginBottom: 12,
+    marginVertical: 12,
+    width: "100%",
   },
   grid: {
-    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: 10,
+  },
+  card: {
+    width: "23%",
+    backgroundColor: grafito.surface,
+    borderWidth: 1,
+    borderColor: grafito.line,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardSelected: {
+    borderWidth: 2,
+    borderColor: grafito.ink,
   },
 })
 

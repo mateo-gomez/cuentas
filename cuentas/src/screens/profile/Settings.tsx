@@ -1,23 +1,24 @@
-import {
-  Collapse,
-  CollapseBody,
-  CollapseHeader,
-} from "accordion-collapse-react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import grafito from "../../theme"
-import { CategoriesOptions } from "../../Components/CategoriesOptions"
 import { LogoutOption } from "../../Components/LogoutOption"
 import { AppVersion } from "../../Components/AppVersion"
+import BottomTabBar from "../../Components/BottomTabBar"
+import { useTabBar } from "../../hooks"
 
 // Migrated from the removed OptionsSideBar drawer (settings hub — design §3d).
 const navigationOptions = [
   {
+    title: "Perfil",
+    icon: "person-outline" as const,
+    to: "/settings/profile",
+  },
+  {
     title: "Categorías",
     icon: "grid-outline" as const,
-    options: <CategoriesOptions />,
+    to: "/categories",
   },
   {
     title: "Importar transacciones",
@@ -41,53 +42,26 @@ const inertOptions = [
 const Settings = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
+  const tabBar = useTabBar()
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
-        </TouchableOpacity>
         <Text style={styles.title}>Configuración</Text>
-        <View style={{ width: 26 }} />
       </View>
 
       <View style={styles.list}>
-        {navigationOptions.map((option) =>
-          option.options ? (
-            <Collapse key={option.title}>
-              <CollapseHeader>
-                <View style={styles.row}>
-                  <Ionicons
-                    name={option.icon}
-                    size={20}
-                    color={grafito.accent}
-                  />
-                  <Text style={styles.rowLabel}>{option.title}</Text>
-                  <Ionicons
-                    name="chevron-down"
-                    size={16}
-                    color={grafito.ink4}
-                  />
-                </View>
-              </CollapseHeader>
-              <CollapseBody>{option.options}</CollapseBody>
-            </Collapse>
-          ) : (
-            <TouchableOpacity
-              key={option.title}
-              style={styles.row}
-              onPress={() => navigate(option.to)}
-            >
-              <Ionicons name={option.icon} size={20} color={grafito.accent} />
-              <Text style={styles.rowLabel}>{option.title}</Text>
-              <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
-            </TouchableOpacity>
-          ),
-        )}
+        {navigationOptions.map((option) => (
+          <TouchableOpacity
+            key={option.title}
+            style={styles.row}
+            onPress={() => navigate(option.to)}
+          >
+            <Ionicons name={option.icon} size={20} color={grafito.accent} />
+            <Text style={styles.rowLabel}>{option.title}</Text>
+            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+          </TouchableOpacity>
+        ))}
 
         {inertOptions.map((option) => (
           <View key={option.title} style={[styles.row, styles.rowDisabled]}>
@@ -102,6 +76,10 @@ const Settings = () => {
 
       <LogoutOption />
       <AppVersion />
+
+      <View style={styles.spacer} />
+
+      <BottomTabBar {...tabBar} />
     </View>
   )
 }
@@ -114,18 +92,17 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 8,
-    gap: 12,
   },
   title: {
-    flex: 1,
-    textAlign: "center",
     fontFamily: grafito.fonts.serif,
-    fontSize: 20,
+    fontSize: 22,
     color: grafito.ink,
+  },
+  spacer: {
+    flex: 1,
   },
   list: {
     paddingHorizontal: 20,

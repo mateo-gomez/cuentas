@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsWideWeb } from '../hooks/useIsWideWeb';
 import theme from '../theme';
 
-export type Tab = 'home' | 'accounts' | 'budget' | 'profile';
+export type Tab = 'home' | 'accounts' | 'budget' | 'settings';
 
 interface Props {
   activeTab: Tab;
@@ -81,11 +81,11 @@ export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props
       />
 
       <NavTab
-        tab="profile"
+        tab="settings"
         activeTab={activeTab}
-        icon="person-outline"
-        activeIcon="person"
-        label="Perfil"
+        icon="settings-outline"
+        activeIcon="settings"
+        label="Ajustes"
         onSelect={onSelect}
       />
     </View>

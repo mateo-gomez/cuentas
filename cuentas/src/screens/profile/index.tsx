@@ -12,13 +12,11 @@ import { useNavigate } from "react-router"
 import grafito from "../../theme"
 import { Button } from "../../Components/Button"
 import { ErrorBanner } from "../../Components"
-import BottomTabBar from "../../Components/BottomTabBar"
-import { useProfile, useTabBar } from "../../hooks"
+import { useProfile } from "../../hooks"
 
 const Profile = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
-  const tabBar = useTabBar()
   const { user, loading, error, save, changePassword } = useProfile()
 
   const [editing, setEditing] = useState(false)
@@ -71,13 +69,14 @@ const Profile = () => {
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Perfil</Text>
         <TouchableOpacity
-          onPress={() => navigate("/profile/settings")}
+          onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="settings-outline" size={24} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
         </TouchableOpacity>
+        <Text style={styles.title}>Perfil</Text>
+        <View style={{ width: 26 }} />
       </View>
 
       <View style={styles.section}>
@@ -182,11 +181,7 @@ const Profile = () => {
 
       <ErrorBanner message={loading ? "" : error} />
 
-      {/* Spacer pushes the tab bar to the bottom — the fixed-height sections
-          above don't fill the screen on their own. */}
       <View style={styles.spacer} />
-
-      <BottomTabBar {...tabBar} />
     </View>
   )
 }
@@ -206,8 +201,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 8,
+    gap: 12,
   },
   title: {
+    flex: 1,
+    textAlign: "center",
     fontFamily: grafito.fonts.serif,
     fontSize: 22,
     color: grafito.ink,

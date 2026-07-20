@@ -4,7 +4,7 @@ import { Tab } from "../Components/BottomTabBar"
 const pathToTab = (pathname: string): Tab => {
   if (pathname.startsWith("/accounts")) return "accounts"
   if (pathname.startsWith("/budget")) return "budget"
-  if (pathname.startsWith("/profile")) return "profile"
+  if (pathname.startsWith("/settings")) return "settings"
   return "home"
 }
 
@@ -12,7 +12,7 @@ const tabToPath: Record<Tab, string> = {
   home: "/",
   accounts: "/accounts",
   budget: "/budget",
-  profile: "/profile",
+  settings: "/settings",
 }
 
 /**

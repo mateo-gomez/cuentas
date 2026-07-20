@@ -188,6 +188,20 @@ const Home = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>cuentas</Text>
         <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.importPill}
+            onPress={() => navigate("/import")}
+            accessibilityRole="button"
+            accessibilityLabel="Importar transacciones"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name="cloud-upload-outline"
+              size={16}
+              color={grafito.ink3}
+            />
+            <Text style={styles.importPillText}>Importar</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.searchPill} onPress={() => {}}>
             <Text style={styles.searchPillText}>Buscar</Text>
           </TouchableOpacity>
@@ -332,6 +346,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   searchPillText: {
+    fontSize: 14,
+    color: grafito.ink3,
+  },
+  importPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: grafito.surface3,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  importPillText: {
     fontSize: 14,
     color: grafito.ink3,
   },

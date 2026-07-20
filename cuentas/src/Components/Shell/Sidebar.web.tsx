@@ -34,11 +34,11 @@ const ITEMS: Item[] = [
     match: (p) => p.startsWith("/budget"),
   },
   {
-    label: "Perfil",
-    path: "/profile",
-    icon: "person-outline",
-    activeIcon: "person",
-    match: (p) => p.startsWith("/profile"),
+    label: "Configuración",
+    path: "/settings",
+    icon: "settings-outline",
+    activeIcon: "settings",
+    match: (p) => p.startsWith("/settings"),
   },
 ]
 

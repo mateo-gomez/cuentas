@@ -15,6 +15,17 @@ const injectBackdrop = () => {
   if (injected || typeof document === "undefined") return
   injected = true
 
+  // Opt into safe-area env() insets. Expo's default viewport meta omits
+  // `viewport-fit=cover`, so env(safe-area-inset-*) resolves to 0 and
+  // react-native-safe-area-context reports no insets on mobile web / PWA.
+  const viewport = document.querySelector('meta[name="viewport"]')
+  if (viewport) {
+    viewport.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover",
+    )
+  }
+
   const style = document.createElement("style")
   style.textContent = `
     html, body, #root { height: 100%; }

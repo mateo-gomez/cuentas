@@ -1,7 +1,6 @@
 export * from "./AppBar"
 export * from "./ErrorBanner"
 export * from "./BackButton"
-export * from "./CategoriesOptions"
 export * from "./CategoryIcon"
 export * from "./DatePicker"
 export * from "./NumberFormat"
