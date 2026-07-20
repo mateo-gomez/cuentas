@@ -69,6 +69,18 @@ const AccountsList = () => {
         </TouchableOpacity>
       </View>
 
+      {accounts.length >= 2 ? (
+        <TouchableOpacity
+          style={styles.transferPill}
+          onPress={() => navigate("/accounts/transfer")}
+          accessibilityRole="button"
+          accessibilityLabel="Transferir entre cuentas"
+        >
+          <Ionicons name="swap-vertical" size={16} color={grafito.accent} />
+          <Text style={styles.transferPillText}>Transferir entre cuentas</Text>
+        </TouchableOpacity>
+      ) : null}
+
       {error ? (
         <Text style={styles.message}>
           Ha ocurrido un error al cargar las cuentas
@@ -114,6 +126,25 @@ const styles = StyleSheet.create({
     fontFamily: grafito.fonts.serif,
     fontSize: 20,
     color: grafito.ink,
+  },
+  transferPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginHorizontal: 20,
+    marginBottom: 12,
+    paddingVertical: 11,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: grafito.line,
+    backgroundColor: grafito.surface,
+  },
+  transferPillText: {
+    fontFamily: grafito.fonts.sans,
+    fontSize: 14,
+    fontWeight: "600",
+    color: grafito.accent,
   },
   list: {
     paddingHorizontal: 20,
