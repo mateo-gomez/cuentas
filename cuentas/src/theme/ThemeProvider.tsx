@@ -4,7 +4,9 @@ import { storage } from "../helpers/storage"
 import { themes } from "./index"
 import type { Theme } from "./types"
 
-export type ThemePref = "claro" | "oscuro" | "auto"
+export type ThemePref = "claro" | "oscuro" | "sepia" | "indigo" | "auto"
+
+const PREFS: ThemePref[] = ["claro", "oscuro", "sepia", "indigo", "auto"]
 
 type ThemeCtx = {
   theme: Theme // resolved concrete theme (never 'auto')
@@ -35,8 +37,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false
     storage.getItem(THEME_STORAGE_KEY).then((stored) => {
       if (cancelled) return
-      if (stored === "claro" || stored === "oscuro" || stored === "auto") {
-        setPrefState(stored)
+      if (stored && PREFS.includes(stored as ThemePref)) {
+        setPrefState(stored as ThemePref)
       }
       setReady(true)
     })

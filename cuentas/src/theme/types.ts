@@ -42,7 +42,7 @@ export type AmountModel = {
 }
 
 export type Theme = {
-  id: "claro" | "oscuro"
+  id: "claro" | "oscuro" | "sepia" | "indigo"
   scheme: "light" | "dark"
   palette: Palette
   categoryTones: CategoryTones

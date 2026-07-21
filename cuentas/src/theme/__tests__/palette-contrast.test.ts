@@ -1,5 +1,7 @@
 import { claro } from "../palettes/claro"
 import { oscuro } from "../palettes/oscuro"
+import { sepia } from "../palettes/sepia"
+import { indigo } from "../palettes/indigo"
 import type { Theme } from "../types"
 
 // WCAG 2.1 contrast verification for the color palettes. Turns the "authored,
@@ -68,5 +70,13 @@ describe("palette contrast (WCAG AA)", () => {
 
   it("Oscuro meets AA for text and icon pairs", () => {
     checkPalette(oscuro)
+  })
+
+  it("Sepia meets AA for text and icon pairs", () => {
+    checkPalette(sepia)
+  })
+
+  it("Índigo meets AA for text and icon pairs", () => {
+    checkPalette(indigo)
   })
 })

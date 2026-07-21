@@ -1,9 +1,11 @@
 import { claro } from "./palettes/claro"
 import { oscuro } from "./palettes/oscuro"
+import { sepia } from "./palettes/sepia"
+import { indigo } from "./palettes/indigo"
 
-export const themes = { claro, oscuro }
+export const themes = { claro, oscuro, sepia, indigo }
 
-export { claro, oscuro }
+export { claro, oscuro, sepia, indigo }
 export * from "./types"
 export { tokens } from "./tokens"
 export { chipColors, getTone } from "./iconTreatment"

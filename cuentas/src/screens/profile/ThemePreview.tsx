@@ -17,6 +17,8 @@ type Kind = "income" | "expense"
 const modes: { id: ThemePref; name: string; hint: string }[] = [
   { id: "claro", name: "Claro", hint: "Fondo claro, siempre activo" },
   { id: "oscuro", name: "Oscuro", hint: "Fondo oscuro, siempre activo" },
+  { id: "sepia", name: "Sepia", hint: "Papel cálido, siempre activo" },
+  { id: "indigo", name: "Índigo", hint: "Oscuro índigo, siempre activo" },
   { id: "auto", name: "Auto", hint: "Sigue el tema del sistema operativo" },
 ]
 
