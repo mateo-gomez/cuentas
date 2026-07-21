@@ -12,7 +12,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useBudget, useCategories } from "../../hooks"
 import { saveBudget } from "../../services"
 import { BudgetCategoryAllocation } from "../../../types"
@@ -40,6 +41,8 @@ const MONTHS_ES = [
 ]
 
 const BudgetEdit = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const { status } = useBudget(YEAR, MONTH)
@@ -130,7 +133,7 @@ const BudgetEdit = () => {
               <TextInput
                 style={styles.totalInput}
                 placeholder="Ej: 2000000"
-                placeholderTextColor={grafito.ink5}
+                placeholderTextColor={theme.palette.ink5}
                 keyboardType="numeric"
                 value={total}
                 onChangeText={(t) => {
@@ -159,7 +162,7 @@ const BudgetEdit = () => {
               <TextInput
                 style={styles.categoryInput}
                 placeholder="0"
-                placeholderTextColor={grafito.ink5}
+                placeholderTextColor={theme.palette.ink5}
                 keyboardType="numeric"
                 value={allocations[item._id] ?? ""}
                 onChangeText={(v) =>
@@ -174,13 +177,14 @@ const BudgetEdit = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   flex: {
     flex: 1,
   },
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -190,12 +194,12 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   cancel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   savePill: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 8,
@@ -204,10 +208,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   savePillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   titleBlock: {
     paddingHorizontal: 20,
@@ -215,16 +219,16 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   eyebrow: {
-    fontFamily: grafito.fonts.mono,
+    fontFamily: theme.fonts.mono,
     fontSize: 11,
     letterSpacing: 0.5,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 30,
     fontWeight: "700",
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   content: {
     padding: 20,
@@ -234,10 +238,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   fieldLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
     fontWeight: "600",
-    color: grafito.ink2,
+    color: theme.palette.ink2,
     marginBottom: 8,
   },
   sectionTitle: {
@@ -245,32 +249,32 @@ const styles = StyleSheet.create({
   },
   optional: {
     fontWeight: "400",
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
   totalInput: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 22,
-    color: grafito.ink,
+    color: theme.palette.ink,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
   },
   errorText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.neg,
+    color: theme.palette.neg,
     marginTop: 8,
   },
   categoryRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 12,
@@ -278,23 +282,23 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   categoryInput: {
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     width: 110,
     textAlign: "right",
-    fontFamily: grafito.fonts.mono,
+    fontFamily: theme.fonts.mono,
     fontSize: 15,
-    color: grafito.ink,
-    backgroundColor: grafito.surface2,
+    color: theme.palette.ink,
+    backgroundColor: theme.palette.surface2,
   },
-})
+  })
 
 export default BudgetEdit

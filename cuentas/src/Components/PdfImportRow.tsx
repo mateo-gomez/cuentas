@@ -1,9 +1,9 @@
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
+import { TextInput, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import grafito from "../theme"
+import { useTheme, useThemedStyles, useAmount } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
 import { formatNumber } from "../utils"
-import { amountColor, amountSign } from "../utils/amountColor"
 import { TransactionType } from "../../types"
 
 interface PdfImportRowProps {
@@ -47,6 +47,9 @@ export const PdfImportRow = ({
   onToggleIncluded,
   onRemove,
 }: PdfImportRowProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  const { amountColor, amountSign } = useAmount()
   const isIncome = type === TransactionType.income
   const showTransferControls = suggestedTransfer || isTransfer
 
@@ -61,7 +64,7 @@ export const PdfImportRow = ({
         <Ionicons
           name={included ? "checkbox" : "square-outline"}
           size={22}
-          color={included ? grafito.accent : grafito.ink4}
+          color={included ? theme.palette.accent : theme.palette.ink4}
         />
       </TouchableOpacity>
 
@@ -82,7 +85,7 @@ export const PdfImportRow = ({
           value={description}
           onChangeText={onChangeDescription}
           placeholder="Descripción"
-          placeholderTextColor={grafito.ink4}
+          placeholderTextColor={theme.palette.ink4}
         />
 
         <TouchableOpacity
@@ -97,7 +100,7 @@ export const PdfImportRow = ({
           >
             {categoryName || "Elegir categoría"}
           </StyledText>
-          <Ionicons name="chevron-down" size={14} color={grafito.ink4} />
+          <Ionicons name="chevron-down" size={14} color={theme.palette.ink4} />
         </TouchableOpacity>
 
         <StyledText
@@ -121,7 +124,7 @@ export const PdfImportRow = ({
               <Ionicons
                 name={isTransfer ? "checkbox" : "square-outline"}
                 size={18}
-                color={isTransfer ? grafito.accent : grafito.ink4}
+                color={isTransfer ? theme.palette.accent : theme.palette.ink4}
               />
               <StyledText style={styles.transferLabel}>
                 Pago de tarjeta (transferencia)
@@ -133,7 +136,7 @@ export const PdfImportRow = ({
                 style={styles.transferAccount}
                 onPress={onPressTransferAccount}
               >
-                <Ionicons name="card-outline" size={14} color={grafito.ink3} />
+                <Ionicons name="card-outline" size={14} color={theme.palette.ink3} />
                 <StyledText
                   style={[
                     styles.transferAccountText,
@@ -142,7 +145,7 @@ export const PdfImportRow = ({
                 >
                   {transferAccountName || "Elegir tarjeta destino"}
                 </StyledText>
-                <Ionicons name="chevron-down" size={14} color={grafito.ink4} />
+                <Ionicons name="chevron-down" size={14} color={theme.palette.ink4} />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -153,78 +156,78 @@ export const PdfImportRow = ({
         onPress={onRemove}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="close-circle-outline" size={22} color={grafito.ink4} />
+        <Ionicons name="close-circle-outline" size={22} color={theme.palette.ink4} />
       </TouchableOpacity>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   container: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: "row" as const,
+    alignItems: "flex-start" as const,
     gap: 10,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     padding: 12,
   },
   containerFlagged: {
-    backgroundColor: grafito.surface3,
-    borderColor: grafito.ink5,
+    backgroundColor: theme.palette.surface3,
+    borderColor: theme.palette.ink5,
   },
   body: {
     flex: 1,
     gap: 4,
   },
   topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "space-between" as const,
   },
   date: {
-    fontFamily: grafito.fonts.mono,
+    fontFamily: theme.fonts.mono,
     fontSize: 12,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   badge: {
-    backgroundColor: grafito.ink5,
+    backgroundColor: theme.palette.ink5,
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   badgeText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 10,
-    fontWeight: "600",
-    color: grafito.surface,
+    fontWeight: "600" as const,
+    color: theme.palette.surface,
   },
   description: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
     paddingVertical: 2,
   },
   categoryPicker: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 4,
-    alignSelf: "flex-start",
+    alignSelf: "flex-start" as const,
     paddingVertical: 2,
   },
   category: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   categoryPlaceholder: {
-    color: grafito.ink4,
-    fontStyle: "italic",
+    color: theme.palette.ink4,
+    fontStyle: "italic" as const,
   },
   value: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 15,
     marginTop: 4,
   },
@@ -232,30 +235,30 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: grafito.line,
+    borderTopColor: theme.palette.line,
     gap: 6,
   },
   transferToggle: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 8,
   },
   transferLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   transferAccount: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 4,
-    alignSelf: "flex-start",
+    alignSelf: "flex-start" as const,
     paddingVertical: 2,
     paddingLeft: 26,
   },
   transferAccountText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
 })

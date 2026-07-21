@@ -1,20 +1,9 @@
 import React from "react"
-import { StyleSheet, Text, TouchableOpacity } from "react-native"
+import { Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import theme from "../theme"
+import { useTheme, useThemedStyles, getTone } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { FrequentCombo } from "../../types"
-
-// Hash categoryId -> one of 10 tone names — mirrors CategoryChip's getTone so
-// suggestion chips visually match their category color elsewhere in the app.
-function getTone(id: string) {
-  const tones = Object.keys(theme.categoryTones) as Array<
-    keyof typeof theme.categoryTones
-  >
-  let hash = 0
-  for (let i = 0; i < id.length; i++)
-    hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
-  return theme.categoryTones[tones[hash % tones.length]]
-}
 
 interface Props {
   combo: FrequentCombo
@@ -22,7 +11,9 @@ interface Props {
 }
 
 export default function SuggestionChip({ combo, onPress }: Props) {
-  const tone = getTone(combo.category._id)
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  const tone = getTone(theme.categoryTones, combo.category._id)
 
   // "Ícono color" treatment: neutral base, category colour carried by the glyph.
   return (
@@ -37,22 +28,22 @@ export default function SuggestionChip({ combo, onPress }: Props) {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   chip: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 6,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: theme.surface3,
+    backgroundColor: theme.palette.surface3,
     borderWidth: 1,
-    borderColor: theme.line,
+    borderColor: theme.palette.line,
   },
   label: {
     fontFamily: theme.weight.medium,
     fontSize: 13,
-    color: theme.ink2,
+    color: theme.palette.ink2,
     maxWidth: 140,
   },
 })

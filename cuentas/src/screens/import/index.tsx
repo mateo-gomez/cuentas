@@ -12,7 +12,8 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useEffect, useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
 import { appendPickedFile } from "../../utils/appendPickedFile"
@@ -24,6 +25,8 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Import")
 
 const Import = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const [selectedFile, setSelectedFile] =
@@ -148,7 +151,7 @@ const Import = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Importar</Text>
       </View>
@@ -167,7 +170,7 @@ const Import = () => {
           </Text>
 
           <TouchableOpacity style={styles.pickButton} onPress={handlePickFile}>
-            <Ionicons name="document-outline" size={20} color={grafito.ink} />
+            <Ionicons name="document-outline" size={20} color={theme.palette.ink} />
             <Text style={styles.pickButtonText}>Seleccionar archivo Excel</Text>
           </TouchableOpacity>
 
@@ -176,7 +179,7 @@ const Import = () => {
               <Ionicons
                 name="document-text-outline"
                 size={18}
-                color={grafito.ink3}
+                color={theme.palette.ink3}
               />
               <Text style={styles.fileName} numberOfLines={1}>
                 {selectedFile.name}
@@ -200,7 +203,7 @@ const Import = () => {
           {uploading ? (
             <ActivityIndicator
               size="large"
-              color={grafito.accent}
+              color={theme.palette.accent}
               style={styles.loader}
             />
           ) : null}
@@ -220,7 +223,7 @@ const Import = () => {
             <Ionicons
               name="document-attach-outline"
               size={20}
-              color={grafito.ink}
+              color={theme.palette.ink}
             />
             <Text style={styles.pickButtonText}>
               {parsingPdf ? "Procesando..." : "Seleccionar extracto PDF"}
@@ -230,7 +233,7 @@ const Import = () => {
           {parsingPdf ? (
             <ActivityIndicator
               size="large"
-              color={grafito.accent}
+              color={theme.palette.accent}
               style={styles.loader}
             />
           ) : null}
@@ -245,7 +248,7 @@ const Import = () => {
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Contraseña del PDF"
-                placeholderTextColor={grafito.ink4}
+                placeholderTextColor={theme.palette.ink4}
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -271,10 +274,11 @@ const Import = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   flex: {
     flex: 1,
@@ -288,18 +292,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   container: {
     padding: 20,
     gap: 16,
   },
   hint: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     lineHeight: 20,
   },
   pickButton: {
@@ -307,35 +311,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     paddingVertical: 14,
   },
   pickButtonText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   fileChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
   fileName: {
     flex: 1,
-    fontFamily: grafito.fonts.mono,
+    fontFamily: theme.fonts.mono,
     fontSize: 13,
-    color: grafito.ink2,
+    color: theme.palette.ink2,
   },
   uploadButton: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: "center",
@@ -344,10 +348,10 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   uploadButtonText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   loader: {
     marginTop: 8,
@@ -357,21 +361,21 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   passwordInput: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   divider: {
     height: 1,
-    backgroundColor: grafito.line,
+    backgroundColor: theme.palette.line,
     marginVertical: 8,
   },
-})
+  })
 
 export default Import

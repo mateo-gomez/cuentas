@@ -1,7 +1,8 @@
 import React, { useState } from "react"
-import { StyleSheet, Text, TouchableOpacity } from "react-native"
+import { Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import grafito from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { useAccounts } from "../hooks"
 import { AccountPickerModal } from "./AccountPickerModal"
 
@@ -14,6 +15,8 @@ interface Props {
 // screen metaRow: shows the current account and opens the shared
 // AccountPickerModal (same one used by Home's account filter) to change it.
 export default function AccountChip({ accountId, onSelect }: Props) {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { accounts } = useAccounts()
   const [visible, setVisible] = useState(false)
   const selectedAccount = accounts.find((account) => account._id === accountId)
@@ -35,12 +38,12 @@ export default function AccountChip({ accountId, onSelect }: Props) {
               : "wallet-outline"
           }
           size={16}
-          color={grafito.ink3}
+          color={theme.palette.ink3}
         />
         <Text style={styles.label} numberOfLines={1}>
           {selectedAccount?.name ?? "Elegir cuenta"}
         </Text>
-        <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+        <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
       </TouchableOpacity>
 
       <AccountPickerModal
@@ -54,18 +57,18 @@ export default function AccountChip({ accountId, onSelect }: Props) {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   chip: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "flex-end" as const,
     gap: 6,
     paddingVertical: 4,
   },
   label: {
     fontSize: 14,
-    color: grafito.ink2,
+    color: theme.palette.ink2,
     flexShrink: 1,
   },
 })

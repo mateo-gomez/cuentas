@@ -1,18 +1,8 @@
 import React from "react"
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import theme from "../theme"
-
-// Hash categoryId → one of 10 tone names
-function getTone(id: string) {
-  const tones = Object.keys(theme.categoryTones) as Array<
-    keyof typeof theme.categoryTones
-  >
-  let hash = 0
-  for (let i = 0; i < id.length; i++)
-    hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
-  return theme.categoryTones[tones[hash % tones.length]]
-}
+import { useTheme, useThemedStyles, chipColors, getTone } from "../theme/index"
+import type { Theme } from "../theme/index"
 
 type Size = "sm" | "md" | "lg"
 
@@ -38,18 +28,18 @@ export default function CategoryChip({
   icon,
   size = "md",
 }: Props) {
-  const tone = getTone(categoryId)
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  const tone = getTone(theme.categoryTones, categoryId)
   const cfg = sizeConfig[size]
+  const paint = chipColors(theme, tone)
 
-  // "Ícono color" treatment: a neutral base with the category colour carried
-  // only by the glyph. Keeps per-category identity without the multi-colour
-  // pill in every list row competing with the amounts.
   return (
     <View
       style={[
         styles.chip,
         {
-          backgroundColor: theme.surface3,
+          backgroundColor: paint.bg,
           borderRadius: cfg.radius,
           height: cfg.height,
           paddingHorizontal: cfg.height * 0.35,
@@ -57,10 +47,10 @@ export default function CategoryChip({
       ]}
     >
       {icon ? (
-        <Ionicons name={icon as any} size={cfg.iconSize} color={tone.fg} />
+        <Ionicons name={icon as any} size={cfg.iconSize} color={paint.fg} />
       ) : (
         <Text
-          style={[styles.initial, { color: tone.fg, fontSize: cfg.iconSize }]}
+          style={[styles.initial, { color: paint.fg, fontSize: cfg.iconSize }]}
         >
           {name.charAt(0).toUpperCase()}
         </Text>
@@ -69,13 +59,13 @@ export default function CategoryChip({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_theme: Theme) => ({
   chip: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    flexDirection: "row" as const,
   },
   initial: {
-    fontWeight: "600",
+    fontWeight: "600" as const,
   },
 })

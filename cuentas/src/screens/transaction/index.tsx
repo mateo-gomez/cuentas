@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import grafito from "../../theme"
 import { formatNumber } from "../../utils"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router"
 import { Category, TransactionDTO } from "../../../types"
 import { ErrorBanner, OverlayLoader } from "../../Components"
@@ -32,6 +33,8 @@ const logger = createLogger("Transaction")
 const initialDate = new Date()
 
 const Transaction = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { type, id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -303,7 +306,7 @@ const Transaction = () => {
       {/* ── Description ── */}
       <TextInput
         placeholder="Descripción"
-        placeholderTextColor={grafito.ink4}
+        placeholderTextColor={theme.palette.ink4}
         style={styles.descriptionInput}
         value={description}
         onChangeText={handleChangeDescription}
@@ -337,7 +340,7 @@ const Transaction = () => {
                 Sin categoría
               </Text>
             )}
-            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
           </View>
         </TouchableOpacity>
 
@@ -349,11 +352,11 @@ const Transaction = () => {
         >
           <Text style={styles.fieldLabel}>Fecha</Text>
           <View style={styles.fieldValue}>
-            <Ionicons name="calendar-outline" size={16} color={grafito.ink3} />
+            <Ionicons name="calendar-outline" size={16} color={theme.palette.ink3} />
             <Text style={styles.fieldValueText} numberOfLines={1}>
               {formatDate(date)}
             </Text>
-            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
           </View>
         </DateField>
 
@@ -383,10 +386,11 @@ const Transaction = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   // Header
   header: {
@@ -402,7 +406,7 @@ const styles = StyleSheet.create({
   },
   ghostBtnText: {
     fontSize: 15,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   togglePill: {
     flexDirection: "row",
@@ -412,40 +416,40 @@ const styles = StyleSheet.create({
   toggleOption: {
     paddingHorizontal: 16,
     paddingVertical: 6,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 20,
   },
   toggleOptionActive: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
   },
   toggleOptionText: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   toggleOptionTextActive: {
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   headerSpacer: {
     minWidth: 64,
   },
   // Amount
   amountText: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 64,
-    color: grafito.ink,
+    color: theme.palette.ink,
     textAlign: "center",
     marginTop: 12,
     marginHorizontal: 16,
   },
   amountError: {
-    color: grafito.neg,
+    color: theme.palette.neg,
   },
   // Description
   descriptionInput: {
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line,
+    borderBottomColor: theme.palette.line,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
     paddingVertical: 8,
     marginHorizontal: 16,
     marginTop: 12,
@@ -456,7 +460,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 14,
     borderTopWidth: 1,
-    borderTopColor: grafito.line,
+    borderTopColor: theme.palette.line,
   },
   field: {
     flexDirection: "row",
@@ -465,14 +469,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     gap: 12,
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line,
+    borderBottomColor: theme.palette.line,
   },
   fieldLast: {
     borderBottomWidth: 0,
   },
   fieldLabel: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   fieldValue: {
     flexDirection: "row",
@@ -482,12 +486,12 @@ const styles = StyleSheet.create({
   },
   fieldValueText: {
     fontSize: 14,
-    color: grafito.ink,
+    color: theme.palette.ink,
     flexShrink: 1,
   },
   fieldValuePlaceholder: {
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
-})
+  })
 
 export default Transaction

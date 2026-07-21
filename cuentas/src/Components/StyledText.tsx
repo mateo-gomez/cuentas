@@ -1,5 +1,6 @@
-import { StyleSheet, Text, TextProps } from "react-native"
-import { theme, weight } from "../theme"
+import { Text, TextProps } from "react-native"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { PropsWithChildren } from "react"
 
 export type FontWeight =
@@ -22,27 +23,27 @@ export interface StyledTextProps {
   textCenter?: boolean
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   text: {
-    fontSize: theme.fontSizes.body,
-    color: theme.colors.textPrimary,
-    fontFamily: theme.fonts.main,
-    textAlignVertical: "center",
+    fontSize: 16,
+    color: "#747E7E",
+    fontFamily: theme.fonts.sans,
+    textAlignVertical: "center" as const,
   },
   // Switch the family (Inter ships a real 700), never fake weight on top of
   // a 400 family — that produces faux-bold and looks muddy.
-  bold: { fontFamily: weight.bold },
-  subheading: { fontSize: theme.fontSizes.subheading },
-  heading: { fontSize: theme.fontSizes.heading },
-  small: { fontSize: theme.fontSizes.small },
-  body: { fontSize: theme.fontSizes.body },
-  colorPrimary: { color: theme.colors.textPrimary },
-  colorSecondary: { color: theme.colors.textSecondary },
-  colorGreen: { color: theme.colors.greenLight },
-  colorGrey: { color: theme.colors.grey },
-  colorRed: { color: theme.colors.red },
-  colorWhite: { color: theme.colors.white },
-  textCenter: { textAlign: "center" },
+  bold: { fontFamily: theme.weight.bold },
+  subheading: { fontSize: 20 },
+  heading: { fontSize: 28 },
+  small: { fontSize: 12 },
+  body: { fontSize: 16 },
+  colorPrimary: { color: "#747E7E" },
+  colorSecondary: { color: theme.palette.accent },
+  colorGreen: { color: theme.palette.pos },
+  colorGrey: { color: "#9da7a7" },
+  colorRed: { color: theme.palette.neg },
+  colorWhite: { color: theme.palette.surface },
+  textCenter: { textAlign: "center" as const },
 })
 
 export const StyledText = ({
@@ -54,6 +55,7 @@ export const StyledText = ({
   style,
   ...restOfProps
 }: PropsWithChildren<StyledTextProps & TextProps>) => {
+  const styles = useThemedStyles(makeStyles)
   const textStyles = [
     styles.text,
     fontWeight === "bold" && styles.bold,

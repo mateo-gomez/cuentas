@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import grafito from "../../theme"
+import { useTheme } from "../../theme/index"
 import type { AmountInputProps } from "./AmountInput.native"
 
 // Web makes the amount a real focusable field: first tab stop, keyboard-driven,
 // so the whole create flow (amount → description → date → account → category)
 // works without a mouse. The browser input handles decimal entry natively.
 const AmountInput = ({ value, onChange, hasError }: AmountInputProps) => {
+  const { theme } = useTheme()
   const ref = useRef<HTMLInputElement>(null)
   const [buffer, setBuffer] = useState(value ? String(value) : "")
 
@@ -38,10 +39,10 @@ const AmountInput = ({ value, onChange, hasError }: AmountInputProps) => {
         onChange(Number(raw) || 0)
       }}
       style={{
-        fontFamily: grafito.weight.bold,
+        fontFamily: theme.weight.bold,
         fontVariantNumeric: "tabular-nums",
         fontSize: 64,
-        color: hasError ? grafito.neg : grafito.ink,
+        color: hasError ? theme.palette.neg : theme.palette.ink,
         textAlign: "center",
         marginTop: 12,
         marginLeft: 16,

@@ -8,15 +8,19 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
+import { useAmount } from "../../theme/useAmount"
 import { useAccounts, useTabBar } from "../../hooks"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { Account } from "../../../types"
 import { formatNumber } from "../../utils"
-import { balanceColor } from "../../utils/amountColor"
 
 const AccountRow = ({ account }: { account: Account }) => {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  const { balanceColor } = useAmount()
 
   return (
     <TouchableOpacity
@@ -27,7 +31,7 @@ const AccountRow = ({ account }: { account: Account }) => {
         <Ionicons
           name={account.type === "credit" ? "card-outline" : "wallet-outline"}
           size={20}
-          color={grafito.accent}
+          color={theme.palette.accent}
         />
       </View>
       <View style={styles.rowInfo}>
@@ -47,13 +51,15 @@ const AccountRow = ({ account }: { account: Account }) => {
         {account.openingBalance < 0 ? "−" : ""}$
         {formatNumber(Math.abs(account.openingBalance))}
       </Text>
-      <Ionicons name="chevron-forward" size={18} color={grafito.ink4} />
+      <Ionicons name="chevron-forward" size={18} color={theme.palette.ink4} />
     </TouchableOpacity>
   )
 }
 
 const AccountsList = () => {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const insets = useSafeAreaInsets()
   const { accounts, loading, error } = useAccounts()
   const tabBar = useTabBar()
@@ -65,14 +71,14 @@ const AccountsList = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Cuentas</Text>
         <TouchableOpacity
           onPress={() => navigate("/accounts/create")}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="add" size={26} color={grafito.ink} />
+          <Ionicons name="add" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
       </View>
 
@@ -83,7 +89,7 @@ const AccountsList = () => {
           accessibilityRole="button"
           accessibilityLabel="Transferir entre cuentas"
         >
-          <Ionicons name="swap-vertical" size={16} color={grafito.accent} />
+          <Ionicons name="swap-vertical" size={16} color={theme.palette.accent} />
           <Text style={styles.transferPillText}>Transferir entre cuentas</Text>
         </TouchableOpacity>
       ) : null}
@@ -113,10 +119,11 @@ const AccountsList = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -130,9 +137,9 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   transferPill: {
     flexDirection: "row",
@@ -144,23 +151,23 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
-    backgroundColor: grafito.surface,
+    borderColor: theme.palette.line,
+    backgroundColor: theme.palette.surface,
   },
   transferPillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
     fontWeight: "600",
-    color: grafito.accent,
+    color: theme.palette.accent,
   },
   list: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   message: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     textAlign: "center",
     marginTop: 20,
   },
@@ -170,13 +177,13 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
+    borderBottomColor: theme.palette.line2,
   },
   rowIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -184,22 +191,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowName: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   rowType: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     marginTop: 1,
   },
   rowBalance: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
-})
+  })
 
 export default AccountsList

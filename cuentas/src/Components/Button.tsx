@@ -2,9 +2,9 @@ import {
   ActivityIndicator,
   GestureResponderEvent,
   Pressable,
-  StyleSheet,
 } from "react-native"
-import { theme } from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { useState } from "react"
 
 interface ButtonProps {
@@ -21,6 +21,8 @@ export const Button = ({
   loading,
   ...rest
 }: ButtonProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const [isPressed, setIsPressed] = useState(false)
 
   const handlePressIn = () => {
@@ -51,15 +53,15 @@ export const Button = ({
       ]}
       {...rest}
     >
-      {loading ? <ActivityIndicator color={theme.colors.white} /> : children}
+      {loading ? <ActivityIndicator color={theme.palette.onAccent} /> : children}
     </Pressable>
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   button: {
-    backgroundColor: theme.colors.primary,
-    textAlign: "center",
+    backgroundColor: theme.palette.accent,
+    textAlign: "center" as const,
     padding: 10,
     borderRadius: 5,
     shadowColor: "#000",

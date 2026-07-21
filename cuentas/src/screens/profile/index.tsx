@@ -9,12 +9,15 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { Button } from "../../Components/Button"
 import { ErrorBanner } from "../../Components"
 import { useProfile } from "../../hooks"
 
 const Profile = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const { user, loading, error, save, changePassword } = useProfile()
@@ -73,7 +76,7 @@ const Profile = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Perfil</Text>
         <View style={{ width: 26 }} />
@@ -127,7 +130,7 @@ const Profile = () => {
               <Ionicons
                 name="pencil-outline"
                 size={16}
-                color={grafito.accent}
+                color={theme.palette.accent}
               />
               <Text style={styles.editLinkLabel}>Editar datos</Text>
             </TouchableOpacity>
@@ -144,7 +147,7 @@ const Profile = () => {
           <Ionicons
             name={changingPassword ? "chevron-up" : "chevron-down"}
             size={18}
-            color={grafito.ink3}
+            color={theme.palette.ink3}
           />
         </TouchableOpacity>
 
@@ -186,10 +189,11 @@ const Profile = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   spacer: {
     flex: 1,
@@ -206,15 +210,15 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 22,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   section: {
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
+    borderBottomColor: theme.palette.line2,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -222,19 +226,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   name: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   email: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     marginTop: 4,
   },
   editLink: {
@@ -244,9 +248,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   editLinkLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.accent,
+    color: theme.palette.accent,
   },
   form: {
     gap: 12,
@@ -254,10 +258,10 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 10,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 8,
-    fontFamily: grafito.fonts.sans,
-    color: grafito.ink,
+    fontFamily: theme.fonts.sans,
+    color: theme.palette.ink,
   },
   formActions: {
     flexDirection: "row",
@@ -265,8 +269,8 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   buttonLabel: {
-    color: grafito.onAccent,
-    fontFamily: grafito.fonts.sans,
+    color: theme.palette.onAccent,
+    fontFamily: theme.fonts.sans,
     fontWeight: "700",
   },
   cancelButton: {
@@ -274,14 +278,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   cancelLabel: {
-    fontFamily: grafito.fonts.sans,
-    color: grafito.ink3,
+    fontFamily: theme.fonts.sans,
+    color: theme.palette.ink3,
   },
   success: {
-    fontFamily: grafito.fonts.sans,
-    color: grafito.accent,
+    fontFamily: theme.fonts.sans,
+    color: theme.palette.accent,
     marginTop: 8,
   },
-})
+  })
 
 export default Profile

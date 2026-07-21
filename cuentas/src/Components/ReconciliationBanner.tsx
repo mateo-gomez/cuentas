@@ -1,6 +1,7 @@
-import { View, StyleSheet } from "react-native"
+import { View } from "react-native"
 import { StyledText } from "./StyledText"
-import grafito from "../theme"
+import { useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { PdfReconciliation } from "../../types"
 
 interface ReconciliationBannerProps {
@@ -15,6 +16,7 @@ interface ReconciliationBannerProps {
 export const ReconciliationBanner = ({
   reconciliation,
 }: ReconciliationBannerProps) => {
+  const styles = useThemedStyles(makeStyles)
   if (!reconciliation.available) return null
 
   if (reconciliation.reconciled) {
@@ -42,44 +44,44 @@ export const ReconciliationBanner = ({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   mismatchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 8,
-    backgroundColor: grafito.warnBg,
+    backgroundColor: theme.palette.warnBg,
     borderLeftWidth: 3,
-    borderLeftColor: grafito.warn,
+    borderLeftColor: theme.palette.warn,
     borderRadius: 6,
     paddingVertical: 10,
     paddingHorizontal: 14,
     marginTop: 16,
   },
   mismatchIcon: {
-    color: grafito.warn,
+    color: theme.palette.warn,
     fontSize: 14,
   },
   mismatchText: {
-    color: grafito.warnInk,
+    color: theme.palette.warnInk,
     fontSize: 14,
     flex: 1,
   },
   confirmedContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 8,
-    backgroundColor: grafito.posBg,
+    backgroundColor: theme.palette.posBg,
     borderRadius: 6,
     paddingVertical: 8,
     paddingHorizontal: 14,
     marginTop: 16,
   },
   confirmedIcon: {
-    color: grafito.pos,
+    color: theme.palette.pos,
     fontSize: 13,
   },
   confirmedText: {
-    color: grafito.pos,
+    color: theme.palette.pos,
     fontSize: 13,
     flex: 1,
   },

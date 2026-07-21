@@ -1,10 +1,13 @@
 import { useAuth } from "../hooks/useAuth"
 import { Ionicons } from "@expo/vector-icons"
-import { StyleSheet, TouchableHighlight, View } from "react-native"
-import { theme } from "../theme"
+import { TouchableHighlight, View } from "react-native"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
 
 export const LogoutOption = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { logout } = useAuth()
 
   const handlePress = async () => {
@@ -17,7 +20,7 @@ export const LogoutOption = () => {
         <View style={styles.iconContainer}>
           <Ionicons
             name="log-out-outline"
-            color={theme.colors.primary}
+            color={theme.palette.accent}
             size={70}
           />
         </View>
@@ -29,7 +32,7 @@ export const LogoutOption = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  iconContainer: { alignItems: "center", padding: 10 },
+const makeStyles = (_theme: Theme) => ({
+  iconContainer: { alignItems: "center" as const, padding: 10 },
   touchable: { padding: 20 },
 })

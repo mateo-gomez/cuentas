@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { StyleProp, Text, ViewStyle } from "react-native"
 import CategoryChip from "./CategoryChip"
-import grafito from "../theme"
+import { useTheme } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { Category } from "../../types"
 
 interface Props {
@@ -27,6 +28,7 @@ export default function CategoryGrid({
   isSelected,
   emptyLabel = "Sin categorías",
 }: Props) {
+  const { theme } = useTheme()
   const refs = useRef<(HTMLButtonElement | null)[]>([])
 
   const initialIndex = useMemo(() => {
@@ -87,7 +89,7 @@ export default function CategoryGrid({
   }
 
   if (categories.length === 0) {
-    return <Text style={emptyStyle}>{emptyLabel}</Text>
+    return <Text style={emptyStyle(theme)}>{emptyLabel}</Text>
   }
 
   return (
@@ -112,9 +114,9 @@ export default function CategoryGrid({
             tabIndex={index === activeIndex ? 0 : -1}
             onClick={() => onSelect(category)}
             style={{
-              ...cardStyle,
+              ...cardStyle(theme),
               borderWidth: selected ? 2 : 1,
-              borderColor: selected ? grafito.ink : grafito.line,
+              borderColor: selected ? theme.palette.ink : theme.palette.line,
             }}
           >
             <CategoryChip
@@ -124,7 +126,7 @@ export default function CategoryGrid({
               icon={category.icon}
             />
             {category.name ? (
-              <span style={cardNameStyle}>{category.name}</span>
+              <span style={cardNameStyle(theme)}>{category.name}</span>
             ) : null}
           </button>
         )
@@ -140,29 +142,29 @@ const gridStyle: React.CSSProperties = {
   padding: "8px 12px",
 }
 
-const cardStyle: React.CSSProperties = {
+const cardStyle = (theme: Theme): React.CSSProperties => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: grafito.surface,
+  backgroundColor: theme.palette.surface,
   borderStyle: "solid",
   borderRadius: 12,
   padding: "14px 6px",
   cursor: "pointer",
-}
+})
 
-const cardNameStyle: React.CSSProperties = {
+const cardNameStyle = (theme: Theme): React.CSSProperties => ({
   fontSize: 12,
-  color: grafito.ink2,
+  color: theme.palette.ink2,
   textAlign: "center",
   marginTop: 6,
-  fontFamily: grafito.fonts.sans,
-}
+  fontFamily: theme.fonts.sans,
+})
 
-const emptyStyle = {
+const emptyStyle = (theme: Theme) => ({
   fontSize: 14,
-  color: grafito.ink3,
+  color: theme.palette.ink3,
   textAlign: "center" as const,
   paddingVertical: 24,
-}
+})

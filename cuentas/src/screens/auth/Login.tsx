@@ -2,7 +2,8 @@ import { View, TextInput, KeyboardAvoidingView, StyleSheet } from "react-native"
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { StyledText, ErrorBanner } from "../../Components"
-import { theme } from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import Link from "../../router/Link"
 import { Button } from "../../Components/Button"
 import { StatusBar } from "expo-status-bar"
@@ -11,6 +12,8 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Login")
 
 const Login = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { login, error } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -63,7 +66,7 @@ const Login = () => {
           </Button>
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <StyledText>¿No tienes una cuenta? </StyledText>
-            <Link to="/register" underlayColor={theme.colors.highlight}>
+            <Link to="/register" underlayColor={theme.palette.bg}>
               <StyledText
                 color={"primary"}
                 fontWeight="bold"
@@ -79,23 +82,24 @@ const Login = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    padding: 40,
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  input: {
-    padding: 10,
-    backgroundColor: theme.colors.white,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-})
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      justifyContent: "center",
+      padding: 40,
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    input: {
+      padding: 10,
+      backgroundColor: theme.palette.surface,
+      borderRadius: 5,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+  })
 
 export default Login

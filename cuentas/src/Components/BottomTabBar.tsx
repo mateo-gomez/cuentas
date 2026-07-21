@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsWideWeb } from '../hooks/useIsWideWeb';
-import theme from '../theme';
+import { useTheme, useThemedStyles } from '../theme/index';
+import type { Theme } from '../theme/index';
 
 export type Tab = 'home' | 'accounts' | 'budget' | 'settings';
 
@@ -24,8 +25,10 @@ interface NavTabProps {
 
 // Extracted to avoid duplicating the icon+label+active-color markup 4x.
 function NavTab({ tab, activeTab, icon, activeIcon, label, onSelect }: NavTabProps) {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const isActive = activeTab === tab;
-  const color = isActive ? theme.ink : theme.ink3;
+  const color = isActive ? theme.palette.ink : theme.palette.ink3;
 
   return (
     <TouchableOpacity style={styles.tab} onPress={() => onSelect(tab)}>
@@ -38,6 +41,8 @@ function NavTab({ tab, activeTab, icon, activeIcon, label, onSelect }: NavTabPro
 }
 
 export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props) {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const wide = useIsWideWeb();
 
@@ -67,7 +72,7 @@ export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props
       {/* FAB */}
       <View style={styles.fabSlot}>
         <TouchableOpacity style={styles.fab} onPress={onPressPlus}>
-          <Ionicons name="add" size={30} color={theme.onAccent} />
+          <Ionicons name="add" size={30} color={theme.palette.onAccent} />
         </TouchableOpacity>
       </View>
 
@@ -92,18 +97,18 @@ export default function BottomTabBar({ activeTab, onSelect, onPressPlus }: Props
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   container: {
-    flexDirection: 'row',
-    backgroundColor: theme.surface,
+    flexDirection: 'row' as const,
+    backgroundColor: theme.palette.surface,
     borderTopWidth: 1,
-    borderTopColor: theme.line,
+    borderTopColor: theme.palette.line,
     paddingTop: 10,
-    alignItems: 'flex-end',
+    alignItems: 'flex-end' as const,
   },
   tab: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     paddingBottom: 4,
     gap: 3,
   },
@@ -113,15 +118,15 @@ const styles = StyleSheet.create({
   },
   fabSlot: {
     width: 88,
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   fab: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: theme.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: theme.palette.accent,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },

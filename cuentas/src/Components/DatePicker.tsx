@@ -1,11 +1,14 @@
 import { openDatePicker } from "../utils/openDatePicker"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { theme } from "../theme"
+import { TouchableOpacity, View } from "react-native"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { formatDate } from "../utils"
 import { StyledText } from "./StyledText"
 import { Ionicons } from "@expo/vector-icons"
 
 export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const dateFormatted = formatDate(date ?? new Date())
 
   const handlePress = () => {
@@ -19,8 +22,8 @@ export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
       <View {...restOfProps} style={datePickerStyles}>
         <Ionicons
           name="calendar-clear-outline"
-          size={theme.fontSizes.subheading}
-          color={theme.colors.textPrimary}
+          size={20}
+          color={theme.palette.ink}
           style={{ marginRight: 5 }}
         />
         <StyledText fontSize="subheading" fontWeight="bold">
@@ -31,11 +34,11 @@ export const DatePicker = ({ style, onChange, date, ...restOfProps }) => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_theme: Theme) => ({
   pickerText: { marginLeft: 5 },
   datePickerWrapper: {
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "center" as const,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
   },
 })

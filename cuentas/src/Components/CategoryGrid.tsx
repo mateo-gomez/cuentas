@@ -1,13 +1,13 @@
 import {
   FlatList,
   StyleProp,
-  StyleSheet,
   Text,
   TouchableOpacity,
   ViewStyle,
 } from "react-native"
 import CategoryChip from "./CategoryChip"
-import grafito from "../theme"
+import { useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { Category } from "../../types"
 
 interface Props {
@@ -30,6 +30,7 @@ export default function CategoryGrid({
   emptyLabel = "Sin categorías",
   style,
 }: Props) {
+  const styles = useThemedStyles(makeStyles)
   return (
     <FlatList
       style={style}
@@ -66,7 +67,7 @@ export default function CategoryGrid({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   listContent: {
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -77,29 +78,29 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 6,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   cardSelected: {
     borderWidth: 2,
-    borderColor: grafito.ink,
+    borderColor: theme.palette.ink,
   },
   cardName: {
     fontSize: 12,
-    color: grafito.ink2,
-    textAlign: "center",
+    color: theme.palette.ink2,
+    textAlign: "center" as const,
     marginTop: 6,
   },
   emptyText: {
     fontSize: 14,
-    color: grafito.ink3,
-    textAlign: "center",
+    color: theme.palette.ink3,
+    textAlign: "center" as const,
     paddingVertical: 24,
   },
 })

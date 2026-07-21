@@ -3,7 +3,8 @@ import { useOutletContext } from "react-router"
 import CategoryGrid from "../../Components/CategoryGrid"
 import { useCategories } from "../../hooks/useCategories"
 import { Category } from "../../../types"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 
 interface NumpadOutletContext {
   commitWithCategory: (category: Category) => void
@@ -15,6 +16,7 @@ interface NumpadOutletContext {
 // is a focusable input above (see AmountInput.web), so the whole flow is
 // keyboard-only: type amount → Tab through fields → Enter on a category to save.
 const NumPad = () => {
+  const styles = useThemedStyles(makeStyles)
   const { commitWithCategory, isValidTransactionValue, categoryId } =
     useOutletContext<NumpadOutletContext>()
 
@@ -47,10 +49,11 @@ const NumPad = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   hint: {
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     textAlign: "center",
     marginBottom: 12,
   },
@@ -60,8 +63,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
-})
+  })
 
 export default NumPad

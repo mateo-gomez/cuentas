@@ -1,5 +1,6 @@
-import { StyleSheet, Text } from "react-native"
-import grafito from "../../theme"
+import { Text } from "react-native"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { formatNumber } from "../../utils"
 
 export type AmountInputProps = {
@@ -9,24 +10,27 @@ export type AmountInputProps = {
 }
 
 // Native drives the amount through the on-screen numpad, so this is display-only.
-const AmountInput = ({ value, hasError }: AmountInputProps) => (
-  <Text style={[styles.amount, hasError && styles.amountError]}>
-    {formatNumber(value)}
-  </Text>
-)
+const AmountInput = ({ value, hasError }: AmountInputProps) => {
+  const styles = useThemedStyles(makeStyles)
+  return (
+    <Text style={[styles.amount, hasError && styles.amountError]}>
+      {formatNumber(value)}
+    </Text>
+  )
+}
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   amount: {
-    fontFamily: grafito.weight.bold,
-    ...grafito.numeric,
+    fontFamily: theme.weight.bold,
+    ...theme.numeric,
     fontSize: 64,
-    color: grafito.ink,
-    textAlign: "center",
+    color: theme.palette.ink,
+    textAlign: "center" as const,
     marginTop: 12,
     marginHorizontal: 16,
   },
   amountError: {
-    color: grafito.neg,
+    color: theme.palette.neg,
   },
 })
 

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
@@ -18,6 +19,8 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Account")
 
 const Account = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const { id } = useParams()
@@ -105,7 +108,7 @@ const Account = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
 
         <Text style={styles.title} numberOfLines={1}>
@@ -118,7 +121,7 @@ const Account = () => {
               onPress={handleDeleteAccount}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Ionicons name="trash-outline" size={22} color={grafito.ink3} />
+              <Ionicons name="trash-outline" size={22} color={theme.palette.ink3} />
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
@@ -142,7 +145,7 @@ const Account = () => {
           numberOfLines={1}
           maxLength={30}
           placeholder="Nombre"
-          placeholderTextColor={grafito.ink5}
+          placeholderTextColor={theme.palette.ink5}
           style={[styles.nameInput, errors.name && styles.error]}
           onChangeText={setName}
           value={name}
@@ -189,7 +192,7 @@ const Account = () => {
           <TextInput
             keyboardType="numeric"
             placeholder="0"
-            placeholderTextColor={grafito.ink5}
+            placeholderTextColor={theme.palette.ink5}
             style={styles.input}
             onChangeText={setOpeningBalance}
             value={openingBalance}
@@ -204,7 +207,7 @@ const Account = () => {
                 keyboardType="numeric"
                 maxLength={2}
                 placeholder="1-31"
-                placeholderTextColor={grafito.ink5}
+                placeholderTextColor={theme.palette.ink5}
                 style={[styles.input, errors.cutoffDay && styles.error]}
                 onChangeText={setCutoffDay}
                 value={cutoffDay}
@@ -216,7 +219,7 @@ const Account = () => {
                 keyboardType="numeric"
                 maxLength={2}
                 placeholder="1-31"
-                placeholderTextColor={grafito.ink5}
+                placeholderTextColor={theme.palette.ink5}
                 style={[styles.input, errors.dueDay && styles.error]}
                 onChangeText={setDueDay}
                 value={dueDay}
@@ -229,10 +232,11 @@ const Account = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -245,9 +249,9 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   actions: {
     flexDirection: "row",
@@ -255,40 +259,40 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   savePill: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 8,
   },
   savePillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   container: {
     flex: 1,
     paddingHorizontal: 20,
   },
   nameInput: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
-    color: grafito.ink,
+    borderColor: theme.palette.line,
+    color: theme.palette.ink,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 24,
     marginVertical: 20,
   },
   error: {
-    borderColor: grafito.neg,
+    borderColor: theme.palette.neg,
   },
   message: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     textAlign: "center",
     marginBottom: 12,
   },
@@ -302,43 +306,43 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     alignItems: "center",
   },
   typeOptionActive: {
-    backgroundColor: grafito.accent,
-    borderColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
+    borderColor: theme.palette.accent,
   },
   typeOptionText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   typeOptionTextActive: {
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
     fontWeight: "600",
   },
   field: {
     marginBottom: 16,
   },
   label: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     marginBottom: 6,
   },
   input: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
-    color: grafito.ink,
+    borderColor: theme.palette.line,
+    color: theme.palette.ink,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 15,
   },
-})
+  })
 
 export default Account

@@ -12,7 +12,8 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useAccounts } from "../../hooks"
 import { AccountPickerModal } from "../../Components/AccountPickerModal"
 import { OverlayLoader } from "../../Components/OverlayLoader"
@@ -32,7 +33,10 @@ const AccountSlot = ({
   label: string
   account?: Account
   onPress: () => void
-}) => (
+}) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  return (
   <TouchableOpacity
     style={styles.slot}
     onPress={onPress}
@@ -52,7 +56,7 @@ const AccountSlot = ({
               : "ellipse-outline"
           }
           size={20}
-          color={account ? grafito.accent : grafito.ink4}
+          color={account ? theme.palette.accent : theme.palette.ink4}
         />
       </View>
       <Text
@@ -61,13 +65,16 @@ const AccountSlot = ({
       >
         {account?.name ?? "Elegir cuenta"}
       </Text>
-      <Ionicons name="chevron-down" size={16} color={grafito.ink4} />
+      <Ionicons name="chevron-down" size={16} color={theme.palette.ink4} />
     </View>
   </TouchableOpacity>
-)
+  )
+}
 
 const AccountTransfer = () => {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const insets = useSafeAreaInsets()
   const { accounts } = useAccounts()
 
@@ -136,7 +143,7 @@ const AccountTransfer = () => {
           accessibilityRole="button"
           accessibilityLabel="Volver"
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Transferir</Text>
         <View style={styles.headerSpacer} />
@@ -174,7 +181,7 @@ const AccountTransfer = () => {
                 <Ionicons
                   name="swap-vertical"
                   size={18}
-                  color={grafito.onAccent}
+                  color={theme.palette.onAccent}
                 />
               </TouchableOpacity>
               <View style={styles.flowLine} />
@@ -196,7 +203,7 @@ const AccountTransfer = () => {
                 value={amountText}
                 onChangeText={setAmountText}
                 placeholder="0"
-                placeholderTextColor={grafito.ink5}
+                placeholderTextColor={theme.palette.ink5}
                 keyboardType="decimal-pad"
                 accessibilityLabel="Monto a transferir"
               />
@@ -210,7 +217,7 @@ const AccountTransfer = () => {
               value={description}
               onChangeText={setDescription}
               placeholder="Ej. Pago tarjeta"
-              placeholderTextColor={grafito.ink4}
+              placeholderTextColor={theme.palette.ink4}
             />
           </View>
         </ScrollView>
@@ -246,10 +253,11 @@ const AccountTransfer = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   flex: {
     flex: 1,
@@ -266,9 +274,9 @@ const styles = StyleSheet.create({
     width: 26,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   content: {
     paddingHorizontal: 20,
@@ -277,26 +285,26 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   caption: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     lineHeight: 19,
   },
   flow: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     padding: 16,
   },
   slot: {
     gap: 6,
   },
   slotLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
     fontWeight: "600",
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -309,18 +317,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     alignItems: "center",
     justifyContent: "center",
   },
   slotName: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 16,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   slotPlaceholder: {
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
   swapRow: {
     flexDirection: "row",
@@ -332,13 +340,13 @@ const styles = StyleSheet.create({
   flowLine: {
     flex: 1,
     height: 1,
-    backgroundColor: grafito.line,
+    backgroundColor: theme.palette.line,
   },
   swapButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -346,10 +354,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   amountLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
     fontWeight: "600",
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -357,43 +365,43 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     paddingHorizontal: 18,
     paddingVertical: 16,
   },
   amountCurrency: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 28,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
   amountInput: {
     flex: 1,
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 32,
-    color: grafito.ink,
+    color: theme.palette.ink,
     padding: 0,
   },
   descriptionBox: {
     gap: 8,
   },
   descriptionInput: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
-    backgroundColor: grafito.surface,
+    color: theme.palette.ink,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
   cta: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: "center",
@@ -403,11 +411,11 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   ctaText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
-})
+  })
 
 export default AccountTransfer

@@ -1,6 +1,7 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, View } from "react-native"
 import { useNavigate } from "react-router"
-import { theme } from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import BackArrowIcon from "./svg/BackArrowIcon"
 
 interface BackButtonProps {
@@ -13,11 +14,13 @@ interface BackButtonProps {
 
 export const BackButton = ({
   to = -1,
-  size = theme.fontSizes.subheading,
-  color = theme.colors.white,
+  size,
+  color,
   onPress,
   ...restOfProps
 }: BackButtonProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
 
   const handlePress = () => {
@@ -28,13 +31,16 @@ export const BackButton = ({
   return (
     <TouchableOpacity onPress={handlePress}>
       <View style={styles.container} {...restOfProps}>
-        <BackArrowIcon color={color} size={size} />
+        <BackArrowIcon
+          color={color ?? theme.palette.surface}
+          size={size ?? 20}
+        />
       </View>
     </TouchableOpacity>
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_theme: Theme) => ({
   container: {
     marginRight: 30,
   },

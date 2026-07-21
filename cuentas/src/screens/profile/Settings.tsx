@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { LogoutOption } from "../../Components/LogoutOption"
 import { AppVersion } from "../../Components/AppVersion"
 import BottomTabBar from "../../Components/BottomTabBar"
@@ -44,6 +45,8 @@ const inertOptions = [
 ]
 
 const Settings = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const tabBar = useTabBar()
@@ -61,15 +64,15 @@ const Settings = () => {
             style={styles.row}
             onPress={() => navigate(option.to)}
           >
-            <Ionicons name={option.icon} size={20} color={grafito.accent} />
+            <Ionicons name={option.icon} size={20} color={theme.palette.accent} />
             <Text style={styles.rowLabel}>{option.title}</Text>
-            <Ionicons name="chevron-forward" size={16} color={grafito.ink4} />
+            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
           </TouchableOpacity>
         ))}
 
         {inertOptions.map((option) => (
           <View key={option.title} style={[styles.row, styles.rowDisabled]}>
-            <Ionicons name={option.icon} size={20} color={grafito.ink4} />
+            <Ionicons name={option.icon} size={20} color={theme.palette.ink4} />
             <Text style={[styles.rowLabel, styles.rowLabelDisabled]}>
               {option.title}
             </Text>
@@ -88,10 +91,11 @@ const Settings = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -101,9 +105,9 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 22,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   spacer: {
     flex: 1,
@@ -117,25 +121,25 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
+    borderBottomColor: theme.palette.line2,
   },
   rowLabel: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   rowDisabled: {
     opacity: 0.6,
   },
   rowLabelDisabled: {
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
   comingSoon: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 11,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
   },
-})
+  })
 
 export default Settings

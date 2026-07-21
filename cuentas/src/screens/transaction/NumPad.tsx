@@ -2,7 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import VirtualKeyboard from "react-native-virtual-keyboard"
 import { useNavigate, useOutletContext } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { Fragment } from "react"
 
 interface NumpadOutletContext {
@@ -13,6 +14,8 @@ interface NumpadOutletContext {
 }
 
 const NumPad = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const {
     handlePressNumpad,
     handleSave,
@@ -45,7 +48,7 @@ const NumPad = () => {
         style={styles.numPad}
         rowStyle={styles.numPadRow}
         cellStyle={styles.numPadCell}
-        color={grafito.ink}
+        color={theme.palette.ink}
         onPress={handlePressNumpad}
       />
 
@@ -61,7 +64,8 @@ const NumPad = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   numPad: {
     backgroundColor: "transparent",
     marginBottom: 0,
@@ -81,7 +85,7 @@ const styles = StyleSheet.create({
   },
   categoryTouchable: {
     marginTop: 8,
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 12,
     height: 48,
     justifyContent: "center",
@@ -89,9 +93,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   categoryText: {
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
     fontSize: 15,
   },
-})
+  })
 
 export default NumPad

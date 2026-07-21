@@ -8,7 +8,8 @@ import {
 import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { StyledText, ErrorBanner } from "../../Components"
-import { theme } from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import Link from "../../router/Link"
 import { StatusBar } from "expo-status-bar"
 import { Button } from "../../Components/Button"
@@ -17,6 +18,8 @@ import { createLogger } from "../../lib/logger"
 const logger = createLogger("Signup")
 
 const Signup = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { register, error } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -94,7 +97,7 @@ const Signup = () => {
 
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <StyledText>¿Ya tienes una cuenta? </StyledText>
-            <Link to="/login" underlayColor={theme.colors.highlight}>
+            <Link to="/login" underlayColor={theme.palette.bg}>
               <StyledText
                 color={"primary"}
                 fontWeight="bold"
@@ -110,23 +113,24 @@ const Signup = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    padding: 40,
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  input: {
-    padding: 10,
-    backgroundColor: theme.colors.white,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-})
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      justifyContent: "center",
+      padding: 40,
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    input: {
+      padding: 10,
+      backgroundColor: theme.palette.surface,
+      borderRadius: 5,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+  })
 
 export default Signup

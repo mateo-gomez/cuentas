@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
+import { useAmount } from "../../theme/useAmount"
 import { useTransactions } from "../../hooks"
 import { useConfirm } from "../../contexts/ConfirmContext"
 import { notify } from "../../utils/notify"
 import { formatDate, formatNumber } from "../../utils"
-import { amountColor, amountSign, balanceColor } from "../../utils/amountColor"
 import { memo, useCallback, useState } from "react"
 import {
   TransactionAggregate,
@@ -33,108 +34,113 @@ interface HeroCardProps {
   expenses: number
 }
 
-const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => (
-  <View style={hero.card}>
-    <Text style={hero.eyebrow}>SALDO DEL MES</Text>
-    <Text
-      style={[hero.balanceText, { color: balanceColor(balance) }]}
-    >
-      {balance < 0 ? "−" : ""}${formatNumber(Math.abs(balance))}
-    </Text>
+const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => {
+  const { theme } = useTheme()
+  const hero = useThemedStyles(makeHero)
+  const { balanceColor } = useAmount()
 
-    {/* Dashed divider */}
-    <View style={hero.dividerRow}>
-      {Array.from({ length: 24 }).map((_, i) => (
-        <View key={i} style={hero.dash} />
-      ))}
-    </View>
+  return (
+    <View style={hero.card}>
+      <Text style={hero.eyebrow}>SALDO DEL MES</Text>
+      <Text style={[hero.balanceText, { color: balanceColor(balance) }]}>
+        {balance < 0 ? "−" : ""}${formatNumber(Math.abs(balance))}
+      </Text>
 
-    {/* Incomes / Expenses */}
-    <View style={hero.row}>
-      <View style={hero.col}>
-        <Text style={hero.colLabel}>↑ Ingresos</Text>
-        <Text style={[hero.colAmount, { color: grafito.pos }]}>
-          ${formatNumber(incomes)}
-        </Text>
+      {/* Dashed divider */}
+      <View style={hero.dividerRow}>
+        {Array.from({ length: 24 }).map((_, i) => (
+          <View key={i} style={hero.dash} />
+        ))}
       </View>
-      <View style={hero.separator} />
-      <View style={hero.col}>
-        <Text style={hero.colLabel}>↓ Gastos</Text>
-        <Text style={[hero.colAmount, { color: grafito.ink }]}>
-          ${formatNumber(expenses)}
-        </Text>
+
+      {/* Incomes / Expenses */}
+      <View style={hero.row}>
+        <View style={hero.col}>
+          <Text style={hero.colLabel}>↑ Ingresos</Text>
+          <Text style={[hero.colAmount, { color: theme.palette.pos }]}>
+            ${formatNumber(incomes)}
+          </Text>
+        </View>
+        <View style={hero.separator} />
+        <View style={hero.col}>
+          <Text style={hero.colLabel}>↓ Gastos</Text>
+          <Text style={[hero.colAmount, { color: theme.palette.ink }]}>
+            ${formatNumber(expenses)}
+          </Text>
+        </View>
       </View>
     </View>
-  </View>
-)
+  )
+}
 
-const hero = StyleSheet.create({
-  card: {
-    backgroundColor: grafito.surface,
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  eyebrow: {
-    fontFamily: grafito.weight.medium,
-    fontSize: 11,
-    letterSpacing: 0.8,
-    color: grafito.ink4,
-    textTransform: "uppercase",
-    marginBottom: 4,
-  },
-  balanceText: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
-    fontSize: 48,
-    color: grafito.ink,
-    lineHeight: 54,
-    marginBottom: 14,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 14,
-  },
-  dash: {
-    width: 6,
-    height: 1,
-    backgroundColor: grafito.line,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  col: {
-    flex: 1,
-    alignItems: "center",
-  },
-  separator: {
-    width: 1,
-    height: 32,
-    backgroundColor: grafito.line,
-  },
-  colLabel: {
-    fontFamily: grafito.fonts.sans,
-    fontSize: 11,
-    color: grafito.ink4,
-    marginBottom: 2,
-  },
-  colAmount: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
-    fontSize: 18,
-    color: grafito.ink,
-  },
-})
+const makeHero = (theme: Theme) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 16,
+      marginHorizontal: 16,
+      marginTop: 8,
+      marginBottom: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.07,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    eyebrow: {
+      fontFamily: theme.weight.medium,
+      fontSize: 11,
+      letterSpacing: 0.8,
+      color: theme.palette.ink4,
+      textTransform: "uppercase",
+      marginBottom: 4,
+    },
+    balanceText: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 48,
+      color: theme.palette.ink,
+      lineHeight: 54,
+      marginBottom: 14,
+    },
+    dividerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 14,
+    },
+    dash: {
+      width: 6,
+      height: 1,
+      backgroundColor: theme.palette.line,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    col: {
+      flex: 1,
+      alignItems: "center",
+    },
+    separator: {
+      width: 1,
+      height: 32,
+      backgroundColor: theme.palette.line,
+    },
+    colLabel: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 11,
+      color: theme.palette.ink4,
+      marginBottom: 2,
+    },
+    colAmount: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 18,
+      color: theme.palette.ink,
+    },
+  })
 
 // ─── Daily group ─────────────────────────────────────────────────────────────
 
@@ -153,6 +159,8 @@ const DayGroup = ({
   onToggleSelect,
   onQuickDelete,
 }: DayGroupProps) => {
+  const { theme } = useTheme()
+  const day = useThemedStyles(makeDay)
   const dayTotal = group.balance.balance
   const dayLabel = formatDate(new Date(group.minDate), {
     weekday: "short",
@@ -168,7 +176,7 @@ const DayGroup = ({
         <Text
           style={[
             day.dayTotal,
-            { color: dayTotal >= 0 ? grafito.pos : grafito.neg },
+            { color: dayTotal >= 0 ? theme.palette.pos : theme.palette.neg },
           ]}
         >
           {dayTotal >= 0 ? "+" : "−"}${formatNumber(Math.abs(dayTotal))}
@@ -190,33 +198,34 @@ const DayGroup = ({
   )
 }
 
-const day = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
-    marginBottom: 2,
-  },
-  dateLabel: {
-    fontFamily: grafito.weight.medium,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    color: grafito.ink4,
-  },
-  dayTotal: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
-    fontSize: 13,
-    color: grafito.ink3,
-  },
-})
+const makeDay = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      marginHorizontal: 16,
+      marginBottom: 8,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 6,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+      marginBottom: 2,
+    },
+    dateLabel: {
+      fontFamily: theme.weight.medium,
+      fontSize: 11,
+      letterSpacing: 0.5,
+      color: theme.palette.ink4,
+    },
+    dayTotal: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 13,
+      color: theme.palette.ink3,
+    },
+  })
 
 // ─── Transaction row ─────────────────────────────────────────────────────────
 
@@ -236,6 +245,9 @@ const TransactionRow = ({
   onQuickDelete,
 }: TransactionRowProps) => {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const row = useThemedStyles(makeRow)
+  const { amountColor, amountSign } = useAmount()
   const [hovered, setHovered] = useState(false)
   const isIncome = transaction.type === TransactionType.income
   const categoryId =
@@ -273,7 +285,7 @@ const TransactionRow = ({
         <Ionicons
           name={selected ? "checkmark-circle" : "ellipse-outline"}
           size={24}
-          color={selected ? grafito.pos : grafito.ink4}
+          color={selected ? theme.palette.pos : theme.palette.ink4}
         />
       ) : isWeb && hovered ? (
         // Web: hovering reveals a checkbox to start/extend a multi-selection
@@ -283,7 +295,7 @@ const TransactionRow = ({
           accessibilityLabel="Seleccionar transacción"
           hitSlop={8}
         >
-          <Ionicons name="ellipse-outline" size={24} color={grafito.ink4} />
+          <Ionicons name="ellipse-outline" size={24} color={theme.palette.ink4} />
         </TouchableOpacity>
       ) : (
         <CategoryChip
@@ -323,7 +335,7 @@ const TransactionRow = ({
               accessibilityLabel="Eliminar transacción"
               hitSlop={8}
             >
-              <Ionicons name="trash-outline" size={16} color={grafito.neg} />
+              <Ionicons name="trash-outline" size={16} color={theme.palette.neg} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -332,59 +344,60 @@ const TransactionRow = ({
   )
 }
 
-const row = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
-  },
-  selected: {
-    backgroundColor: grafito.surface3,
-  },
-  hovered: {
-    backgroundColor: grafito.surface3,
-  },
-  selectBox: {
-    width: 40,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  info: {
-    flex: 1,
-  },
-  action: {
-    width: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  actionBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  categoryName: {
-    fontFamily: grafito.weight.medium,
-    fontSize: 14,
-    color: grafito.ink2,
-  },
-  description: {
-    fontFamily: grafito.fonts.sans,
-    fontSize: 12,
-    color: grafito.ink4,
-    marginTop: 1,
-  },
-  amount: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
-    fontSize: 15,
-  },
-})
+const makeRow = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 10,
+      gap: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+    },
+    selected: {
+      backgroundColor: theme.palette.surface3,
+    },
+    hovered: {
+      backgroundColor: theme.palette.surface3,
+    },
+    selectBox: {
+      width: 40,
+      height: 36,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    info: {
+      flex: 1,
+    },
+    action: {
+      width: 28,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    actionBtn: {
+      width: 28,
+      height: 28,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    categoryName: {
+      fontFamily: theme.weight.medium,
+      fontSize: 14,
+      color: theme.palette.ink2,
+    },
+    description: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 12,
+      color: theme.palette.ink4,
+      marginTop: 1,
+    },
+    amount: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 15,
+    },
+  })
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -399,6 +412,9 @@ const Transactions = ({
   accountId?: string
   width: number
 }) => {
+  const { theme } = useTheme()
+  const bar = useThemedStyles(makeBar)
+  const empty = useThemedStyles(makeEmpty)
   const { transactions, loading, balance, removeTransactions } =
     useTransactions({
       start,
@@ -514,7 +530,7 @@ const Transactions = ({
             onPress={clearSelection}
             disabled={deleting}
           >
-            <Ionicons name="close" size={22} color={grafito.ink3} />
+            <Ionicons name="close" size={22} color={theme.palette.ink3} />
             <Text style={bar.count}>{selectedIds.size}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -522,7 +538,7 @@ const Transactions = ({
             onPress={confirmDelete}
             disabled={deleting}
           >
-            <Ionicons name="trash-outline" size={18} color={grafito.onAccent} />
+            <Ionicons name="trash-outline" size={18} color={theme.palette.onAccent} />
             <Text style={bar.deleteText}>
               {deleting ? "Eliminando..." : "Eliminar"}
             </Text>
@@ -533,63 +549,65 @@ const Transactions = ({
   )
 }
 
-const bar = StyleSheet.create({
-  container: {
-    position: "absolute",
-    left: 16,
-    right: 16,
-    bottom: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: grafito.surface,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  side: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  count: {
-    fontFamily: grafito.weight.semibold,
-    fontSize: 16,
-    color: grafito.ink,
-  },
-  deleteBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: grafito.neg,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  deleteText: {
-    fontFamily: grafito.weight.semibold,
-    fontSize: 14,
-    color: grafito.onAccent,
-  },
-})
+const makeBar = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      left: 16,
+      right: 16,
+      bottom: 16,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: theme.palette.surface,
+      borderRadius: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    side: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    count: {
+      fontFamily: theme.weight.semibold,
+      fontSize: 16,
+      color: theme.palette.ink,
+    },
+    deleteBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: theme.palette.neg,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    deleteText: {
+      fontFamily: theme.weight.semibold,
+      fontSize: 14,
+      color: theme.palette.onAccent,
+    },
+  })
 
-const empty = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40,
-  },
-  text: {
-    fontFamily: grafito.fonts.sans,
-    fontSize: 14,
-    color: grafito.ink4,
-  },
-})
+const makeEmpty = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingTop: 40,
+    },
+    text: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink4,
+    },
+  })
 
 export default memo(Transactions)

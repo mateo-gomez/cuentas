@@ -7,7 +7,8 @@ import {
   View,
 } from "react-native"
 import { useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useRef, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -57,6 +58,8 @@ const initialSteps = [
 ]
 
 const Home = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { dateRange: totalDateRange } = useDateRange()
   const { accounts } = useAccounts()
   const [steps, setSteps] = useState(initialSteps)
@@ -198,7 +201,7 @@ const Home = () => {
             <Ionicons
               name="cloud-upload-outline"
               size={16}
-              color={grafito.ink3}
+              color={theme.palette.ink3}
             />
             <Text style={styles.importPillText}>Importar</Text>
           </TouchableOpacity>
@@ -214,14 +217,14 @@ const Home = () => {
           onPress={goToPrevMonth}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={22} color={grafito.ink3} />
+          <Ionicons name="chevron-back" size={22} color={theme.palette.ink3} />
         </TouchableOpacity>
         <Text style={styles.monthLabel}>{visibleMonth}</Text>
         <TouchableOpacity
           onPress={goToNextMonth}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-forward" size={22} color={grafito.ink3} />
+          <Ionicons name="chevron-forward" size={22} color={theme.palette.ink3} />
         </TouchableOpacity>
       </View>
 
@@ -231,11 +234,11 @@ const Home = () => {
           style={styles.accountPill}
           onPress={() => setAccountPickerVisible(true)}
         >
-          <Ionicons name="wallet-outline" size={14} color={grafito.ink3} />
+          <Ionicons name="wallet-outline" size={14} color={theme.palette.ink3} />
           <Text style={styles.accountPillText} numberOfLines={1}>
             {selectedAccountName}
           </Text>
-          <Ionicons name="chevron-down" size={14} color={grafito.ink3} />
+          <Ionicons name="chevron-down" size={14} color={theme.palette.ink3} />
         </TouchableOpacity>
       </View>
 
@@ -316,11 +319,12 @@ const Home = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: grafito.bg,
-  },
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -330,9 +334,9 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   headerTitle: {
-    fontFamily: grafito.weight.semibold,
+    fontFamily: theme.weight.semibold,
     fontSize: 22,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   headerActions: {
     flexDirection: "row",
@@ -340,27 +344,27 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   searchPill: {
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
   },
   searchPillText: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   importPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
   },
   importPillText: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   monthSwitcher: {
     flexDirection: "row",
@@ -370,9 +374,9 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   monthLabel: {
-    fontFamily: grafito.weight.bold,
+    fontFamily: theme.weight.bold,
     fontSize: 34,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   listContainer: {
     flex: 1,
@@ -386,16 +390,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
     maxWidth: 220,
   },
   accountPillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   suggestions: {
     flexGrow: 0,

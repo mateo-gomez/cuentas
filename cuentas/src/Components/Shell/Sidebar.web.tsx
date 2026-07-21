@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useLocation, useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 
 type Item = {
   label: string
@@ -43,6 +44,8 @@ const ITEMS: Item[] = [
 ]
 
 export default function Sidebar() {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -54,7 +57,7 @@ export default function Sidebar() {
     <View style={styles.sidebar}>
       <View style={styles.brand}>
         <View style={styles.mark}>
-          <Ionicons name="reader-outline" size={18} color={grafito.onAccent} />
+          <Ionicons name="reader-outline" size={18} color={theme.palette.onAccent} />
         </View>
         <Text style={styles.brandText}>Cuentas</Text>
       </View>
@@ -65,14 +68,14 @@ export default function Sidebar() {
         accessibilityRole="button"
         accessibilityLabel="Registrar nueva transacción"
       >
-        <Ionicons name="add" size={20} color={grafito.onAccent} />
+        <Ionicons name="add" size={20} color={theme.palette.onAccent} />
         <Text style={styles.newLabel}>Nueva transacción</Text>
       </TouchableOpacity>
 
       <View style={styles.nav}>
         {ITEMS.map((item) => {
           const active = item.match(location.pathname)
-          const color = active ? grafito.ink : grafito.ink3
+          const color = active ? theme.palette.ink : theme.palette.ink3
           return (
             <TouchableOpacity
               key={item.path}
@@ -99,19 +102,19 @@ export default function Sidebar() {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   sidebar: {
     width: 256,
     paddingHorizontal: 16,
     paddingTop: 28,
     paddingBottom: 20,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: grafito.line,
+    borderRightColor: theme.palette.line,
   },
   brand: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 10,
     paddingHorizontal: 8,
     marginBottom: 28,
@@ -120,50 +123,50 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 9,
-    backgroundColor: grafito.accent,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: theme.palette.accent,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   brandText: {
     fontSize: 18,
-    fontWeight: "600",
-    color: grafito.ink,
+    fontWeight: "600" as const,
+    color: theme.palette.ink,
     letterSpacing: 0.2,
   },
   newButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
     gap: 8,
     height: 44,
     borderRadius: 12,
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     marginBottom: 24,
   },
   newLabel: {
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "600" as const,
   },
   nav: {
     gap: 4,
   },
   item: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 12,
     height: 42,
     paddingHorizontal: 12,
     borderRadius: 10,
   },
   itemActive: {
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
   },
   itemLabel: {
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "500" as const,
   },
   itemLabelActive: {
-    fontWeight: "600",
+    fontWeight: "600" as const,
   },
 })

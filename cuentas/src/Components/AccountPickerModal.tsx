@@ -2,13 +2,13 @@ import {
   FlatList,
   Modal,
   Platform,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native"
 import { useEffect, useRef } from "react"
 import { Ionicons } from "@expo/vector-icons"
-import grafito from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
 import { Account } from "../../types"
 
@@ -33,6 +33,8 @@ export const AccountPickerModal = ({
   onClose,
   allowAll = false,
 }: AccountPickerModalProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const sheetRef = useRef<View>(null)
 
   // On web, move keyboard focus into the sheet when it opens — onto the selected
@@ -92,7 +94,7 @@ export const AccountPickerModal = ({
               onPress={onClose}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Ionicons name="close" size={22} color={grafito.ink3} />
+              <Ionicons name="close" size={22} color={theme.palette.ink3} />
             </TouchableOpacity>
           </View>
 
@@ -115,7 +117,7 @@ export const AccountPickerModal = ({
                     <Ionicons
                       name="layers-outline"
                       size={18}
-                      color={grafito.accent}
+                      color={theme.palette.accent}
                     />
                   </View>
                   <StyledText style={styles.rowLabel}>Todo</StyledText>
@@ -123,7 +125,7 @@ export const AccountPickerModal = ({
                     <Ionicons
                       name="checkmark"
                       size={20}
-                      color={grafito.accent}
+                      color={theme.palette.accent}
                     />
                   ) : null}
                 </TouchableOpacity>
@@ -149,7 +151,7 @@ export const AccountPickerModal = ({
                           : "wallet-outline"
                       }
                       size={18}
-                      color={grafito.accent}
+                      color={theme.palette.accent}
                     />
                   </View>
                   <StyledText style={styles.rowLabel}>{item.name}</StyledText>
@@ -157,7 +159,7 @@ export const AccountPickerModal = ({
                     <Ionicons
                       name="checkmark"
                       size={20}
-                      color={grafito.accent}
+                      color={theme.palette.accent}
                     />
                   ) : null}
                 </TouchableOpacity>
@@ -170,58 +172,58 @@ export const AccountPickerModal = ({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end" as const,
   },
   sheet: {
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingTop: 12,
-    maxHeight: "70%",
+    maxHeight: "70%" as const,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "space-between" as const,
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 18,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   list: {
     paddingHorizontal: 12,
     paddingBottom: 24,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 12,
   },
   rowActive: {
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
   },
   icon: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: grafito.surface3,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: theme.palette.surface3,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   rowLabel: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
 })

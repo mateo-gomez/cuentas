@@ -8,12 +8,15 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import CategoryChip from "../../Components/CategoryChip"
 import { useCategories } from "../../hooks"
 
 const CategoryList = () => {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const insets = useSafeAreaInsets()
   const { categories, loading, error } = useCategories()
 
@@ -36,7 +39,7 @@ const CategoryList = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Categorías</Text>
         <View style={{ width: 26 }} />
@@ -49,7 +52,7 @@ const CategoryList = () => {
         accessibilityRole="button"
         accessibilityLabel="Nueva categoría"
       >
-        <Ionicons name="add" size={20} color={grafito.onAccent} />
+        <Ionicons name="add" size={20} color={theme.palette.onAccent} />
         <Text style={styles.newButtonText}>Nueva categoría</Text>
       </TouchableOpacity>
 
@@ -79,7 +82,7 @@ const CategoryList = () => {
               <Text style={styles.rowName} numberOfLines={1}>
                 {item.name}
               </Text>
-              <Ionicons name="pencil-outline" size={18} color={grafito.ink4} />
+              <Ionicons name="pencil-outline" size={18} color={theme.palette.ink4} />
             </TouchableOpacity>
           ))
         )}
@@ -88,10 +91,11 @@ const CategoryList = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -105,9 +109,9 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 22,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   newButton: {
     flexDirection: "row",
@@ -118,13 +122,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
   },
   newButtonText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   body: {
     flex: 1,
@@ -139,21 +143,21 @@ const styles = StyleSheet.create({
     gap: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
+    borderBottomColor: theme.palette.line2,
   },
   rowName: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   message: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     textAlign: "center",
     paddingVertical: 32,
   },
-})
+  })
 
 export default CategoryList

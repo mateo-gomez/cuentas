@@ -1,12 +1,14 @@
-import { View, StyleSheet } from "react-native"
+import { View } from "react-native"
 import { StyledText } from "./StyledText"
-import grafito from "../theme"
+import { useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 
 interface ErrorBannerProps {
   message: string
 }
 
 export const ErrorBanner = ({ message }: ErrorBannerProps) => {
+  const styles = useThemedStyles(makeStyles)
   if (!message) return null
 
   return (
@@ -17,25 +19,25 @@ export const ErrorBanner = ({ message }: ErrorBannerProps) => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 8,
-    backgroundColor: grafito.negBg,
+    backgroundColor: theme.palette.negBg,
     borderLeftWidth: 3,
-    borderLeftColor: grafito.neg,
+    borderLeftColor: theme.palette.neg,
     borderRadius: 6,
     paddingVertical: 10,
     paddingHorizontal: 14,
     marginTop: 16,
   },
   icon: {
-    color: grafito.neg,
+    color: theme.palette.neg,
     fontSize: 14,
   },
   text: {
-    color: grafito.neg,
+    color: theme.palette.neg,
     fontSize: 14,
     flex: 1,
   },

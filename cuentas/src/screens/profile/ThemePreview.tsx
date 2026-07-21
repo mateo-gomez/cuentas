@@ -1,82 +1,33 @@
-import { useState } from "react"
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useMemo } from "react"
+import { ScrollView, Text, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles, useAmount, chipColors } from "../../theme/index"
+import type { CategoryTones, Theme, ThemePref } from "../../theme/index"
 import { formatNumber } from "../../utils"
 
-// Preview-only playground for choosing how the transactions screen reads:
-// number-colour scheme, category-icon treatment and the red used for negative
-// state. The live app still reads its colours from theme.ts — this screen
-// renders a realistic sample with local inline styles so the options can be
-// compared before one is baked into the theme.
+// Real Claro/Oscuro/Auto theme picker. The sample cards below render a live
+// preview of the actually active theme via useTheme() — the footnote
+// "se aplica a toda la app" is literally true because selecting persists
+// and repaints globally.
 
 type Kind = "income" | "expense"
 
-interface Scheme {
-  id: string
-  name: string
-  hint: string
-  expense: string
-  income: string
-}
-
-const schemes: Scheme[] = [
-  {
-    id: "reserved",
-    name: "Reservado",
-    hint: "Gasto neutro · ingreso verde · rojo solo para negativos reales",
-    expense: grafito.ink,
-    income: grafito.pos,
-  },
-  {
-    id: "mono",
-    name: "Mono",
-    hint: "Casi sin color · el signo +/− comunica",
-    expense: grafito.ink,
-    income: grafito.ink3,
-  },
-  {
-    id: "dual",
-    name: "Dual vivo",
-    hint: "Clásico · gasto rojo · ingreso verde",
-    expense: "#e5484d",
-    income: "#0f9d6b",
-  },
-  {
-    id: "accent",
-    name: "Accent",
-    hint: "Ingreso en teal de marca · gasto neutro",
-    expense: grafito.ink,
-    income: grafito.accent,
-  },
+const modes: { id: ThemePref; name: string; hint: string }[] = [
+  { id: "claro", name: "Claro", hint: "Fondo claro, siempre activo" },
+  { id: "oscuro", name: "Oscuro", hint: "Fondo oscuro, siempre activo" },
+  { id: "auto", name: "Auto", hint: "Sigue el tema del sistema operativo" },
 ]
 
-// Category-icon treatments — the main lever for how "busy" the list feels.
-const iconTreatments = [
-  { id: "color", name: "Color", hint: "Pastilla pastel por categoría (actual)" },
-  { id: "tint", name: "Ícono color", hint: "Base neutra, solo el ícono con color" },
-  { id: "neutral", name: "Neutro", hint: "Todo monocromo, la lista más calma" },
-] as const
-type IconTreatment = (typeof iconTreatments)[number]["id"]
+const tones = (categoryTones: CategoryTones) =>
+  Object.keys(categoryTones) as Array<keyof CategoryTones>
 
-// Red used for genuinely negative state (negative balance, budget overspend).
-const redHues = [
-  { id: "terra", name: "Terracota", hex: "#c9483d" },
-  { id: "classic", name: "Rojo", hex: "#e5484d" },
-  { id: "carmin", name: "Carmín", hex: "#d1435b" },
-  { id: "brick", name: "Teja", hex: "#b0463a" },
-]
-
-const tones = Object.keys(grafito.categoryTones) as Array<
-  keyof typeof grafito.categoryTones
->
-function getTone(id: string) {
+function getTone(categoryTones: CategoryTones, id: string) {
   let hash = 0
-  for (let i = 0; i < id.length; i++)
-    hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
-  return grafito.categoryTones[tones[hash % tones.length]]
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
+  const keys = tones(categoryTones)
+  return categoryTones[keys[hash % keys.length]]
 }
 
 const sampleRows: {
@@ -102,29 +53,20 @@ const money = (value: number) => `$${formatNumber(Math.abs(value))}`
 const ThemePreview = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
-  const [scheme, setScheme] = useState<Scheme>(schemes[0])
-  const [iconStyle, setIconStyle] = useState<IconTreatment>("neutral")
-  const [red, setRed] = useState(redHues[0])
+  const { theme, pref, setPref } = useTheme()
+  const { amountColor, balanceColor } = useAmount()
+  const styles = useThemedStyles(makeStyles)
 
-  const amountColor = (kind: Kind) =>
-    kind === "income" ? scheme.income : scheme.expense
-
-  const chipColors = (categoryId: string) => {
-    const tone = getTone(categoryId)
-    if (iconStyle === "color") return { bg: tone.bg, fg: tone.fg }
-    if (iconStyle === "tint") return { bg: grafito.surface3, fg: tone.fg }
-    return { bg: grafito.surface3, fg: grafito.ink3 }
-  }
+  const chipStyle = useMemo(
+    () => (categoryId: string) => chipColors(theme, getTone(theme.categoryTones, categoryId)),
+    [theme],
+  )
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={8}
-          accessibilityLabel="Volver"
-        >
-          <Ionicons name="chevron-back" size={24} color={grafito.ink} />
+        <TouchableOpacity onPress={() => navigate(-1)} hitSlop={8} accessibilityLabel="Volver">
+          <Ionicons name="chevron-back" size={24} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Tema</Text>
         <View style={{ width: 24 }} />
@@ -134,88 +76,38 @@ const ThemePreview = () => {
         contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Number-colour scheme */}
-        <Text style={styles.sectionLabel}>COLOR DE NÚMEROS</Text>
+        {/* Theme mode */}
+        <Text style={styles.sectionLabel}>TEMA</Text>
         <View style={styles.chipRow}>
-          {schemes.map((s) => {
-            const active = s.id === scheme.id
+          {modes.map((m) => {
+            const active = m.id === pref
             return (
               <TouchableOpacity
-                key={s.id}
+                key={m.id}
                 style={[styles.chip, active && styles.chipActive]}
-                onPress={() => setScheme(s)}
+                onPress={() => setPref(m.id)}
               >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                  {s.name}
-                </Text>
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>{m.name}</Text>
               </TouchableOpacity>
             )
           })}
         </View>
-        <Text style={styles.hint}>{scheme.hint}</Text>
-
-        {/* Icon treatment */}
-        <Text style={styles.sectionLabel}>ÍCONOS DE CATEGORÍA</Text>
-        <View style={styles.chipRow}>
-          {iconTreatments.map((t) => {
-            const active = t.id === iconStyle
-            return (
-              <TouchableOpacity
-                key={t.id}
-                style={[styles.chip, active && styles.chipActive]}
-                onPress={() => setIconStyle(t.id)}
-              >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                  {t.name}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-        <Text style={styles.hint}>
-          {iconTreatments.find((t) => t.id === iconStyle)?.hint}
-        </Text>
-
-        {/* Red hue */}
-        <Text style={styles.sectionLabel}>ROJO (NEGATIVOS)</Text>
-        <View style={styles.chipRow}>
-          {redHues.map((h) => {
-            const active = h.id === red.id
-            return (
-              <TouchableOpacity
-                key={h.id}
-                style={[styles.swatchChip, active && styles.chipActive]}
-                onPress={() => setRed(h)}
-              >
-                <View style={[styles.swatch, { backgroundColor: h.hex }]} />
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                  {h.name}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
+        <Text style={styles.hint}>{modes.find((m) => m.id === pref)?.hint}</Text>
 
         {/* Hero balance card */}
         <View style={styles.card}>
           <Text style={styles.eyebrow}>SALDO DEL MES</Text>
-          <Text style={[styles.balance, { color: grafito.ink }]}>
-            {money(balance)}
-          </Text>
+          <Text style={[styles.balance, { color: theme.palette.ink }]}>{money(balance)}</Text>
           <View style={styles.divider} />
           <View style={styles.heroRow}>
             <View style={styles.heroCol}>
               <Text style={styles.heroLabel}>↑ Ingresos</Text>
-              <Text style={[styles.heroAmount, { color: scheme.income }]}>
-                {money(incomes)}
-              </Text>
+              <Text style={[styles.heroAmount, { color: amountColor("income") }]}>{money(incomes)}</Text>
             </View>
             <View style={styles.heroSep} />
             <View style={styles.heroCol}>
               <Text style={styles.heroLabel}>↓ Gastos</Text>
-              <Text style={[styles.heroAmount, { color: grafito.ink }]}>
-                {money(expenses)}
-              </Text>
+              <Text style={[styles.heroAmount, { color: amountColor("expense") }]}>{money(expenses)}</Text>
             </View>
           </View>
         </View>
@@ -223,15 +115,9 @@ const ThemePreview = () => {
         {/* Transaction list */}
         <View style={styles.card}>
           {sampleRows.map((row, i) => {
-            const c = chipColors(row.name)
+            const c = chipStyle(row.name)
             return (
-              <View
-                key={row.name}
-                style={[
-                  styles.txRow,
-                  i < sampleRows.length - 1 && styles.txBorder,
-                ]}
-              >
+              <View key={row.name} style={[styles.txRow, i < sampleRows.length - 1 && styles.txBorder]}>
                 <View style={[styles.chipIcon, { backgroundColor: c.bg }]}>
                   <Ionicons name={row.icon as any} size={18} color={c.fg} />
                 </View>
@@ -248,66 +134,60 @@ const ThemePreview = () => {
           })}
         </View>
 
-        {/* Negative states — where the red applies */}
+        {/* Negative states — where the theme's negative color applies */}
         <View style={styles.card}>
           <View style={[styles.txRow, styles.txBorder]}>
             <View style={styles.txInfo}>
               <Text style={styles.txName}>Tarjeta de crédito</Text>
               <Text style={styles.txCategory}>Saldo negativo</Text>
             </View>
-            <Text style={[styles.txAmount, { color: red.hex }]}>
-              −{money(230000)}
-            </Text>
+            <Text style={[styles.txAmount, { color: balanceColor(-230000) }]}>−{money(230000)}</Text>
           </View>
           <View style={styles.txRow}>
             <View style={styles.txInfo}>
               <Text style={styles.txName}>Restaurantes</Text>
               <Text style={styles.txCategory}>Sobregiro de presupuesto</Text>
             </View>
-            <Text style={[styles.txAmount, { color: red.hex }]}>
-              −{money(15000)}
-            </Text>
+            <Text style={[styles.txAmount, { color: balanceColor(-15000) }]}>−{money(15000)}</Text>
           </View>
         </View>
 
-        <Text style={styles.footnote}>
-          Vista previa. Cuando elijas, se aplica a toda la app.
-        </Text>
+        <Text style={styles.footnote}>Cuando elijas, se aplica a toda la app.</Text>
       </ScrollView>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "space-between" as const,
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 8,
   },
   title: {
-    fontFamily: grafito.weight.semibold,
+    fontFamily: theme.weight.semibold,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   sectionLabel: {
-    fontFamily: grafito.weight.medium,
+    fontFamily: theme.weight.medium,
     fontSize: 11,
     letterSpacing: 0.8,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     marginHorizontal: 20,
     marginTop: 18,
     marginBottom: 10,
   },
   chipRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "row" as const,
+    flexWrap: "wrap" as const,
     gap: 8,
     paddingHorizontal: 20,
   },
@@ -316,139 +196,123 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: grafito.line,
-    backgroundColor: grafito.surface,
-  },
-  swatchChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: grafito.line,
-    backgroundColor: grafito.surface,
-  },
-  swatch: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    borderColor: theme.palette.line,
+    backgroundColor: theme.palette.surface,
   },
   chipActive: {
-    backgroundColor: grafito.accent,
-    borderColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
+    borderColor: theme.palette.accent,
   },
   chipText: {
-    fontFamily: grafito.weight.medium,
+    fontFamily: theme.weight.medium,
     fontSize: 14,
-    color: grafito.ink2,
+    color: theme.palette.ink2,
   },
   chipTextActive: {
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   hint: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     marginHorizontal: 20,
     marginTop: 10,
   },
   card: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 18,
     marginHorizontal: 20,
     marginTop: 16,
     paddingHorizontal: 18,
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
   },
   eyebrow: {
-    fontFamily: grafito.weight.medium,
+    fontFamily: theme.weight.medium,
     fontSize: 11,
     letterSpacing: 0.8,
-    color: grafito.ink4,
-    textTransform: "uppercase",
+    color: theme.palette.ink4,
+    textTransform: "uppercase" as const,
     marginBottom: 4,
   },
   balance: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 40,
     lineHeight: 46,
     marginBottom: 14,
   },
   divider: {
     height: 1,
-    backgroundColor: grafito.line2,
+    backgroundColor: theme.palette.line2,
     marginBottom: 14,
   },
   heroRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
   },
   heroCol: {
     flex: 1,
-    alignItems: "center",
+    alignItems: "center" as const,
   },
   heroSep: {
     width: 1,
     height: 32,
-    backgroundColor: grafito.line,
+    backgroundColor: theme.palette.line,
   },
   heroLabel: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 11,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     marginBottom: 2,
   },
   heroAmount: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 18,
   },
   txRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 12,
     paddingVertical: 12,
   },
   txBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: grafito.line2,
+    borderBottomColor: theme.palette.line2,
   },
   chipIcon: {
     width: 36,
     height: 36,
     borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   txInfo: {
     flex: 1,
   },
   txName: {
-    fontFamily: grafito.weight.medium,
+    fontFamily: theme.weight.medium,
     fontSize: 14,
-    color: grafito.ink2,
+    color: theme.palette.ink2,
   },
   txCategory: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
-    color: grafito.ink4,
+    color: theme.palette.ink4,
     marginTop: 1,
   },
   txAmount: {
-    fontFamily: grafito.amountFamily,
-    ...grafito.numeric,
+    fontFamily: theme.amountFamily,
+    ...theme.numeric,
     fontSize: 15,
   },
   footnote: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 12,
-    color: grafito.ink4,
-    textAlign: "center",
+    color: theme.palette.ink4,
+    textAlign: "center" as const,
     marginTop: 20,
     marginHorizontal: 24,
   },

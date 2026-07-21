@@ -3,7 +3,8 @@ import { useOutletContext } from "react-router"
 import CategoryGrid from "../../Components/CategoryGrid"
 import { useCategories } from "../../hooks/useCategories"
 import { Category } from "../../../types"
-import grafito from "../../theme"
+import { useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 
 interface UseOutletContext {
   handleSelectCategory: (category: Category) => void
@@ -11,6 +12,7 @@ interface UseOutletContext {
 }
 
 const Categories = () => {
+  const styles = useThemedStyles(makeStyles)
   const { handleSelectCategory, categoryId } =
     useOutletContext<UseOutletContext>()
   const { categories, loading } = useCategories()
@@ -38,15 +40,16 @@ const Categories = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    alignItems: "center",
-    paddingVertical: 24,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: grafito.ink3,
-  },
-})
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    loadingContainer: {
+      alignItems: "center",
+      paddingVertical: 24,
+    },
+    loadingText: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+  })
 
 export default Categories

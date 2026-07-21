@@ -9,7 +9,8 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useLocation, useNavigate } from "react-router"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { PdfImportRow } from "../../Components/PdfImportRow"
 import { OverlayLoader } from "../../Components/OverlayLoader"
 import { ErrorBanner } from "../../Components/ErrorBanner"
@@ -50,6 +51,8 @@ const buildInitialRows = (result: PdfParseResponse): ReviewRow[] =>
   }))
 
 const PdfImportReview = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const location = useLocation()
   const insets = useSafeAreaInsets()
@@ -167,7 +170,7 @@ const PdfImportReview = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Revisar importación</Text>
       </View>
@@ -184,11 +187,11 @@ const PdfImportReview = () => {
           style={styles.accountPill}
           onPress={() => setAccountPickerVisible(true)}
         >
-          <Ionicons name="wallet-outline" size={14} color={grafito.ink3} />
+          <Ionicons name="wallet-outline" size={14} color={theme.palette.ink3} />
           <Text style={styles.accountPillText} numberOfLines={1}>
             {selectedAccountName ?? "Elegir cuenta"}
           </Text>
-          <Ionicons name="chevron-down" size={14} color={grafito.ink3} />
+          <Ionicons name="chevron-down" size={14} color={theme.palette.ink3} />
         </TouchableOpacity>
       </View>
 
@@ -291,10 +294,11 @@ const PdfImportReview = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -305,9 +309,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   summary: {
     paddingHorizontal: 20,
@@ -315,29 +319,29 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   summaryText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   summaryStrong: {
     fontWeight: "600",
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   accountPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     alignSelf: "flex-start",
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginTop: 4,
   },
   accountPillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 13,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
   },
   list: {
     paddingHorizontal: 20,
@@ -345,7 +349,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   confirmButton: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: "center",
@@ -355,11 +359,11 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   confirmButtonText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
-})
+  })
 
 export default PdfImportReview

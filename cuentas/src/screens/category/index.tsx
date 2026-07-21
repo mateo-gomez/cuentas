@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import { useEffect, useMemo, useState } from "react"
 import CategoryChip from "../../Components/CategoryChip"
 import { categoryIcons } from "../../constants/"
@@ -29,6 +30,8 @@ const availableCategories = Object.values(categoryIcons).map(
 )
 
 const Category = () => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const { id } = useParams()
@@ -119,7 +122,7 @@ const Category = () => {
           onPress={() => navigate(-1)}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-back" size={26} color={grafito.ink} />
+          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
         </TouchableOpacity>
 
         <Text style={styles.title} numberOfLines={1}>
@@ -132,7 +135,7 @@ const Category = () => {
               onPress={handleDeleteCategory}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Ionicons name="trash-outline" size={22} color={grafito.ink3} />
+              <Ionicons name="trash-outline" size={22} color={theme.palette.ink3} />
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
@@ -158,7 +161,7 @@ const Category = () => {
           numberOfLines={1}
           maxLength={20}
           placeholder="Nombre"
-          placeholderTextColor={grafito.ink5}
+          placeholderTextColor={theme.palette.ink5}
           style={[styles.nameInput, errors.name && styles.error]}
           onChangeText={handleChangeName}
           value={name}
@@ -166,10 +169,10 @@ const Category = () => {
 
         {!loading && !error ? (
           <View style={styles.search}>
-            <Ionicons name="search" size={16} color={grafito.ink4} />
+            <Ionicons name="search" size={16} color={theme.palette.ink4} />
             <TextInput
               placeholder="Buscar ícono"
-              placeholderTextColor={grafito.ink5}
+              placeholderTextColor={theme.palette.ink5}
               style={styles.searchInput}
               onChangeText={setIconQuery}
               value={iconQuery}
@@ -181,7 +184,7 @@ const Category = () => {
                 onPress={() => setIconQuery("")}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Ionicons name="close-circle" size={16} color={grafito.ink4} />
+                <Ionicons name="close-circle" size={16} color={theme.palette.ink4} />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -237,10 +240,11 @@ const Category = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: grafito.bg,
+    backgroundColor: theme.palette.bg,
   },
   header: {
     flexDirection: "row",
@@ -253,9 +257,9 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 20,
-    color: grafito.ink,
+    color: theme.palette.ink,
   },
   actions: {
     flexDirection: "row",
@@ -263,16 +267,16 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   savePill: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 8,
   },
   savePillText: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
     fontWeight: "600",
-    color: grafito.onAccent,
+    color: theme.palette.onAccent,
   },
   fixedTop: {
     paddingHorizontal: 20,
@@ -289,14 +293,14 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   nameInput: {
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: grafito.line,
-    color: grafito.ink,
+    borderColor: theme.palette.line,
+    color: theme.palette.ink,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontFamily: grafito.fonts.serif,
+    fontFamily: theme.fonts.serif,
     fontSize: 26,
     marginTop: 12,
     marginBottom: 12,
@@ -305,7 +309,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -313,18 +317,18 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 15,
-    color: grafito.ink,
+    color: theme.palette.ink,
     padding: 0,
   },
   error: {
-    borderColor: grafito.neg,
+    borderColor: theme.palette.neg,
   },
   message: {
-    fontFamily: grafito.fonts.sans,
+    fontFamily: theme.fonts.sans,
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     textAlign: "center",
     marginVertical: 12,
     width: "100%",
@@ -337,9 +341,9 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "23%",
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderWidth: 1,
-    borderColor: grafito.line,
+    borderColor: theme.palette.line,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",
@@ -347,8 +351,8 @@ const styles = StyleSheet.create({
   },
   cardSelected: {
     borderWidth: 2,
-    borderColor: grafito.ink,
+    borderColor: theme.palette.ink,
   },
-})
+  })
 
 export default Category

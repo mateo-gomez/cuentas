@@ -1,4 +1,6 @@
-import grafito from "../theme"
+import { claro } from "../theme/palettes/claro"
+
+const grafito = claro.palette
 
 // react-native-web doesn't render a focus ring on Touchables by default, which
 // fails WCAG 2.4.7 for keyboard users. Inject a global :focus-visible outline.

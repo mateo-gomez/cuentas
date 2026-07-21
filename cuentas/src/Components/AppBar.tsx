@@ -1,12 +1,14 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
+import { StyleProp, View, ViewStyle } from "react-native"
 import Constants from "expo-constants"
-import { theme } from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { PropsWithChildren } from "react"
 
 export const AppBar = ({
   children,
   style = {},
 }: PropsWithChildren<{ style?: StyleProp<ViewStyle> }>) => {
+  const styles = useThemedStyles(makeStyles)
   return (
     <View style={styles.container}>
       <View style={[{ marginTop: Constants.statusBarHeight }, [style]]}>
@@ -16,12 +18,12 @@ export const AppBar = ({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   container: {
-    flexDirection: "row",
-    width: "100%",
-    alignItems: "center",
-    backgroundColor: theme.appBar.primary,
+    flexDirection: "row" as const,
+    width: "100%" as const,
+    alignItems: "center" as const,
+    backgroundColor: theme.palette.accent,
     minHeight: 100,
     paddingHorizontal: 20,
   },

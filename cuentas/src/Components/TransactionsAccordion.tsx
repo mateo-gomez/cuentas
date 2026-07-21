@@ -4,10 +4,11 @@ import {
   CollapseHeader,
 } from "accordion-collapse-react-native"
 import { useState } from "react"
-import { StyleSheet, View } from "react-native"
+import { View } from "react-native"
 import { StyledText } from "./StyledText"
 import { TransactionItem } from "./TransactionItem"
-import { theme } from "../theme"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { NumberFormat } from "./NumberFormat"
 import { Transaction, Balance } from "../../types"
 import { Ionicons } from "@expo/vector-icons"
@@ -23,6 +24,8 @@ export const TransactionsAccordion = ({
   transactions,
   balance,
 }: TransactionsAccordionProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const [expanded, setExpanded] = useState(true)
   const toggleCollapse = () => {
     setExpanded((expanded) => !expanded)
@@ -35,13 +38,13 @@ export const TransactionsAccordion = ({
           {expanded ? (
             <Ionicons
               name="chevron-up-outline"
-              color={theme.colors.grey}
+              color={theme.palette.ink4}
               size={20}
             />
           ) : (
             <Ionicons
               name="chevron-down-outline"
-              color={theme.colors.grey}
+              color={theme.palette.ink4}
               size={20}
             />
           )}
@@ -69,16 +72,16 @@ export const TransactionsAccordion = ({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_theme: Theme) => ({
   headerContainer: {
     paddingVertical: 10,
-    justifyContent: "space-between",
-    alignContent: "center",
-    flexDirection: "row",
+    justifyContent: "space-between" as const,
+    alignContent: "center" as const,
+    flexDirection: "row" as const,
   },
   headerPrice: {
-    alignContent: "center",
-    flexDirection: "row",
+    alignContent: "center" as const,
+    flexDirection: "row" as const,
   },
   accordionBody: {
     marginLeft: 20,

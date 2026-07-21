@@ -1,41 +1,46 @@
 import { ReactNode, useEffect } from "react"
-import { StyleSheet, View } from "react-native"
+import { View } from "react-native"
 import { useIsWideWeb } from "../../hooks/useIsWideWeb"
-import grafito from "../../theme"
+import { useTheme, useThemedStyles } from "../../theme/index"
+import type { Theme } from "../../theme/index"
 import Sidebar from "./Sidebar.web"
 
 // Max width of the content column inside the desktop app-shell. Keeps line
 // length and forms readable instead of stretching edge-to-edge.
 const CONTENT_MAX = 760
 
-// Sets up the full-height root and a neutral desktop backdrop. Injected once,
-// web-only, idempotent.
-let injected = false
-const injectBackdrop = () => {
-  if (injected || typeof document === "undefined") return
-  injected = true
+// Sets up the full-height root and a neutral desktop backdrop. Injected once
+// (idempotent), then kept in sync with the active theme's bg on every
+// theme change so the surrounding page background repaints too.
+let styleEl: HTMLStyleElement | null = null
+const syncBackdrop = (bg: string) => {
+  if (typeof document === "undefined") return
 
-  // Opt into safe-area env() insets. Expo's default viewport meta omits
-  // `viewport-fit=cover`, so env(safe-area-inset-*) resolves to 0 and
-  // react-native-safe-area-context reports no insets on mobile web / PWA.
-  const viewport = document.querySelector('meta[name="viewport"]')
-  if (viewport) {
-    viewport.setAttribute(
-      "content",
-      "width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover",
-    )
+  if (!styleEl) {
+    // Opt into safe-area env() insets. Expo's default viewport meta omits
+    // `viewport-fit=cover`, so env(safe-area-inset-*) resolves to 0 and
+    // react-native-safe-area-context reports no insets on mobile web / PWA.
+    const viewport = document.querySelector('meta[name="viewport"]')
+    if (viewport) {
+      viewport.setAttribute(
+        "content",
+        "width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover",
+      )
+    }
+    styleEl = document.createElement("style")
+    document.head.appendChild(styleEl)
   }
 
-  const style = document.createElement("style")
-  style.textContent = `
+  styleEl.textContent = `
     html, body, #root { height: 100%; }
-    body { background-color: ${grafito.bg}; }
+    body { background-color: ${bg}; }
   `
-  document.head.appendChild(style)
 }
 
 export default function Shell({ children }: { children: ReactNode }) {
-  useEffect(injectBackdrop, [])
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
+  useEffect(() => syncBackdrop(theme.palette.bg), [theme])
   const wide = useIsWideWeb()
 
   // Narrow web behaves exactly like mobile: full-bleed single column with the
@@ -52,21 +57,21 @@ export default function Shell({ children }: { children: ReactNode }) {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   fill: { flex: 1 },
   appShell: {
     flex: 1,
-    flexDirection: "row",
-    backgroundColor: grafito.bg,
+    flexDirection: "row" as const,
+    backgroundColor: theme.palette.bg,
   },
   main: {
     flex: 1,
-    alignItems: "center",
-    overflow: "hidden",
+    alignItems: "center" as const,
+    overflow: "hidden" as const,
   },
   content: {
     flex: 1,
-    width: "100%",
+    width: "100%" as const,
     maxWidth: CONTENT_MAX,
   },
 })

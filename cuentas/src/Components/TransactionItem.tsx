@@ -1,5 +1,6 @@
-import { StyleSheet, View } from "react-native"
-import { theme } from "../theme"
+import { View } from "react-native"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
 import { NumberFormat } from "./NumberFormat"
 import Link from "../router/Link"
@@ -23,9 +24,11 @@ export const TransactionItem = ({
   categoryName,
   isTransfer,
 }: TransactionItemProps) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   return (
     <Link
-      underlayColor={theme.colors.highlight}
+      underlayColor={theme.palette.bg}
       to={`/transactions/${TransactionType[type]}/${id}`}
     >
       <View style={styles.container}>
@@ -35,19 +38,19 @@ export const TransactionItem = ({
             // show a neutral swap icon so they don't read as a real gain/loss.
             <Ionicons
               name="swap-horizontal-outline"
-              color={theme.colors.grey}
+              color={theme.palette.ink4}
               size={20}
             />
           ) : type ? (
             <Ionicons
               name="arrow-up-circle-outline"
-              color={theme.colors.greenLight}
+              color={theme.palette.pos}
               size={20}
             />
           ) : (
             <Ionicons
               name="arrow-down-circle-outline"
-              color={theme.colors.red}
+              color={theme.palette.neg}
               size={20}
             />
           )}
@@ -68,15 +71,15 @@ export const TransactionItem = ({
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_theme: Theme) => ({
   container: {
     height: 50,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "center" as const,
   },
   price: {
-    alignItems: "flex-end",
+    alignItems: "flex-end" as const,
   },
   box: {
     flex: 1,

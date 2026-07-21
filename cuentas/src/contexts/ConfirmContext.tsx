@@ -6,8 +6,9 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native"
-import grafito, { neg } from "../theme"
+import { Modal, Pressable, Text, View } from "react-native"
+import { useTheme, useThemedStyles } from "../theme/index"
+import type { Theme } from "../theme/index"
 
 export type ConfirmOptions = {
   title: string
@@ -22,6 +23,8 @@ type ConfirmFn = (options: ConfirmOptions) => Promise<boolean>
 const ConfirmContext = createContext<ConfirmFn | null>(null)
 
 export const ConfirmProvider = ({ children }: { children: ReactNode }) => {
+  const { theme } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const [options, setOptions] = useState<ConfirmOptions | null>(null)
   const resolverRef = useRef<((value: boolean) => void) | null>(null)
 
@@ -89,36 +92,36 @@ export const useConfirm = (): ConfirmFn => {
   return ctx
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme: Theme) => ({
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
     padding: 24,
   },
   card: {
-    width: "100%",
+    width: "100%" as const,
     maxWidth: 340,
-    backgroundColor: grafito.surface,
+    backgroundColor: theme.palette.surface,
     borderRadius: 16,
-    borderCurve: "continuous",
+    borderCurve: "continuous" as const,
     padding: 20,
     gap: 8,
   },
   title: {
     fontSize: 17,
-    fontWeight: "600",
-    color: grafito.ink,
+    fontWeight: "600" as const,
+    color: theme.palette.ink,
   },
   message: {
     fontSize: 14,
-    color: grafito.ink3,
+    color: theme.palette.ink3,
     lineHeight: 20,
   },
   actions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: "row" as const,
+    justifyContent: "flex-end" as const,
     gap: 8,
     marginTop: 12,
   },
@@ -126,25 +129,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 10,
-    borderCurve: "continuous",
+    borderCurve: "continuous" as const,
   },
   cancelButton: {
-    backgroundColor: grafito.surface3,
+    backgroundColor: theme.palette.surface3,
   },
   confirmButton: {
-    backgroundColor: grafito.accent,
+    backgroundColor: theme.palette.accent,
   },
   destructiveButton: {
-    backgroundColor: neg,
+    backgroundColor: theme.palette.neg,
   },
   cancelText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: grafito.ink2,
+    fontWeight: "500" as const,
+    color: theme.palette.ink2,
   },
   confirmText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: grafito.onAccent,
+    fontWeight: "600" as const,
+    color: theme.palette.onAccent,
   },
 })
