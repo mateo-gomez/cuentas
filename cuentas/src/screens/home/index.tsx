@@ -205,6 +205,20 @@ const Home = () => {
             />
             <Text style={styles.importPillText}>Importar</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.importPill}
+            onPress={() => navigate("/reports")}
+            accessibilityRole="button"
+            accessibilityLabel="Ver informes por categoría"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name="pie-chart-outline"
+              size={16}
+              color={theme.palette.ink3}
+            />
+            <Text style={styles.importPillText}>Informes</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.searchPill} onPress={() => {}}>
             <Text style={styles.searchPillText}>Buscar</Text>
           </TouchableOpacity>

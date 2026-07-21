@@ -3,6 +3,7 @@ import transactionRouter from "../../../features/transaction/infrastructure/api/
 import authRouter from "../../../features/auth/infrastructure/api/auth.routes";
 import budgetRouter from "../../../features/budget/infrastructure/api/budget.routes";
 import accountRouter from "../../../features/account/infrastructure/api/accounts.routes";
+import reportRouter from "../../../features/report/infrastructure/api/report.routes";
 import { AuthMiddleware } from "../middlewares/AuthMiddleware";
 import { Route } from "../../types/Route";
 
@@ -26,6 +27,11 @@ export const routes: Route[] = [
 		path: "/accounts",
 		middleware: AuthMiddleware.handle(),
 		router: accountRouter,
+	},
+	{
+		path: "/reports",
+		middleware: AuthMiddleware.handle(),
+		router: reportRouter,
 	},
 	{ path: "/auth", router: authRouter },
 ];

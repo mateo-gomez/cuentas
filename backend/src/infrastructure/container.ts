@@ -1,3 +1,5 @@
+import { CategoryReportGetter } from "../features/report/application/useCases/CategoryReportGetter";
+import { CategoryTrendGetter } from "../features/report/application/useCases/CategoryTrendGetter";
 import { CategoryByIdGetter } from "../features/category/application/categoryByIdGetter";
 import { CategoryCreator } from "../features/category/application/categoryCreator";
 import { CategoryGetter } from "../features/category/application/categoryGetter";
@@ -63,6 +65,8 @@ const refreshTokenIssuer = new RefreshTokenIssuer(
 	refreshTokenRepository
 );
 const budgetRepository = new MongoBudgetRepository();
+// Shared so CategoryTrendGetter can reuse the same per-range aggregation.
+const reportCategoryGetter = new CategoryReportGetter(transactionRepository);
 const transactionImporter = new TransactionImporter(transactionRepository);
 const httpPdfBankParser = new HttpPdfBankParser();
 const inMemoryPreviewStore = new InMemoryPreviewStore();
@@ -137,6 +141,10 @@ export const container = {
 	balanceGetter: new BalanceGetter(transactionRepository),
 
 	dateRangeGetter: new DateRangeGetter(transactionRepository),
+
+	// report
+	categoryReportGetter: reportCategoryGetter,
+	categoryTrendGetter: new CategoryTrendGetter(reportCategoryGetter),
 
 	// auth
 	authService,

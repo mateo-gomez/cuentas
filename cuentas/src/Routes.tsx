@@ -16,6 +16,7 @@ import { useEffect, useRef } from "react"
 import Import from "./screens/import"
 import PdfImportReview from "./screens/pdfImport"
 import BudgetScreen from "./screens/budget"
+import ReportScreen from "./screens/report"
 import BudgetEdit from "./screens/budget/Edit"
 import Profile from "./screens/profile"
 import Settings from "./screens/profile/Settings"
@@ -85,6 +86,7 @@ const Routes = () => {
           <Route path="/import" element={<Import />} />
           <Route path="/import/pdf" element={<PdfImportReview />} />
           <Route path="/budget" element={<BudgetScreen />} />
+          <Route path="/reports" element={<ReportScreen />} />
           <Route path="/budget/edit" element={<BudgetEdit />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<Profile />} />
