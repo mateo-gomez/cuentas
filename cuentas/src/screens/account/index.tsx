@@ -13,7 +13,14 @@ import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { AccountType } from "../../../types"
 import { useAccount } from "../../hooks"
-import { createAccount, deleteAccount, updateAccount } from "../../services"
+import {
+  createAccount,
+  deleteAccount,
+  emptyAccount,
+  updateAccount,
+} from "../../services"
+import { useConfirm } from "../../contexts/ConfirmContext"
+import { notify } from "../../utils/notify"
 import { createLogger } from "../../lib/logger"
 
 const logger = createLogger("Account")
@@ -25,6 +32,7 @@ const Account = () => {
   const insets = useSafeAreaInsets()
   const { id } = useParams()
   const { account, loading, error } = useAccount(id)
+  const confirm = useConfirm()
 
   const [name, setName] = useState("")
   const [type, setType] = useState<AccountType>("bank")
@@ -91,12 +99,42 @@ const Account = () => {
   }
 
   const handleDeleteAccount = async () => {
+    const ok = await confirm({
+      title: "Eliminar cuenta",
+      message:
+        "Se eliminará la cuenta y TODAS sus transacciones (incluidas las transferencias asociadas). Esta acción no se puede deshacer.",
+      confirmText: "Eliminar",
+      destructive: true,
+    })
+    if (!ok) return
+
     try {
       await deleteAccount(id)
-
+      notify.success("Cuenta eliminada")
       navigate("/accounts")
     } catch (error) {
-      throw error
+      logger.error("Delete account failed", { message: error.message })
+      notify.error("No se pudo eliminar la cuenta")
+    }
+  }
+
+  const handleEmptyAccount = async () => {
+    const ok = await confirm({
+      title: "Vaciar cuenta",
+      message:
+        "Se eliminarán TODAS las transacciones de esta cuenta (incluidas las transferencias asociadas). La cuenta se conserva. Esta acción no se puede deshacer.",
+      confirmText: "Vaciar",
+      destructive: true,
+    })
+    if (!ok) return
+
+    try {
+      await emptyAccount(id)
+      notify.success("Cuenta vaciada")
+      navigate("/accounts")
+    } catch (error) {
+      logger.error("Empty account failed", { message: error.message })
+      notify.error("No se pudo vaciar la cuenta")
     }
   }
 
@@ -227,6 +265,20 @@ const Account = () => {
             </View>
           </>
         ) : null}
+
+        {id ? (
+          <TouchableOpacity
+            style={styles.emptyButton}
+            onPress={handleEmptyAccount}
+          >
+            <Ionicons
+              name="refresh-outline"
+              size={18}
+              color={theme.palette.neg}
+            />
+            <Text style={styles.emptyButtonText}>Vaciar cuenta</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </View>
   )
@@ -342,6 +394,23 @@ const makeStyles = (theme: Theme) =>
     fontFamily: theme.amountFamily,
     ...theme.numeric,
     fontSize: 15,
+  },
+  emptyButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.palette.neg,
+  },
+  emptyButtonText: {
+    fontFamily: theme.fonts.sans,
+    fontSize: 14,
+    fontWeight: "600",
+    color: theme.palette.neg,
   },
   })
 

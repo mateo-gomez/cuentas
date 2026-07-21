@@ -13,6 +13,7 @@ import { TransactionCreator } from "../features/transaction/application/useCases
 import { CreateTransfer } from "../features/transaction/application/useCases/CreateTransfer";
 import { TransactionRemover } from "../features/transaction/application/useCases/transactionRemover";
 import { TransactionsRemover } from "../features/transaction/application/useCases/transactionsRemover";
+import { AllTransactionsRemover } from "../features/transaction/application/useCases/allTransactionsRemover";
 import { TransactionUpdater } from "../features/transaction/application/useCases/transactionUpdater";
 import { MongoCategoryRepository } from "../features/category/infrastructure/database/mongoCategory.repository";
 import { MongoTransactionRepository } from "../features/transaction/infrastructure/database/mongoTransaction.repository";
@@ -45,6 +46,7 @@ import { AccountGetter } from "../features/account/application/accountGetter";
 import { AccountCreator } from "../features/account/application/accountCreator";
 import { AccountUpdater } from "../features/account/application/accountUpdater";
 import { AccountRemover } from "../features/account/application/accountRemover";
+import { AccountEmptier } from "../features/account/application/accountEmptier";
 import { AccountBalanceGetter } from "../features/account/application/accountBalanceGetter";
 import { AccountDefaultGetter } from "../features/account/application/accountDefaultGetter";
 import { UserDefaultsBootstrapper } from "../features/account/application/userDefaultsBootstrapper";
@@ -82,6 +84,7 @@ export const container = {
 	accountCreator: new AccountCreator(accountRepository),
 	accountUpdater: new AccountUpdater(accountRepository),
 	accountRemover: new AccountRemover(accountRepository, transactionRepository),
+	accountEmptier: new AccountEmptier(accountRepository, transactionRepository),
 	accountBalanceGetter: new AccountBalanceGetter(accountRepository, transactionRepository),
 	accountDefaultGetter: new AccountDefaultGetter(accountRepository),
 
@@ -104,6 +107,7 @@ export const container = {
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
 	transactionsRemover: new TransactionsRemover(transactionRepository),
+	allTransactionsRemover: new AllTransactionsRemover(transactionRepository),
 	transactionImporter,
 
 	// pdf import

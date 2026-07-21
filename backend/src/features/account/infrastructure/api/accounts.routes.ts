@@ -8,6 +8,7 @@ const accountController = new AccountController(
   container.accountCreator,
   container.accountUpdater,
   container.accountRemover,
+  container.accountEmptier,
   container.accountBalanceGetter,
   container.accountDefaultGetter,
 );
@@ -23,6 +24,7 @@ router
   .get("/:id/balance", accountController.getAccountBalance)
   .get("/:id", accountController.getAccount)
   .put("/:id", accountController.updateAccount)
+  .post("/:id/empty", accountController.emptyAccount)
   .delete("/:id", accountController.deleteAccount);
 
 export default router;

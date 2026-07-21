@@ -38,7 +38,7 @@ describe("AccountRemover", () => {
 		await expect(remover.execute("user-1", account._id)).rejects.toThrow(ValidationError);
 	});
 
-	test("blocks deleting an account that still has transactions", async () => {
+	test("cascade-deletes the account's transactions when removing it", async () => {
 		const accountRepository = new InMemoryAccountRepository();
 		const transactionRepository = new InMemoryTransactionRepository();
 		const creator = new AccountCreator(accountRepository);
@@ -58,7 +58,10 @@ describe("AccountRemover", () => {
 			description: "",
 		});
 
-		await expect(remover.execute("user-1", account._id)).rejects.toThrow(ValidationError);
+		await remover.execute("user-1", account._id);
+
+		expect(await accountRepository.getByIdForUser("user-1", account._id)).toBeNull();
+		expect(await transactionRepository.existsForAccount(account._id)).toBe(false);
 	});
 
 	test("throws NotFoundError for a non-owned account", async () => {

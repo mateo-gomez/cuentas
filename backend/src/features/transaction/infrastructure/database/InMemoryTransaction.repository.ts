@@ -181,6 +181,39 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return before - this.transactions.length;
   }
 
+  async deleteByAccount(userId: string, accountId: string): Promise<number> {
+    const transferIds = new Set(
+      this.transactions
+        .filter(
+          (transaction) =>
+            transaction.userId === userId &&
+            transaction.accountId === accountId &&
+            transaction.transferId,
+        )
+        .map((transaction) => transaction.transferId),
+    );
+
+    const before = this.transactions.length;
+    this.transactions = this.transactions.filter(
+      (transaction) =>
+        !(
+          transaction.userId === userId &&
+          (transaction.accountId === accountId ||
+            (transaction.transferId &&
+              transferIds.has(transaction.transferId)))
+        ),
+    );
+    return Promise.resolve(before - this.transactions.length);
+  }
+
+  async deleteAllForUser(userId: string): Promise<number> {
+    const before = this.transactions.length;
+    this.transactions = this.transactions.filter(
+      (transaction) => transaction.userId !== userId,
+    );
+    return Promise.resolve(before - this.transactions.length);
+  }
+
   saveMany(transactions: TransactionDTO[]): Promise<void> {
     for (const dto of transactions) {
       this.transactions.push({

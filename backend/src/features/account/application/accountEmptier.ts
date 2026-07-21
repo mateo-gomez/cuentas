@@ -1,42 +1,32 @@
 import { AccountRepository } from "../domain/account.repository";
-import { DEFAULT_ACCOUNT_NAME } from "../domain/defaultAccount";
 import { TransactionRepository } from "../../transaction/domain/Transaction.repository";
 import { ApplicationError } from "../../../application/errors/applicationError";
 import { NotFoundError } from "../../../application/errors/notFoundError";
 import { DatabaseError } from "../../../infrastructure/api/errors/databaseError";
-import { ValidationError } from "../../../infrastructure/api/errors/validationError";
 
-export class AccountRemover {
+export class AccountEmptier {
   constructor(
     private readonly accountRepository: AccountRepository,
     private readonly transactionRepository: TransactionRepository,
   ) {}
 
-  execute = async (userId: string, id: string): Promise<void> => {
+  execute = async (userId: string, id: string): Promise<number> => {
     const account = await this.accountRepository.getByIdForUser(userId, id);
 
     if (!account) {
       throw new NotFoundError("Cuenta no encontrada", id);
     }
 
-    if (account.name === DEFAULT_ACCOUNT_NAME) {
-      throw new ValidationError().addError(
-        "id",
-        `No se puede eliminar la cuenta "${DEFAULT_ACCOUNT_NAME}"`,
-      );
-    }
-
     try {
-      // Cascade: drop every transaction of this account (and any transfer
-      // partner legs) before removing the account, so no orphan tx remains.
-      await this.transactionRepository.deleteByAccount(userId, id);
-      await this.accountRepository.delete(userId, id);
+      // Wipes every transaction of the account (plus transfer partner legs)
+      // but keeps the account itself so the user can start from zero.
+      return await this.transactionRepository.deleteByAccount(userId, id);
     } catch (error) {
       if (error instanceof DatabaseError) {
         throw new ApplicationError(error.message, error);
       }
 
-      throw new ApplicationError("Error al eliminar cuenta", error);
+      throw new ApplicationError("Error al vaciar cuenta", error);
     }
   };
 }

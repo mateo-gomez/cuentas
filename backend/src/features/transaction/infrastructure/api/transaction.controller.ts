@@ -7,6 +7,7 @@ import { TransactionCreator } from "../../application/useCases/transactionCreato
 import { CreateTransfer } from "../../application/useCases/CreateTransfer";
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
 import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
+import { AllTransactionsRemover } from "../../application/useCases/allTransactionsRemover";
 import { TransactionUpdater } from "../../application/useCases/transactionUpdater";
 import { Response } from "express";
 import { TransactionImporter } from "../../application/useCases/TransactionImporter";
@@ -41,6 +42,7 @@ export class TransactionController {
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
 		private readonly transactionsRemover: TransactionsRemover,
+		private readonly allTransactionsRemover: AllTransactionsRemover,
 		private readonly transactionImporter: TransactionImporter,
 		private readonly pdfStatementParser: PdfStatementParser,
 		private readonly pdfImportConfirmer: PdfImportConfirmer,
@@ -270,6 +272,15 @@ export class TransactionController {
 			userId,
 			ids as string[]
 		);
+
+		const responseBody = HttpResponse.success({ deletedCount });
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	resetAll = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+
+		const deletedCount = await this.allTransactionsRemover.execute(userId);
 
 		const responseBody = HttpResponse.success({ deletedCount });
 		res.status(responseBody.statusCode).json(responseBody);

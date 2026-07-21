@@ -90,6 +90,10 @@ export const deleteTransactions = async (ids: string[]): Promise<void> => {
   await client.post("transactions/bulk-delete", { ids })
 }
 
+export const resetAllTransactions = async (): Promise<void> => {
+  await client.post("transactions/reset", {})
+}
+
 export const importTransactions = async (formData: FormData) => {
   const response = await client.upload("transactions/import", formData)
 

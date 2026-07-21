@@ -8,6 +8,7 @@ import { AccountByIdGetter } from "../../application/accountByIdGetter";
 import { AccountCreator } from "../../application/accountCreator";
 import { AccountGetter } from "../../application/accountGetter";
 import { AccountRemover } from "../../application/accountRemover";
+import { AccountEmptier } from "../../application/accountEmptier";
 import { AccountUpdater } from "../../application/accountUpdater";
 import { AccountBalanceGetter } from "../../application/accountBalanceGetter";
 import { AccountDefaultGetter } from "../../application/accountDefaultGetter";
@@ -19,6 +20,7 @@ export class AccountController {
     private readonly accountCreator: AccountCreator,
     private readonly accountUpdater: AccountUpdater,
     private readonly accountRemover: AccountRemover,
+    private readonly accountEmptier: AccountEmptier,
     private readonly accountBalanceGetter: AccountBalanceGetter,
     private readonly accountDefaultGetter: AccountDefaultGetter,
   ) {}
@@ -125,6 +127,20 @@ export class AccountController {
     await this.accountRemover.execute(userId, id);
 
     const responseBody = HttpResponse.success();
+    response.status(responseBody.statusCode).json(responseBody);
+  });
+
+  emptyAccount = catchAsync(async (request: RequestAuthenticated, response: Response) => {
+    const userId = request.user!.id;
+    const { id } = request.params;
+
+    if (!isIdValid(id)) {
+      throw new ValidationError().addError("id", `El id ${id} is inválido`);
+    }
+
+    const deletedCount = await this.accountEmptier.execute(userId, id);
+
+    const responseBody = HttpResponse.success({ deletedCount });
     response.status(responseBody.statusCode).json(responseBody);
   });
 }

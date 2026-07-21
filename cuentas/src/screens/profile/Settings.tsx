@@ -8,6 +8,12 @@ import { LogoutOption } from "../../Components/LogoutOption"
 import { AppVersion } from "../../Components/AppVersion"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { useTabBar } from "../../hooks"
+import { useConfirm } from "../../contexts/ConfirmContext"
+import { notify } from "../../utils/notify"
+import { resetAllTransactions } from "../../services"
+import { createLogger } from "../../lib/logger"
+
+const logger = createLogger("Settings")
 
 // Migrated from the removed OptionsSideBar drawer (settings hub — design §3d).
 const navigationOptions = [
@@ -50,6 +56,27 @@ const Settings = () => {
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
   const tabBar = useTabBar()
+  const confirm = useConfirm()
+
+  const handleResetData = async () => {
+    const ok = await confirm({
+      title: "Eliminar todos los datos",
+      message:
+        "Se eliminarán TODAS tus transacciones y empezarás de cero. Tus cuentas y categorías se conservan (quedarán en saldo 0). Esta acción no se puede deshacer.",
+      confirmText: "Eliminar todo",
+      destructive: true,
+    })
+    if (!ok) return
+
+    try {
+      await resetAllTransactions()
+      notify.success("Datos eliminados", "Empezás de cero")
+      navigate("/")
+    } catch (error) {
+      logger.error("Reset data failed", { message: error.message })
+      notify.error("No se pudieron eliminar los datos")
+    }
+  }
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -79,6 +106,16 @@ const Settings = () => {
             <Text style={styles.comingSoon}>Próximamente</Text>
           </View>
         ))}
+
+        <TouchableOpacity
+          style={styles.row}
+          onPress={handleResetData}
+        >
+          <Ionicons name="trash-outline" size={20} color={theme.palette.neg} />
+          <Text style={[styles.rowLabel, styles.rowLabelDanger]}>
+            Eliminar todos los datos
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <LogoutOption />
@@ -134,6 +171,9 @@ const makeStyles = (theme: Theme) =>
   },
   rowLabelDisabled: {
     color: theme.palette.ink4,
+  },
+  rowLabelDanger: {
+    color: theme.palette.neg,
   },
   comingSoon: {
     fontFamily: theme.fonts.sans,

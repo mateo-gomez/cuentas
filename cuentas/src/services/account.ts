@@ -53,3 +53,11 @@ export const deleteAccount = async (id: string) => {
   const { data } = await client.delete<{ data: Account }>(`/accounts/${id}`)
   return data
 }
+
+export const emptyAccount = async (id: string) => {
+  const { data } = await client.post<{ data: { deletedCount: number } }>(
+    `accounts/${id}/empty`,
+    {},
+  )
+  return data
+}

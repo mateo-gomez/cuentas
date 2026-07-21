@@ -12,6 +12,7 @@ const transactionController = new TransactionController(
 	container.transactionUpdater,
 	container.transactionRemover,
 	container.transactionsRemover,
+	container.allTransactionsRemover,
 	container.transactionImporter,
 	container.pdfStatementParser,
 	container.pdfImportConfirmer,
@@ -40,6 +41,7 @@ router
 	.get("/", transactionAggregateController.getAllTransactions)
 	.get("/:id", transactionController.getTransaction)
 	.post("/bulk-delete", transactionController.deleteTransactions)
+	.post("/reset", transactionController.resetAll)
 	.post("/transfer", transactionController.saveTransfer)
 	.post("/", transactionController.saveTransaction)
 	.put("/:id", transactionController.updateTransaction)

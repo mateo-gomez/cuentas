@@ -205,6 +205,36 @@ export class MongoTransactionRepository implements TransactionRepository {
     return deletedCount;
   };
 
+  deleteByAccount = async (
+    userId: string,
+    accountId: string,
+  ): Promise<number> => {
+    // Collect transferIds referenced by this account's transactions so the
+    // partner legs living on OTHER accounts get removed too — otherwise those
+    // legs would keep a dangling transferId.
+    const transferIds = await TransactionModel.find({
+      userId,
+      accountId: toObjectId(accountId),
+      transferId: { $exists: true, $ne: null },
+    }).distinct("transferId");
+
+    const { deletedCount } = await TransactionModel.deleteMany({
+      userId,
+      $or: [
+        { accountId: toObjectId(accountId) },
+        ...(transferIds.length ? [{ transferId: { $in: transferIds } }] : []),
+      ],
+    });
+
+    return deletedCount;
+  };
+
+  deleteAllForUser = async (userId: string): Promise<number> => {
+    const { deletedCount } = await TransactionModel.deleteMany({ userId });
+
+    return deletedCount;
+  };
+
   firstDateRecord = async (
     userId: string,
   ): Promise<{ firstDate: Date } | null> => {

@@ -59,6 +59,16 @@ export interface TransactionRepository {
 
   deleteMany: (userId: string, ids: string[]) => Promise<number>;
 
+  /**
+   * Deletes every transaction belonging to an account, including the partner
+   * legs of any transfer those transactions take part in (so no dangling
+   * `transferId` is left on other accounts). Returns the number of docs removed.
+   */
+  deleteByAccount: (userId: string, accountId: string) => Promise<number>;
+
+  /** Deletes ALL transactions for a user. Used by the "start from scratch" reset. */
+  deleteAllForUser: (userId: string) => Promise<number>;
+
   firstDateRecord: (userId: string) => Promise<{ firstDate: Date } | null>;
 
   saveMany: (transactions: TransactionDTO[]) => Promise<void>;
