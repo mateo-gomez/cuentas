@@ -1,3 +1,6 @@
+import { client } from "../helpers/client"
+import { ApiError, isApiError } from "../helpers/ApiError"
+
 jest.mock("../utils", () => ({
   removeInitialSlash: (s: string) => s.replace(/^\//, ""),
 }))
@@ -23,9 +26,6 @@ jest.mock("../lib/logger", () => ({
   }),
 }))
 
-import { client } from "../helpers/client"
-import { ApiError, isApiError } from "../helpers/ApiError"
-
 const mockFetch = jest.fn()
 global.fetch = mockFetch as unknown as typeof fetch
 
@@ -39,10 +39,11 @@ describe("client fetcher", () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 401,
-        json: async () => ({
-          statusCode: 401,
-          message: "Invalid email or password",
-        }),
+        text: async () =>
+          JSON.stringify({
+            statusCode: 401,
+            message: "Invalid email or password",
+          }),
       })
 
       let caught: unknown
@@ -62,11 +63,12 @@ describe("client fetcher", () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 400,
-        json: async () => ({
-          statusCode: 400,
-          message: "Validation failed",
-          errors: { email: ["invalid format"] },
-        }),
+        text: async () =>
+          JSON.stringify({
+            statusCode: 400,
+            message: "Validation failed",
+            errors: { email: ["invalid format"] },
+          }),
       })
 
       let caught: unknown
@@ -84,7 +86,7 @@ describe("client fetcher", () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
-        json: async () => ({}),
+        text: async () => JSON.stringify({}),
       })
 
       let caught: unknown
@@ -122,7 +124,7 @@ describe("client fetcher", () => {
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => data,
+        text: async () => JSON.stringify(data),
       })
 
       const result = await client.get("/test")

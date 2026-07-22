@@ -82,6 +82,10 @@ const Routes = () => {
           <Route path="/accounts/create" element={<Account />} />
           {/* MUST stay before "/:id" — else "transfer" parses as an account id. */}
           <Route path="/accounts/transfer" element={<AccountTransfer />} />
+          <Route
+            path="/accounts/transfer/:transferId"
+            element={<AccountTransfer />}
+          />
           <Route path="/accounts/:id" element={<Account />} />
           <Route path="/import" element={<Import />} />
           <Route path="/import/pdf" element={<PdfImportReview />} />

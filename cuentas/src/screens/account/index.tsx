@@ -159,7 +159,11 @@ const Account = () => {
               onPress={handleDeleteAccount}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Ionicons name="trash-outline" size={22} color={theme.palette.ink3} />
+              <Ionicons
+                name="trash-outline"
+                size={22}
+                color={theme.palette.ink3}
+              />
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
@@ -286,132 +290,132 @@ const Account = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 12,
-  },
-  title: {
-    flex: 1,
-    fontFamily: theme.fonts.serif,
-    fontSize: 20,
-    color: theme.palette.ink,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  savePill: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
-  savePillText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  nameInput: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    color: theme.palette.ink,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    fontFamily: theme.fonts.serif,
-    fontSize: 24,
-    marginVertical: 20,
-  },
-  error: {
-    borderColor: theme.palette.neg,
-  },
-  message: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  typeToggle: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 20,
-  },
-  typeOption: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    alignItems: "center",
-  },
-  typeOptionActive: {
-    backgroundColor: theme.palette.accent,
-    borderColor: theme.palette.accent,
-  },
-  typeOptionText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
-  typeOptionTextActive: {
-    color: theme.palette.onAccent,
-    fontWeight: "600",
-  },
-  field: {
-    marginBottom: 16,
-  },
-  label: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    color: theme.palette.ink3,
-    marginBottom: 6,
-  },
-  input: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    color: theme.palette.ink,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontFamily: theme.amountFamily,
-    ...theme.numeric,
-    fontSize: 15,
-  },
-  emptyButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginTop: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.neg,
-  },
-  emptyButtonText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    fontWeight: "600",
-    color: theme.palette.neg,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 12,
+    },
+    title: {
+      flex: 1,
+      fontFamily: theme.fonts.serif,
+      fontSize: 20,
+      color: theme.palette.ink,
+    },
+    actions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+    },
+    savePill: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 20,
+      paddingHorizontal: 18,
+      paddingVertical: 8,
+    },
+    savePillText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    nameInput: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      color: theme.palette.ink,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      fontFamily: theme.fonts.serif,
+      fontSize: 24,
+      marginVertical: 20,
+    },
+    error: {
+      borderColor: theme.palette.neg,
+    },
+    message: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+      textAlign: "center",
+      marginBottom: 12,
+    },
+    typeToggle: {
+      flexDirection: "row",
+      gap: 10,
+      marginBottom: 20,
+    },
+    typeOption: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      alignItems: "center",
+    },
+    typeOptionActive: {
+      backgroundColor: theme.palette.accent,
+      borderColor: theme.palette.accent,
+    },
+    typeOptionText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+    typeOptionTextActive: {
+      color: theme.palette.onAccent,
+      fontWeight: "600",
+    },
+    field: {
+      marginBottom: 16,
+    },
+    label: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      color: theme.palette.ink3,
+      marginBottom: 6,
+    },
+    input: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      color: theme.palette.ink,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 15,
+    },
+    emptyButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginTop: 24,
+      paddingVertical: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.neg,
+    },
+    emptyButtonText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      fontWeight: "600",
+      color: theme.palette.neg,
+    },
   })
 
 export default Account

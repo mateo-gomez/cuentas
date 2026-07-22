@@ -86,9 +86,10 @@ const BudgetEdit = () => {
         categories: categoryAllocations,
       })
       navigate("/budget")
-    } catch (err: any) {
-      logger.error("Error saving budget", { error: err?.message })
-      setError(err?.message ?? "Error al guardar")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Error al guardar"
+      logger.error("Error saving budget", { error: message })
+      setError(message)
     } finally {
       setSaving(false)
     }
@@ -179,126 +180,126 @@ const BudgetEdit = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-  cancel: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink3,
-  },
-  savePill: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
-  savePillDisabled: {
-    opacity: 0.5,
-  },
-  savePillText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
-  titleBlock: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  eyebrow: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    color: theme.palette.ink4,
-  },
-  title: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 30,
-    fontWeight: "700",
-    color: theme.palette.ink,
-  },
-  content: {
-    padding: 20,
-    paddingTop: 12,
-  },
-  headerSection: {
-    marginBottom: 8,
-  },
-  fieldLabel: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    fontWeight: "600",
-    color: theme.palette.ink2,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    marginTop: 24,
-  },
-  optional: {
-    fontWeight: "400",
-    color: theme.palette.ink4,
-  },
-  totalInput: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontFamily: theme.fonts.serif,
-    fontSize: 22,
-    color: theme.palette.ink,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-  },
-  errorText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    color: theme.palette.neg,
-    marginTop: 8,
-  },
-  categoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 12,
-    marginBottom: 8,
-  },
-  categoryName: {
-    flex: 1,
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-  },
-  categoryInput: {
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    width: 110,
-    textAlign: "right",
-    fontFamily: theme.fonts.mono,
-    fontSize: 15,
-    color: theme.palette.ink,
-    backgroundColor: theme.palette.surface2,
-  },
+    flex: {
+      flex: 1,
+    },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 12,
+    },
+    cancel: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink3,
+    },
+    savePill: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 20,
+      paddingHorizontal: 18,
+      paddingVertical: 8,
+    },
+    savePillDisabled: {
+      opacity: 0.5,
+    },
+    savePillText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
+    titleBlock: {
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+    },
+    eyebrow: {
+      fontFamily: theme.fonts.mono,
+      fontSize: 11,
+      letterSpacing: 0.5,
+      color: theme.palette.ink4,
+    },
+    title: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 30,
+      fontWeight: "700",
+      color: theme.palette.ink,
+    },
+    content: {
+      padding: 20,
+      paddingTop: 12,
+    },
+    headerSection: {
+      marginBottom: 8,
+    },
+    fieldLabel: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      fontWeight: "600",
+      color: theme.palette.ink2,
+      marginBottom: 8,
+    },
+    sectionTitle: {
+      marginTop: 24,
+    },
+    optional: {
+      fontWeight: "400",
+      color: theme.palette.ink4,
+    },
+    totalInput: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      fontFamily: theme.fonts.serif,
+      fontSize: 22,
+      color: theme.palette.ink,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+    },
+    errorText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      color: theme.palette.neg,
+      marginTop: 8,
+    },
+    categoryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      gap: 12,
+      marginBottom: 8,
+    },
+    categoryName: {
+      flex: 1,
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+    },
+    categoryInput: {
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      width: 110,
+      textAlign: "right",
+      fontFamily: theme.fonts.mono,
+      fontSize: 15,
+      color: theme.palette.ink,
+      backgroundColor: theme.palette.surface2,
+    },
   })
 
 export default BudgetEdit

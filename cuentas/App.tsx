@@ -26,7 +26,7 @@ function ThemedStatusBar() {
   return <StatusBar style={theme.scheme === "dark" ? "light" : "dark"} />
 }
 
-function AppShell({ themeReady }: { themeReady: boolean }) {
+function AppShell() {
   return (
     <AuthProvider>
       <ConfirmProvider>
@@ -52,7 +52,13 @@ export default function App() {
   )
 }
 
-function AppBoot({ fontsLoaded, fontError }: { fontsLoaded: boolean; fontError: Error | null }) {
+function AppBoot({
+  fontsLoaded,
+  fontError,
+}: {
+  fontsLoaded: boolean
+  fontError: Error | null
+}) {
   const { ready: themeReady } = useTheme()
 
   useEffect(() => {
@@ -73,7 +79,7 @@ function AppBoot({ fontsLoaded, fontError }: { fontsLoaded: boolean; fontError: 
   return (
     <AppRouter>
       <SafeAreaProvider>
-        <AppShell themeReady={themeReady} />
+        <AppShell />
       </SafeAreaProvider>
       <Toast />
     </AppRouter>

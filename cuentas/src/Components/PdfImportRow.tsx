@@ -151,7 +151,11 @@ export const PdfImportRow = ({
                 style={styles.transferAccount}
                 onPress={onPressTransferAccount}
               >
-                <Ionicons name="card-outline" size={14} color={theme.palette.ink3} />
+                <Ionicons
+                  name="card-outline"
+                  size={14}
+                  color={theme.palette.ink3}
+                />
                 <StyledText
                   style={[
                     styles.transferAccountText,
@@ -160,7 +164,11 @@ export const PdfImportRow = ({
                 >
                   {transferAccountName || "Elegir tarjeta destino"}
                 </StyledText>
-                <Ionicons name="chevron-down" size={14} color={theme.palette.ink4} />
+                <Ionicons
+                  name="chevron-down"
+                  size={14}
+                  color={theme.palette.ink4}
+                />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -171,7 +179,11 @@ export const PdfImportRow = ({
         onPress={onRemove}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="close-circle-outline" size={22} color={theme.palette.ink4} />
+        <Ionicons
+          name="close-circle-outline"
+          size={22}
+          color={theme.palette.ink4}
+        />
       </TouchableOpacity>
     </View>
   )

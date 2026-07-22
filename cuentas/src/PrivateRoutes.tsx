@@ -1,8 +1,6 @@
 // crea un componente de autenticación protegido que obtene la autenticación del usuario y redirige a la pantalla de inicio de sesión si no hay una autenticación
 
-import { Navigate, Outlet, Route, Routes as Router } from "react-router"
-import Home from "./screens/home"
-import Login from "./screens/auth/Login"
+import { Navigate, Outlet } from "react-router"
 import { useAuth } from "./hooks/useAuth"
 
 const PrivateRoutes = () => {

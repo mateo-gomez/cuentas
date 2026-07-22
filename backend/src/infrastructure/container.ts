@@ -13,6 +13,7 @@ import { GroupedTransactionByDayGetter } from "../features/transaction/applicati
 import { GroupedTransactionByDayInRangeGetter } from "../features/transaction/application/useCases/groupedTransactionByDayInRangeGetter";
 import { TransactionCreator } from "../features/transaction/application/useCases/transactionCreator";
 import { CreateTransfer } from "../features/transaction/application/useCases/CreateTransfer";
+import { UpdateTransfer } from "../features/transaction/application/useCases/UpdateTransfer";
 import { TransactionRemover } from "../features/transaction/application/useCases/transactionRemover";
 import { TransactionsRemover } from "../features/transaction/application/useCases/transactionsRemover";
 import { TransactionsCategoryUpdater } from "../features/transaction/application/useCases/transactionsCategoryUpdater";
@@ -109,6 +110,7 @@ export const container = {
 	frequentCombosGetter: new FrequentCombosGetter(transactionRepository),
 	transactionCreator: new TransactionCreator(transactionRepository),
 	createTransfer: new CreateTransfer(transactionRepository),
+	updateTransfer: new UpdateTransfer(transactionRepository),
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
 	transactionsRemover: new TransactionsRemover(transactionRepository),

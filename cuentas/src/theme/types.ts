@@ -27,7 +27,16 @@ export type Palette = {
 export type CategoryTone = { bg: string; fg: string }
 
 export type CategoryTones = Record<
-  "sand" | "sage" | "rose" | "sky" | "lilac" | "clay" | "moss" | "fog" | "butter" | "wine",
+  | "sand"
+  | "sage"
+  | "rose"
+  | "sky"
+  | "lilac"
+  | "clay"
+  | "moss"
+  | "fog"
+  | "butter"
+  | "wine",
   CategoryTone
 >
 

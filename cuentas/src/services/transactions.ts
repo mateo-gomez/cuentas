@@ -76,6 +76,16 @@ export const createTransfer = async (transfer: TransferDTO): Promise<void> => {
   await client.post("transactions/transfer", transfer)
 }
 
+// Edits an existing transfer by rewriting BOTH linked legs at once, so the two
+// sides can never drift apart. Editing a single leg through the normal
+// transaction update path is intentionally not allowed for transfers.
+export const updateTransfer = async (
+  transferId: string,
+  transfer: TransferDTO,
+): Promise<void> => {
+  await client.put(`transactions/transfer/${transferId}`, transfer)
+}
+
 export const updateTransaction = async (
   transaction: TransactionDTO,
 ): Promise<void> => {

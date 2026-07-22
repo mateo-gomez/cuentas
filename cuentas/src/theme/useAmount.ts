@@ -11,8 +11,11 @@ export function useAmount() {
   const { theme } = useTheme()
   return {
     amountColor: (kind: AmountKind): string =>
-      kind === "income" ? resolve(theme, theme.amount.income) : resolve(theme, theme.amount.expense),
-    balanceColor: (value: number): string => (value < 0 ? theme.palette.neg : theme.palette.ink),
+      kind === "income"
+        ? resolve(theme, theme.amount.income)
+        : resolve(theme, theme.amount.expense),
+    balanceColor: (value: number): string =>
+      value < 0 ? theme.palette.neg : theme.palette.ink,
     amountSign,
   }
 }

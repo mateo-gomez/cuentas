@@ -1,6 +1,6 @@
 import { StyleProp, View, ViewStyle } from "react-native"
 import Constants from "expo-constants"
-import { useTheme, useThemedStyles } from "../theme/index"
+import { useThemedStyles } from "../theme/index"
 import type { Theme } from "../theme/index"
 import { PropsWithChildren } from "react"
 

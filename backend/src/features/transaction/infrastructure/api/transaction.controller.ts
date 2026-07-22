@@ -5,6 +5,7 @@ import { HttpNotFoundError } from "../../../../infrastructure/api/errors/httpNot
 import { TransactionByIdGetter } from "../../application/useCases/TransactionByIdGetter";
 import { TransactionCreator } from "../../application/useCases/transactionCreator";
 import { CreateTransfer } from "../../application/useCases/CreateTransfer";
+import { UpdateTransfer } from "../../application/useCases/UpdateTransfer";
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
 import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
 import { TransactionsCategoryUpdater } from "../../application/useCases/transactionsCategoryUpdater";
@@ -40,6 +41,7 @@ export class TransactionController {
 		private readonly transactionByIdGetter: TransactionByIdGetter,
 		private readonly transactionCreator: TransactionCreator,
 		private readonly createTransfer: CreateTransfer,
+		private readonly transferUpdater: UpdateTransfer,
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
 		private readonly transactionsRemover: TransactionsRemover,
@@ -207,6 +209,55 @@ export class TransactionController {
 		});
 
 		const responseBody = HttpResponse.success(result);
+		res.status(responseBody.statusCode).json(responseBody);
+	});
+
+	updateTransfer = catchAsync(async (req: RequestAuthenticated, res: Response) => {
+		const userId = req.user!.id;
+		const { transferId } = req.params;
+		const body = await req.body;
+
+		const fromAccountId = await this.resolveOwnedAccountId(
+			userId,
+			body.fromAccountId
+		);
+		const toAccountId = await this.resolveOwnedAccountId(
+			userId,
+			body.toAccountId
+		);
+
+		if (fromAccountId === toAccountId) {
+			throw new ValidationError().addError(
+				"toAccountId",
+				"La cuenta origen y destino deben ser distintas"
+			);
+		}
+
+		const value = Number(body.value);
+		if (!Number.isFinite(value) || value <= 0) {
+			throw new ValidationError().addError(
+				"value",
+				"El monto debe ser un número positivo"
+			);
+		}
+
+		const date = body.date ? new Date(body.date) : new Date();
+		if (Number.isNaN(date.getTime())) {
+			throw new ValidationError().addError("date", "Fecha inválida");
+		}
+
+		await this.transferUpdater.execute({
+			userId,
+			transferId,
+			fromAccountId,
+			toAccountId,
+			value,
+			date,
+			description:
+				typeof body.description === "string" ? body.description : "",
+		});
+
+		const responseBody = HttpResponse.success({ transferId });
 		res.status(responseBody.statusCode).json(responseBody);
 	});
 

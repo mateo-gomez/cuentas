@@ -47,7 +47,11 @@ export default function CategoryChip({
       ]}
     >
       {icon ? (
-        <Ionicons name={icon as any} size={cfg.iconSize} color={paint.fg} />
+        <Ionicons
+          name={icon as keyof typeof Ionicons.glyphMap}
+          size={cfg.iconSize}
+          color={paint.fg}
+        />
       ) : (
         <Text
           style={[styles.initial, { color: paint.fg, fontSize: cfg.iconSize }]}

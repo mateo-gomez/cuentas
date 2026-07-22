@@ -46,6 +46,7 @@ const buildController = () => {
 		{ execute: async () => null } as any,
 		transactionCreator,
 		{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
+			{ execute: async () => undefined } as any, // updateTransfer
 		{ execute: async () => { throw new Error("not used"); } } as any,
 		{ execute: async () => {} } as any,
 		{ execute: async () => 0 } as any,
@@ -135,6 +136,7 @@ describe("TransactionController — category ownership validation", () => {
 			{ execute: async () => null } as any,
 			transactionCreator,
 			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
+			{ execute: async () => undefined } as any, // updateTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
@@ -232,6 +234,7 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 			transactionByIdGetter,
 			transactionCreator,
 			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
+			{ execute: async () => undefined } as any, // updateTransfer
 			transactionUpdater,
 			transactionRemover,
 			transactionsRemover,
@@ -385,6 +388,7 @@ describe("TransactionController — getFrequent", () => {
 			{ execute: async () => null } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
+			{ execute: async () => undefined } as any, // updateTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
@@ -458,6 +462,7 @@ describe("TransactionController — getFrequent", () => {
 			{ execute: async () => null } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => ({ transferId: "t-1" }) } as any, // createTransfer
+			{ execute: async () => undefined } as any, // updateTransfer
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { formatNumber } from "../../utils"
+import { formatDate } from "../../utils"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router"
@@ -24,7 +24,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import DateField from "../../Components/DateField/DateField"
 import AmountInput from "../../Components/AmountInput/AmountInput"
 import { Ionicons } from "@expo/vector-icons"
-import { formatDate } from "../../utils"
 import CategoryChip from "../../Components/CategoryChip"
 import AccountChip from "../../Components/AccountChip"
 
@@ -340,7 +339,11 @@ const Transaction = () => {
                 Sin categoría
               </Text>
             )}
-            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.palette.ink4}
+            />
           </View>
         </TouchableOpacity>
 
@@ -352,11 +355,19 @@ const Transaction = () => {
         >
           <Text style={styles.fieldLabel}>Fecha</Text>
           <View style={styles.fieldValue}>
-            <Ionicons name="calendar-outline" size={16} color={theme.palette.ink3} />
+            <Ionicons
+              name="calendar-outline"
+              size={16}
+              color={theme.palette.ink3}
+            />
             <Text style={styles.fieldValueText} numberOfLines={1}>
               {formatDate(date)}
             </Text>
-            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.palette.ink4}
+            />
           </View>
         </DateField>
 
@@ -388,110 +399,110 @@ const Transaction = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  // Header
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  ghostBtn: {
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-  },
-  ghostBtnText: {
-    fontSize: 15,
-    color: theme.palette.ink3,
-  },
-  togglePill: {
-    flexDirection: "row",
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  toggleOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-  },
-  toggleOptionActive: {
-    backgroundColor: theme.palette.accent,
-  },
-  toggleOptionText: {
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
-  toggleOptionTextActive: {
-    color: theme.palette.onAccent,
-  },
-  headerSpacer: {
-    minWidth: 64,
-  },
-  // Amount
-  amountText: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 64,
-    color: theme.palette.ink,
-    textAlign: "center",
-    marginTop: 12,
-    marginHorizontal: 16,
-  },
-  amountError: {
-    color: theme.palette.neg,
-  },
-  // Description
-  descriptionInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line,
-    fontSize: 15,
-    color: theme.palette.ink,
-    paddingVertical: 8,
-    marginHorizontal: 16,
-    marginTop: 12,
-  },
-  // Meta fields — stacked full-width rows so long category/account names
-  // never truncate or collide (previously a cramped 3-column row).
-  fields: {
-    marginHorizontal: 16,
-    marginTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: theme.palette.line,
-  },
-  field: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line,
-  },
-  fieldLast: {
-    borderBottomWidth: 0,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
-  fieldValue: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    flexShrink: 1,
-  },
-  fieldValueText: {
-    fontSize: 14,
-    color: theme.palette.ink,
-    flexShrink: 1,
-  },
-  fieldValuePlaceholder: {
-    color: theme.palette.ink4,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    // Header
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+    },
+    ghostBtn: {
+      paddingHorizontal: 4,
+      paddingVertical: 6,
+    },
+    ghostBtnText: {
+      fontSize: 15,
+      color: theme.palette.ink3,
+    },
+    togglePill: {
+      flexDirection: "row",
+      borderRadius: 20,
+      overflow: "hidden",
+    },
+    toggleOption: {
+      paddingHorizontal: 16,
+      paddingVertical: 6,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+    },
+    toggleOptionActive: {
+      backgroundColor: theme.palette.accent,
+    },
+    toggleOptionText: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+    toggleOptionTextActive: {
+      color: theme.palette.onAccent,
+    },
+    headerSpacer: {
+      minWidth: 64,
+    },
+    // Amount
+    amountText: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 64,
+      color: theme.palette.ink,
+      textAlign: "center",
+      marginTop: 12,
+      marginHorizontal: 16,
+    },
+    amountError: {
+      color: theme.palette.neg,
+    },
+    // Description
+    descriptionInput: {
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line,
+      fontSize: 15,
+      color: theme.palette.ink,
+      paddingVertical: 8,
+      marginHorizontal: 16,
+      marginTop: 12,
+    },
+    // Meta fields — stacked full-width rows so long category/account names
+    // never truncate or collide (previously a cramped 3-column row).
+    fields: {
+      marginHorizontal: 16,
+      marginTop: 14,
+      borderTopWidth: 1,
+      borderTopColor: theme.palette.line,
+    },
+    field: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 12,
+      gap: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line,
+    },
+    fieldLast: {
+      borderBottomWidth: 0,
+    },
+    fieldLabel: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+    fieldValue: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      flexShrink: 1,
+    },
+    fieldValueText: {
+      fontSize: 14,
+      color: theme.palette.ink,
+      flexShrink: 1,
+    },
+    fieldValuePlaceholder: {
+      color: theme.palette.ink4,
+    },
   })
 
 export default Transaction

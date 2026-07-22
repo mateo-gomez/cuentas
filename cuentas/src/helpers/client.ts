@@ -102,7 +102,7 @@ const attemptRefresh = (): Promise<boolean> => {
 const createRequestInit = async (
   method: Method,
   token: string | null,
-  data?: Record<string, any> | FormData,
+  data?: unknown,
   headers: Record<string, string> = {},
 ): Promise<RequestInit> => {
   const isFormData = data instanceof FormData
@@ -130,7 +130,7 @@ const createRequestInit = async (
     method === Method.PUT ||
     method === Method.PATCH
   ) {
-    requestInit.body = isFormData ? data : JSON.stringify(data)
+    requestInit.body = data instanceof FormData ? data : JSON.stringify(data)
   }
 
   return requestInit
@@ -139,7 +139,7 @@ const createRequestInit = async (
 const fetcher = async <T>(
   method: Method,
   endpoint: string,
-  data?: Record<string, any> | FormData,
+  data?: unknown,
   headers?: Record<string, string>,
 ): Promise<T> => {
   const normalizedEndpoint = removeInitialSlash(endpoint)
@@ -213,11 +213,11 @@ const fetcher = async <T>(
     }
 
     return result
-  } catch (error: any) {
+  } catch (error) {
     logger.error("Error in fetcher", {
       method,
       url,
-      error: error?.message ?? error,
+      error: error instanceof Error ? error.message : error,
     })
     throw error
   }
@@ -225,11 +225,11 @@ const fetcher = async <T>(
 
 export const client = {
   get: <T>(endpoint: string) => fetcher<T>(Method.GET, endpoint),
-  post: <T>(endpoint: string, data: Record<string, any>) =>
+  post: <T>(endpoint: string, data: unknown) =>
     fetcher<T>(Method.POST, endpoint, data),
-  put: <T>(endpoint: string, data: Record<string, any>) =>
+  put: <T>(endpoint: string, data: unknown) =>
     fetcher<T>(Method.PUT, endpoint, data),
-  patch: <T>(endpoint: string, data: Record<string, any>) =>
+  patch: <T>(endpoint: string, data: unknown) =>
     fetcher<T>(Method.PATCH, endpoint, data),
   delete: <T>(endpoint: string) => fetcher<T>(Method.DELETE, endpoint),
   upload: <T>(

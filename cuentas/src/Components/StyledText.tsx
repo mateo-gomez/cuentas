@@ -1,5 +1,5 @@
 import { Text, TextProps } from "react-native"
-import { useTheme, useThemedStyles } from "../theme/index"
+import { useThemedStyles } from "../theme/index"
 import type { Theme } from "../theme/index"
 import { PropsWithChildren } from "react"
 

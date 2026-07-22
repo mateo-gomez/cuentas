@@ -19,7 +19,10 @@ const THEME_STORAGE_KEY = "theme.pref"
 
 const ThemeContext = createContext<ThemeCtx | null>(null)
 
-function resolve(pref: ThemePref, systemScheme: "light" | "dark" | null | undefined): Theme {
+function resolve(
+  pref: ThemePref,
+  systemScheme: "light" | "dark" | null | undefined,
+): Theme {
   if (pref === "auto") {
     return systemScheme === "dark" ? themes.oscuro : themes.claro
   }

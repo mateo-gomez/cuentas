@@ -201,7 +201,11 @@ const PdfImportReview = () => {
           style={styles.accountPill}
           onPress={() => setAccountPickerVisible(true)}
         >
-          <Ionicons name="wallet-outline" size={14} color={theme.palette.ink3} />
+          <Ionicons
+            name="wallet-outline"
+            size={14}
+            color={theme.palette.ink3}
+          />
           <Text style={styles.accountPillText} numberOfLines={1}>
             {selectedAccountName ?? "Elegir cuenta"}
           </Text>
@@ -310,74 +314,74 @@ const PdfImportReview = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 8,
-  },
-  title: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 20,
-    color: theme.palette.ink,
-  },
-  summary: {
-    paddingHorizontal: 20,
-    paddingBottom: 8,
-    gap: 4,
-  },
-  summaryText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    color: theme.palette.ink3,
-  },
-  summaryStrong: {
-    fontWeight: "600",
-    color: theme.palette.ink,
-  },
-  accountPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    alignSelf: "flex-start",
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginTop: 4,
-  },
-  accountPillText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    color: theme.palette.ink3,
-  },
-  list: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    gap: 10,
-  },
-  confirmButton: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: "center",
-    marginHorizontal: 20,
-  },
-  confirmButtonDisabled: {
-    opacity: 0.4,
-  },
-  confirmButtonText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 8,
+    },
+    title: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 20,
+      color: theme.palette.ink,
+    },
+    summary: {
+      paddingHorizontal: 20,
+      paddingBottom: 8,
+      gap: 4,
+    },
+    summaryText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      color: theme.palette.ink3,
+    },
+    summaryStrong: {
+      fontWeight: "600",
+      color: theme.palette.ink,
+    },
+    accountPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      alignSelf: "flex-start",
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      marginTop: 4,
+    },
+    accountPillText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      color: theme.palette.ink3,
+    },
+    list: {
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+      gap: 10,
+    },
+    confirmButton: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 12,
+      paddingVertical: 15,
+      alignItems: "center",
+      marginHorizontal: 20,
+    },
+    confirmButtonDisabled: {
+      opacity: 0.4,
+    },
+    confirmButtonText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
   })
 
 export default PdfImportReview

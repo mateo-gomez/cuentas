@@ -245,7 +245,11 @@ const Home = () => {
           onPress={goToNextMonth}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Ionicons name="chevron-forward" size={22} color={theme.palette.ink3} />
+          <Ionicons
+            name="chevron-forward"
+            size={22}
+            color={theme.palette.ink3}
+          />
         </TouchableOpacity>
       </View>
 
@@ -255,7 +259,11 @@ const Home = () => {
           style={styles.accountPill}
           onPress={() => setAccountPickerVisible(true)}
         >
-          <Ionicons name="wallet-outline" size={14} color={theme.palette.ink3} />
+          <Ionicons
+            name="wallet-outline"
+            size={14}
+            color={theme.palette.ink3}
+          />
           <Text style={styles.accountPillText} numberOfLines={1}>
             {selectedAccountName}
           </Text>
@@ -300,42 +308,42 @@ const Home = () => {
             accountId={selectedAccountId || undefined}
           />
         ) : pageWidth > 0 && pageHeight > 0 ? (
-        <FlatList
-          key={pageWidth}
-          ref={listRef}
-          data={steps}
-          renderItem={({ item }) => (
-            <Transactions
-              start={item.start}
-              end={item.end}
-              accountId={selectedAccountId || undefined}
-              width={pageWidth}
-              height={pageHeight}
-            />
-          )}
-          onScrollToIndexFailed={({ index }) => {
-            setTimeout(() => {
-              listRef.current?.scrollToIndex({ index, animated: true })
-            }, 80)
-          }}
-          pagingEnabled
-          horizontal
-          inverted
-          initialNumToRender={5}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
-          onStartReached={onStartReached}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={1}
-          onStartReachedThreshold={1}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          getItemLayout={(_, index) => ({
-            length: pageWidth,
-            offset: pageWidth * index,
-            index,
-          })}
-        />
+          <FlatList
+            key={pageWidth}
+            ref={listRef}
+            data={steps}
+            renderItem={({ item }) => (
+              <Transactions
+                start={item.start}
+                end={item.end}
+                accountId={selectedAccountId || undefined}
+                width={pageWidth}
+                height={pageHeight}
+              />
+            )}
+            onScrollToIndexFailed={({ index }) => {
+              setTimeout(() => {
+                listRef.current?.scrollToIndex({ index, animated: true })
+              }, 80)
+            }}
+            pagingEnabled
+            horizontal
+            inverted
+            initialNumToRender={5}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            onStartReached={onStartReached}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={1}
+            onStartReachedThreshold={1}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            getItemLayout={(_, index) => ({
+              length: pageWidth,
+              offset: pageWidth * index,
+              index,
+            })}
+          />
         ) : null}
       </View>
 
@@ -360,92 +368,92 @@ const makeStyles = (theme: Theme) =>
       flex: 1,
       backgroundColor: theme.palette.bg,
     },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 4,
-  },
-  headerTitle: {
-    fontFamily: theme.weight.semibold,
-    fontSize: 22,
-    color: theme.palette.ink,
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  searchPill: {
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  searchPillText: {
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
-  importPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  importPillText: {
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
-  monthSwitcher: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    gap: 16,
-  },
-  monthLabel: {
-    fontFamily: theme.weight.bold,
-    fontSize: 34,
-    color: theme.palette.ink,
-  },
-  listContainer: {
-    flex: 1,
-  },
-  accountFilterRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingBottom: 8,
-  },
-  accountPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    maxWidth: 220,
-  },
-  accountPillText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 13,
-    color: theme.palette.ink3,
-  },
-  suggestions: {
-    flexGrow: 0,
-  },
-  suggestionsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 20,
-    paddingBottom: 8,
-  },
-})
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 4,
+    },
+    headerTitle: {
+      fontFamily: theme.weight.semibold,
+      fontSize: 22,
+      color: theme.palette.ink,
+    },
+    headerActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    searchPill: {
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+    },
+    searchPillText: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+    importPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+    },
+    importPillText: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
+    monthSwitcher: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 8,
+      gap: 16,
+    },
+    monthLabel: {
+      fontFamily: theme.weight.bold,
+      fontSize: 34,
+      color: theme.palette.ink,
+    },
+    listContainer: {
+      flex: 1,
+    },
+    accountFilterRow: {
+      flexDirection: "row",
+      justifyContent: "center",
+      paddingBottom: 8,
+    },
+    accountPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      maxWidth: 220,
+    },
+    accountPillText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 13,
+      color: theme.palette.ink3,
+    },
+    suggestions: {
+      flexGrow: 0,
+    },
+    suggestionsRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingHorizontal: 20,
+      paddingBottom: 8,
+    },
+  })
 
 export default Home

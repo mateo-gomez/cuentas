@@ -19,7 +19,11 @@ export default function SuggestionChip({ combo, onPress }: Props) {
   return (
     <TouchableOpacity style={styles.chip} onPress={() => onPress(combo)}>
       {combo.category.icon ? (
-        <Ionicons name={combo.category.icon as any} size={14} color={tone.fg} />
+        <Ionicons
+          name={combo.category.icon as keyof typeof Ionicons.glyphMap}
+          size={14}
+          color={tone.fg}
+        />
       ) : null}
       <Text style={styles.label} numberOfLines={1}>
         {combo.description}

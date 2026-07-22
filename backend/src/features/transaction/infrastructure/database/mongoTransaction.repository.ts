@@ -32,6 +32,16 @@ export class MongoTransactionRepository implements TransactionRepository {
     return doc as unknown as Transaction | null;
   };
 
+  findByTransferId = async (
+    userId: string,
+    transferId: string,
+  ): Promise<Transaction[]> => {
+    const docs = await TransactionModel.find({ userId, transferId })
+      .populate("category")
+      .lean();
+    return docs as unknown as Transaction[];
+  };
+
   getAll = async (
     userId: string,
     accountId?: string,
