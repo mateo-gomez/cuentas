@@ -55,7 +55,11 @@ export const PdfImportRow = ({
 
   return (
     <View
-      style={[styles.container, possibleDuplicate && styles.containerFlagged]}
+      style={[
+        styles.container,
+        possibleDuplicate && styles.containerFlagged,
+        showTransferControls && styles.containerTransfer,
+      ]}
     >
       <TouchableOpacity
         onPress={onToggleIncluded}
@@ -71,7 +75,18 @@ export const PdfImportRow = ({
       <View style={styles.body}>
         <View style={styles.topRow}>
           <StyledText style={styles.date}>{date}</StyledText>
-          {possibleDuplicate ? (
+          {showTransferControls ? (
+            <View style={styles.transferBadge}>
+              <Ionicons
+                name="swap-horizontal"
+                size={11}
+                color={theme.palette.onAccent}
+              />
+              <StyledText style={styles.transferBadgeText}>
+                Transferencia
+              </StyledText>
+            </View>
+          ) : possibleDuplicate ? (
             <View style={styles.badge}>
               <StyledText style={styles.badgeText}>
                 Posible duplicado
@@ -176,6 +191,25 @@ const makeStyles = (theme: Theme) => ({
   containerFlagged: {
     backgroundColor: theme.palette.surface3,
     borderColor: theme.palette.ink5,
+  },
+  containerTransfer: {
+    borderLeftWidth: 3,
+    borderLeftColor: theme.palette.accent,
+  },
+  transferBadge: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 3,
+    backgroundColor: theme.palette.accent,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  transferBadgeText: {
+    fontFamily: theme.fonts.sans,
+    fontSize: 10,
+    fontWeight: "600" as const,
+    color: theme.palette.onAccent,
   },
   body: {
     flex: 1,

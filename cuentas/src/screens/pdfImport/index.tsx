@@ -96,6 +96,20 @@ const PdfImportReview = () => {
     [rows],
   )
 
+  // Surface likely card-payment transfers at the top so they're easy to spot
+  // and act on. Sort by the stable auto-flag (not the toggleable isTransfer) so
+  // rows don't jump around while the user reviews them.
+  const orderedRows = useMemo(() => {
+    return rows
+      .map((row, index) => ({ row, index }))
+      .sort((a, b) => {
+        const transferDelta =
+          Number(b.row.suggestedTransfer) - Number(a.row.suggestedTransfer)
+        return transferDelta !== 0 ? transferDelta : a.index - b.index
+      })
+      .map((entry) => entry.row)
+  }, [rows])
+
   if (!result) {
     return (
       <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -203,7 +217,7 @@ const PdfImportReview = () => {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.list}
       >
-        {rows.map((row) => (
+        {orderedRows.map((row) => (
           <PdfImportRow
             key={row.rowId}
             date={row.date}

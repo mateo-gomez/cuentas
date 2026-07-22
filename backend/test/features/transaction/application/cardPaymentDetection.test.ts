@@ -7,6 +7,8 @@ describe("isLikelyCardPayment", () => {
 		"Pago a su tarjeta Visa",
 		"TARJETA DE CRÉDITO MASTERCARD",
 		"PAGO TC 1234",
+		"PAGO PSE BANCO DAVIVIENDA SA",
+		"PAGO PSE PAGOS ELECTRONICOS",
 	])("flags card-payment description: %s", (description) => {
 		expect(isLikelyCardPayment(description)).toBe(true);
 	});

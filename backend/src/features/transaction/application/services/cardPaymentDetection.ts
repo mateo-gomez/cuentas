@@ -11,6 +11,11 @@ const CARD_PAYMENT_PATTERNS: RegExp[] = [
 	/\btarjeta\s+de\s+cr[eé]dito\b/i,
 	// "PAGO TC" / "ABONO TC" shorthand
 	/\b(pago|abono)\s+tc\b/i,
+	// PSE payment to Davivienda — Rappi card is issued by Davivienda, so a PSE
+	// payment to that bank is really a card payment (no "tarjeta" in the text).
+	/\bpago\s+pse\b[\s\S]*\bdavivienda\b/i,
+	// PSE payment labeled "PAGOS ELECTRONICOS" — Davibank card payment.
+	/\bpago\s+pse\b[\s\S]*\bpagos\s+electr[oó]nicos\b/i,
 ];
 
 export const isLikelyCardPayment = (description: string): boolean => {
