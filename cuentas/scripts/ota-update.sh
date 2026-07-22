@@ -35,5 +35,9 @@ if [[ -z "$message" ]]; then
   read -rp "Update message: " message
 fi
 
-echo "Publishing OTA update to channel '$channel'..."
-exec npx eas update --channel "$channel" --message "$message"
+# The channel names match the EAS environment names one-to-one. Passing
+# --environment loads that environment's EAS env vars (EXPO_PUBLIC_API_URL)
+# into the bundle. Without it, eas update falls back to the local .env (dev
+# LAN IP) or the localhost default, which is unreachable from devices.
+echo "Publishing OTA update to channel '$channel' (environment '$channel')..."
+exec npx eas update --channel "$channel" --environment "$channel" --message "$message"
