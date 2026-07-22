@@ -7,6 +7,7 @@ import { TransactionCreator } from "../../application/useCases/transactionCreato
 import { CreateTransfer } from "../../application/useCases/CreateTransfer";
 import { TransactionRemover } from "../../application/useCases/transactionRemover";
 import { TransactionsRemover } from "../../application/useCases/transactionsRemover";
+import { TransactionsCategoryUpdater } from "../../application/useCases/transactionsCategoryUpdater";
 import { AllTransactionsRemover } from "../../application/useCases/allTransactionsRemover";
 import { TransactionUpdater } from "../../application/useCases/transactionUpdater";
 import { Response } from "express";
@@ -42,6 +43,7 @@ export class TransactionController {
 		private readonly transactionUpdater: TransactionUpdater,
 		private readonly transactionRemover: TransactionRemover,
 		private readonly transactionsRemover: TransactionsRemover,
+		private readonly transactionsCategoryUpdater: TransactionsCategoryUpdater,
 		private readonly allTransactionsRemover: AllTransactionsRemover,
 		private readonly transactionImporter: TransactionImporter,
 		private readonly pdfStatementParser: PdfStatementParser,
@@ -276,6 +278,51 @@ export class TransactionController {
 		const responseBody = HttpResponse.success({ deletedCount });
 		res.status(responseBody.statusCode).json(responseBody);
 	});
+
+	updateTransactionsCategory = catchAsync(
+		async (req: RequestAuthenticated, res: Response) => {
+			const userId = req.user!.id;
+			const { ids, category } = req.body as {
+				ids: unknown;
+				category: unknown;
+			};
+
+			if (!Array.isArray(ids) || ids.length === 0) {
+				throw new ValidationError().addError(
+					"ids",
+					"Se requiere una lista de ids"
+				);
+			}
+
+			const invalidId = ids.find((id) => !isIdValid(id));
+			if (invalidId !== undefined) {
+				throw new ValidationError().addError(
+					"ids",
+					`El id ${invalidId} is inválido`
+				);
+			}
+
+			// A bulk assignment always targets a real category — unlike single-row
+			// edits, there is no "clear category" affordance here, so an owned
+			// category id is required.
+			const categoryId = await this.resolveOwnedCategoryId(userId, category);
+			if (!categoryId) {
+				throw new ValidationError().addError(
+					"category",
+					"Se requiere una categoría válida"
+				);
+			}
+
+			const modifiedCount = await this.transactionsCategoryUpdater.execute(
+				userId,
+				ids as string[],
+				categoryId
+			);
+
+			const responseBody = HttpResponse.success({ modifiedCount });
+			res.status(responseBody.statusCode).json(responseBody);
+		}
+	);
 
 	resetAll = catchAsync(async (req: RequestAuthenticated, res: Response) => {
 		const userId = req.user!.id;

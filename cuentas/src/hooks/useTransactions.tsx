@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 import { TransactionAggregate } from "../../types"
-import { deleteTransactions, getTransactions } from "../services"
+import {
+  deleteTransactions,
+  getTransactions,
+  updateTransactionsCategory,
+} from "../services"
 import { createLogger } from "../lib/logger"
 
 const logger = createLogger("useTransactions")
@@ -51,6 +55,14 @@ export const useTransactions = ({
     [load],
   )
 
+  const assignCategory = useCallback(
+    async (ids: string[], categoryId: string) => {
+      await updateTransactionsCategory(ids, categoryId)
+      await load()
+    },
+    [load],
+  )
+
   return {
     transactions,
     balance,
@@ -58,5 +70,6 @@ export const useTransactions = ({
     error,
     refetch: load,
     removeTransactions,
+    assignCategory,
   }
 }

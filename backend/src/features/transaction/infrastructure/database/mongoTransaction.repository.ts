@@ -205,6 +205,19 @@ export class MongoTransactionRepository implements TransactionRepository {
     return deletedCount;
   };
 
+  updateCategoryMany = async (
+    userId: string,
+    ids: string[],
+    categoryId: string,
+  ): Promise<number> => {
+    const { modifiedCount } = await TransactionModel.updateMany(
+      { _id: { $in: ids }, userId },
+      { $set: { category: categoryId } },
+    );
+
+    return modifiedCount;
+  };
+
   deleteByAccount = async (
     userId: string,
     accountId: string,

@@ -49,6 +49,7 @@ const buildController = () => {
 		{ execute: async () => { throw new Error("not used"); } } as any,
 		{ execute: async () => {} } as any,
 		{ execute: async () => 0 } as any,
+		{ execute: async () => 0 } as any, // transactionsCategoryUpdater
 		{ execute: async () => 0 } as any, // allTransactionsRemover
 		{ execute: async () => {} } as any,
 		{} as any,
@@ -137,7 +138,8 @@ describe("TransactionController — category ownership validation", () => {
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
-			{ execute: async () => 0 } as any, // allTransactionsRemover
+			{ execute: async () => 0 } as any, // transactionsCategoryUpdater
+		{ execute: async () => 0 } as any, // allTransactionsRemover
 			{ execute: async () => {} } as any,
 			{} as any,
 			{} as any,
@@ -233,7 +235,8 @@ describe("TransactionController — userId scoping (IDOR)", () => {
 			transactionUpdater,
 			transactionRemover,
 			transactionsRemover,
-			{ execute: async () => 0 } as any, // allTransactionsRemover
+			{ execute: async () => 0 } as any, // transactionsCategoryUpdater
+		{ execute: async () => 0 } as any, // allTransactionsRemover
 			{ execute: async () => {} } as any,
 			{} as any,
 			{} as any,
@@ -385,7 +388,8 @@ describe("TransactionController — getFrequent", () => {
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
-			{ execute: async () => 0 } as any, // allTransactionsRemover
+			{ execute: async () => 0 } as any, // transactionsCategoryUpdater
+		{ execute: async () => 0 } as any, // allTransactionsRemover
 			{ execute: async () => {} } as any,
 			{} as any,
 			{} as any,
@@ -457,7 +461,8 @@ describe("TransactionController — getFrequent", () => {
 			{ execute: async () => { throw new Error("not used"); } } as any,
 			{ execute: async () => {} } as any,
 			{ execute: async () => 0 } as any,
-			{ execute: async () => 0 } as any, // allTransactionsRemover
+			{ execute: async () => 0 } as any, // transactionsCategoryUpdater
+		{ execute: async () => 0 } as any, // allTransactionsRemover
 			{ execute: async () => {} } as any,
 			{} as any,
 			{} as any,

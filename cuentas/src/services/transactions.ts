@@ -90,6 +90,15 @@ export const deleteTransactions = async (ids: string[]): Promise<void> => {
   await client.post("transactions/bulk-delete", { ids })
 }
 
+// Assigns one category to many transactions at once (bulk categorization from
+// the Home multi-selection). `category` is the category id.
+export const updateTransactionsCategory = async (
+  ids: string[],
+  category: string,
+): Promise<void> => {
+  await client.post("transactions/bulk-category", { ids, category })
+}
+
 export const resetAllTransactions = async (): Promise<void> => {
   await client.post("transactions/reset", {})
 }

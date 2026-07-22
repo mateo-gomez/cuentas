@@ -13,6 +13,8 @@ import {
 	startOfUTCDay,
 } from "../services/naturalKey";
 import { isLikelyCardPayment } from "../services/cardPaymentDetection";
+import { CategoryClassifier } from "../services/categoryClassifier";
+import { CategoryRepository } from "../../../category/domain/category.repository";
 
 export interface PdfParseResult {
 	importSessionId: string;
@@ -27,6 +29,8 @@ export class PdfStatementParser {
 		private readonly pdfBankParser: PdfBankParser,
 		private readonly previewStore: PreviewStore,
 		private readonly transactionRepository: TransactionRepository,
+		private readonly categoryClassifier: CategoryClassifier,
+		private readonly categoryRepository: CategoryRepository,
 	) {}
 
 	execute = async (
@@ -39,13 +43,22 @@ export class PdfStatementParser {
 
 		const duplicateKeys = await this.buildDuplicateKeySet(userId, parsed.rows);
 
+		// Classify against the user's OWN categories (defaults + custom), not a
+		// fixed list, so a suggestion links to a category the user actually has.
+		const categories = await this.categoryRepository.getAllForUser(userId);
+
 		const rows: PreviewRow[] = parsed.rows.map((row) => ({
 			rowId: crypto.randomUUID(),
 			date: row.date,
 			description: row.description,
 			value: row.value,
 			type: row.type,
-			categoryName: row.categoryName,
+			// The rule-based PDF parser doesn't classify, so fill an empty category
+			// with a keyword-based suggestion. Left as a suggestion only — the user
+			// can still override it in the import review before confirming.
+			categoryName:
+				row.categoryName?.trim() ||
+				this.categoryClassifier.localClassify(row.description, categories),
 			possibleDuplicate: duplicateKeys.has(
 				naturalKey(dayKeyFromISODate(row.date), row.value, row.description),
 			),

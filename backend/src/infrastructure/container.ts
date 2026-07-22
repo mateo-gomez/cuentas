@@ -15,6 +15,7 @@ import { TransactionCreator } from "../features/transaction/application/useCases
 import { CreateTransfer } from "../features/transaction/application/useCases/CreateTransfer";
 import { TransactionRemover } from "../features/transaction/application/useCases/transactionRemover";
 import { TransactionsRemover } from "../features/transaction/application/useCases/transactionsRemover";
+import { TransactionsCategoryUpdater } from "../features/transaction/application/useCases/transactionsCategoryUpdater";
 import { AllTransactionsRemover } from "../features/transaction/application/useCases/allTransactionsRemover";
 import { TransactionUpdater } from "../features/transaction/application/useCases/transactionUpdater";
 import { MongoCategoryRepository } from "../features/category/infrastructure/database/mongoCategory.repository";
@@ -111,6 +112,9 @@ export const container = {
 	transactionUpdater: new TransactionUpdater(transactionRepository),
 	transactionRemover: new TransactionRemover(transactionRepository),
 	transactionsRemover: new TransactionsRemover(transactionRepository),
+	transactionsCategoryUpdater: new TransactionsCategoryUpdater(
+		transactionRepository
+	),
 	allTransactionsRemover: new AllTransactionsRemover(transactionRepository),
 	transactionImporter,
 
@@ -118,7 +122,9 @@ export const container = {
 	pdfStatementParser: new PdfStatementParser(
 		httpPdfBankParser,
 		inMemoryPreviewStore,
-		transactionRepository
+		transactionRepository,
+		new CategoryClassifier(),
+		categoryRepository
 	),
 	pdfImportConfirmer: new PdfImportConfirmer(
 		inMemoryPreviewStore,

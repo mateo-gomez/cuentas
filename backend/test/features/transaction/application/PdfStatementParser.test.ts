@@ -5,6 +5,8 @@ import { TransactionType } from "../../../../src/domain/valueObjects/transaction
 import { FakePdfBankParser } from "../fakes/FakePdfBankParser";
 import { ParsedStatement } from "../../../../src/features/transaction/domain/pdfImport/ParsedStatement";
 import { Category } from "../../../../src/features/category/domain/category.entity";
+import { CategoryClassifier } from "../../../../src/features/transaction/application/services/categoryClassifier";
+import { inMemoryCategoryRepository } from "../../../../src/features/category/infrastructure/database/inMemoryCategory.repository";
 
 const category: Category = {
 	_id: "cat-1",
@@ -43,6 +45,8 @@ const buildParser = (
 		new FakePdfBankParser(parsed),
 		previewStore,
 		repository,
+		new CategoryClassifier(),
+		new inMemoryCategoryRepository(),
 	);
 
 	return { parser, previewStore, repository };

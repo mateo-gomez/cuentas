@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,6 +25,8 @@ import { createLogger } from "../../lib/logger"
 import { FrequentCombo, TransactionType } from "../../../types"
 
 const logger = createLogger("Home")
+
+const isWeb = Platform.OS === "web"
 
 const now = new Date()
 
@@ -64,9 +67,13 @@ const Home = () => {
   const { accounts } = useAccounts()
   const [steps, setSteps] = useState(initialSteps)
   const [visibleIndex, setVisibleIndex] = useState(0)
-  // Width of a single paged month. Measured from the list container so the
-  // page matches the desktop content area, not the full browser width.
+  // Size of a single paged month. Measured from the list container so the page
+  // matches the desktop content area, not the full browser width. The height is
+  // needed to bound the inner transaction scroller — on react-native-web a
+  // horizontal VirtualizedList item doesn't reliably resolve a flex height, so
+  // without an explicit height the inner ScrollView never scrolls.
   const [pageWidth, setPageWidth] = useState(0)
+  const [pageHeight, setPageHeight] = useState(0)
   const [selectedAccountId, setSelectedAccountId] = useState("")
   const [accountPickerVisible, setAccountPickerVisible] = useState(false)
   const { suggestions } = useSuggestions(selectedAccountId || undefined)
@@ -274,12 +281,25 @@ const Home = () => {
         </ScrollView>
       ) : null}
 
-      {/* Paged transaction list */}
+      {/* Transaction list. Web navigates months with the ‹ › arrows, so it
+          renders just the visible month as a plain top-level scroller — no
+          horizontal pager to swallow the mouse wheel. Native keeps the swipeable
+          paged FlatList. */}
       <View
         style={styles.listContainer}
-        onLayout={(e) => setPageWidth(e.nativeEvent.layout.width)}
+        onLayout={(e) => {
+          setPageWidth(e.nativeEvent.layout.width)
+          setPageHeight(e.nativeEvent.layout.height)
+        }}
       >
-        {pageWidth > 0 ? (
+        {isWeb ? (
+          <Transactions
+            key={visibleStep?.id}
+            start={visibleStep.start}
+            end={visibleStep.end}
+            accountId={selectedAccountId || undefined}
+          />
+        ) : pageWidth > 0 && pageHeight > 0 ? (
         <FlatList
           key={pageWidth}
           ref={listRef}
@@ -290,6 +310,7 @@ const Home = () => {
               end={item.end}
               accountId={selectedAccountId || undefined}
               width={pageWidth}
+              height={pageHeight}
             />
           )}
           onScrollToIndexFailed={({ index }) => {

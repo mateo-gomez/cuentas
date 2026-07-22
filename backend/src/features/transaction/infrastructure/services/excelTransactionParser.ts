@@ -3,6 +3,7 @@ import { ValidationError } from "../../../../infrastructure/api/errors/validatio
 import { CategoryRepository } from "../../../category/domain/category.repository";
 import { TransactionDTO } from "../../application/dto/transactionDTO";
 import { CategoryClassifier } from "../../application/services/categoryClassifier";
+import { DEFAULT_CATEGORY_NAME } from "../../../category/domain/defaultCategories";
 import { ExcelStreamParser } from "../../application/services/excelStreamParser";
 import * as XLSX from "xlsx";
 
@@ -33,7 +34,8 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 	validateTransactionRow = async (
 		row: any,
 		userId: string,
-		accountId: string
+		accountId: string,
+		userCategories: { name: string }[] = []
 	): Promise<TransactionDTO> => {
 		const errors: string[] = [];
 
@@ -53,13 +55,14 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 			throw new ValidationError({ file: errors });
 		}
 
-		// 🔥 Inferencia de categoría si está vacía
+		// Infer the category from the description when the sheet leaves it blank.
+		// The classifier returns "" when nothing matches, so fall back to the
+		// default category instead of failing the row.
 		if (!categoryName) {
-			categoryName = this.categoryClasifier.localClassify(description);
+			categoryName =
+				this.categoryClasifier.localClassify(description, userCategories) ||
+				DEFAULT_CATEGORY_NAME;
 		}
-
-		if (!categoryName || typeof categoryName !== "string")
-			errors.push("categoria inválida");
 
 		// 🔎 Validar si categoría existe en DB
 		let category = await this.categoryRepository.getByNameForUser(userId, categoryName);
@@ -88,6 +91,10 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 		accountId: string,
 		batchSize = 100
 	): Promise<void> => {
+		// Load the user's categories once so keyword inference can match against
+		// their own categories (defaults + custom), not a fixed list.
+		const userCategories = await this.categoryRepository.getAllForUser(userId);
+
 		const workbook = XLSX.readFile(filePath);
 		const sheetName = workbook.SheetNames[0];
 		const worksheet = workbook.Sheets[sheetName];
@@ -110,7 +117,12 @@ export class ExcelTransactionParser implements ExcelStreamParser {
 					isFirstRow = false;
 					continue;
 				}
-				const tx = await this.validateTransactionRow(row, userId, accountId);
+				const tx = await this.validateTransactionRow(
+					row,
+					userId,
+					accountId,
+					userCategories
+				);
 				batch.push(tx);
 
 				if (batch.length >= batchSize) {

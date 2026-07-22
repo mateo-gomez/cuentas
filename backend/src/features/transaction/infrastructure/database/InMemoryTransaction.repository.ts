@@ -181,6 +181,29 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return before - this.transactions.length;
   }
 
+  async updateCategoryMany(
+    userId: string,
+    ids: string[],
+    categoryId: string,
+  ): Promise<number> {
+    let updated = 0;
+
+    this.transactions = this.transactions.map((transaction) => {
+      if (ids.includes(transaction._id) && transaction.userId === userId) {
+        updated += 1;
+        return {
+          ...transaction,
+          category: categoryId as unknown as Transaction["category"],
+          updatedAt: new Date(),
+        };
+      }
+
+      return transaction;
+    });
+
+    return Promise.resolve(updated);
+  }
+
   async deleteByAccount(userId: string, accountId: string): Promise<number> {
     const transferIds = new Set(
       this.transactions

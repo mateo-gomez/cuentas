@@ -59,6 +59,13 @@ export interface TransactionRepository {
 
   deleteMany: (userId: string, ids: string[]) => Promise<number>;
 
+  /** Assigns the same category to many transactions at once. Returns the number of docs updated. */
+  updateCategoryMany: (
+    userId: string,
+    ids: string[],
+    categoryId: string,
+  ) => Promise<number>;
+
   /**
    * Deletes every transaction belonging to an account, including the partner
    * legs of any transfer those transactions take part in (so no dangling
