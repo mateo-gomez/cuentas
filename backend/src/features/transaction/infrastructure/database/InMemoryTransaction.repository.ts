@@ -155,6 +155,19 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     );
   }
 
+  async findByTransferId(
+    userId: string,
+    transferId: string,
+  ): Promise<Transaction[]> {
+    return Promise.resolve(
+      this.transactions.filter(
+        (transaction) =>
+          transaction.transferId === transferId &&
+          transaction.userId === userId,
+      ),
+    );
+  }
+
   async deleteByTransferId(
     userId: string,
     transferId: string,

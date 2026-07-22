@@ -13,6 +13,12 @@ export interface TransactionRepository {
 
   findOne: (userId: string, id: string) => Promise<Transaction | null>;
 
+  /** Returns every leg of a transfer (source + destination) sharing a transferId. */
+  findByTransferId: (
+    userId: string,
+    transferId: string,
+  ) => Promise<Transaction[]>;
+
   getAll: (userId: string, accountId?: string) => Promise<Transaction[]>;
 
   getBetweenDates: (
