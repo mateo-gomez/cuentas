@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.expo/
+coverage/
+babel.config.js
+metro.config.js

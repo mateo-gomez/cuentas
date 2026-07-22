@@ -191,101 +191,101 @@ const Profile = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  spacer: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 12,
-  },
-  title: {
-    flex: 1,
-    textAlign: "center",
-    fontFamily: theme.fonts.serif,
-    fontSize: 22,
-    color: theme.palette.ink,
-  },
-  section: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line2,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-  },
-  name: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 20,
-    color: theme.palette.ink,
-  },
-  email: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-    marginTop: 4,
-  },
-  editLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: 12,
-  },
-  editLinkLabel: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.accent,
-  },
-  form: {
-    gap: 12,
-    marginTop: 12,
-  },
-  input: {
-    padding: 10,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 8,
-    fontFamily: theme.fonts.sans,
-    color: theme.palette.ink,
-  },
-  formActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  buttonLabel: {
-    color: theme.palette.onAccent,
-    fontFamily: theme.fonts.sans,
-    fontWeight: "700",
-  },
-  cancelButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-  },
-  cancelLabel: {
-    fontFamily: theme.fonts.sans,
-    color: theme.palette.ink3,
-  },
-  success: {
-    fontFamily: theme.fonts.sans,
-    color: theme.palette.accent,
-    marginTop: 8,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    spacer: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 12,
+    },
+    title: {
+      flex: 1,
+      textAlign: "center",
+      fontFamily: theme.fonts.serif,
+      fontSize: 22,
+      color: theme.palette.ink,
+    },
+    section: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    sectionTitle: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+    },
+    name: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 20,
+      color: theme.palette.ink,
+    },
+    email: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+      marginTop: 4,
+    },
+    editLink: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      marginTop: 12,
+    },
+    editLinkLabel: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.accent,
+    },
+    form: {
+      gap: 12,
+      marginTop: 12,
+    },
+    input: {
+      padding: 10,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 8,
+      fontFamily: theme.fonts.sans,
+      color: theme.palette.ink,
+    },
+    formActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+    },
+    buttonLabel: {
+      color: theme.palette.onAccent,
+      fontFamily: theme.fonts.sans,
+      fontWeight: "700",
+    },
+    cancelButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+    },
+    cancelLabel: {
+      fontFamily: theme.fonts.sans,
+      color: theme.palette.ink3,
+    },
+    success: {
+      fontFamily: theme.fonts.sans,
+      color: theme.palette.accent,
+      marginTop: 8,
+    },
   })
 
 export default Profile

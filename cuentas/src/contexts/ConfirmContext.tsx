@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react"
 import { Modal, Pressable, Text, View } from "react-native"
-import { useTheme, useThemedStyles } from "../theme/index"
+import { useThemedStyles } from "../theme/index"
 import type { Theme } from "../theme/index"
 
 export type ConfirmOptions = {
@@ -23,7 +23,6 @@ type ConfirmFn = (options: ConfirmOptions) => Promise<boolean>
 const ConfirmContext = createContext<ConfirmFn | null>(null)
 
 export const ConfirmProvider = ({ children }: { children: ReactNode }) => {
-  const { theme } = useTheme()
   const styles = useThemedStyles(makeStyles)
   const [options, setOptions] = useState<ConfirmOptions | null>(null)
   const resolverRef = useRef<((value: boolean) => void) | null>(null)

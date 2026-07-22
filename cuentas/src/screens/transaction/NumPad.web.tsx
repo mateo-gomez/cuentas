@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router"
 import CategoryGrid from "../../Components/CategoryGrid"
 import { useCategories } from "../../hooks/useCategories"
 import { Category } from "../../../types"
-import { useTheme, useThemedStyles } from "../../theme/index"
+import { useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 
 interface NumpadOutletContext {
@@ -51,20 +51,20 @@ const NumPad = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  hint: {
-    fontSize: 13,
-    color: theme.palette.ink3,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  loadingContainer: {
-    alignItems: "center",
-    paddingVertical: 24,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: theme.palette.ink3,
-  },
+    hint: {
+      fontSize: 13,
+      color: theme.palette.ink3,
+      textAlign: "center",
+      marginBottom: 12,
+    },
+    loadingContainer: {
+      alignItems: "center",
+      paddingVertical: 24,
+    },
+    loadingText: {
+      fontSize: 14,
+      color: theme.palette.ink3,
+    },
   })
 
 export default NumPad

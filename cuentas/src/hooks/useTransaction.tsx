@@ -22,7 +22,7 @@ export const useTransaction = (id: string) => {
         })
         .finally(() => setLoading(false))
     }
-  }, [])
+  }, [id])
 
   return { transaction, loading }
 }

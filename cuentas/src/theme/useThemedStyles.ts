@@ -7,5 +7,5 @@ import type { Theme } from "./types"
 // this recomputes ONLY on theme change, not on every render.
 export function useThemedStyles<T>(factory: (theme: Theme) => T): T {
   const { theme } = useTheme()
-  return useMemo(() => factory(theme), [theme])
+  return useMemo(() => factory(theme), [theme, factory])
 }

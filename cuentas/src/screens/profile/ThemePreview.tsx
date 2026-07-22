@@ -3,7 +3,12 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useTheme, useThemedStyles, useAmount, chipColors } from "../../theme/index"
+import {
+  useTheme,
+  useThemedStyles,
+  useAmount,
+  chipColors,
+} from "../../theme/index"
 import type { CategoryTones, Theme, ThemePref } from "../../theme/index"
 import { formatNumber } from "../../utils"
 
@@ -27,7 +32,8 @@ const tones = (categoryTones: CategoryTones) =>
 
 function getTone(categoryTones: CategoryTones, id: string) {
   let hash = 0
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
+  for (let i = 0; i < id.length; i++)
+    hash = (hash * 31 + id.charCodeAt(i)) & 0xffffff
   const keys = tones(categoryTones)
   return categoryTones[keys[hash % keys.length]]
 }
@@ -39,11 +45,41 @@ const sampleRows: {
   value: number
   kind: Kind
 }[] = [
-  { name: "Mercado", category: "Supermercado", icon: "cart-outline", value: 45000, kind: "expense" },
-  { name: "Sueldo", category: "Ingresos", icon: "cash-outline", value: 1200000, kind: "income" },
-  { name: "Netflix", category: "Suscripciones", icon: "tv-outline", value: 18900, kind: "expense" },
-  { name: "Freelance", category: "Ingresos", icon: "laptop-outline", value: 340000, kind: "income" },
-  { name: "Transporte", category: "Movilidad", icon: "bus-outline", value: 7500, kind: "expense" },
+  {
+    name: "Mercado",
+    category: "Supermercado",
+    icon: "cart-outline",
+    value: 45000,
+    kind: "expense",
+  },
+  {
+    name: "Sueldo",
+    category: "Ingresos",
+    icon: "cash-outline",
+    value: 1200000,
+    kind: "income",
+  },
+  {
+    name: "Netflix",
+    category: "Suscripciones",
+    icon: "tv-outline",
+    value: 18900,
+    kind: "expense",
+  },
+  {
+    name: "Freelance",
+    category: "Ingresos",
+    icon: "laptop-outline",
+    value: 340000,
+    kind: "income",
+  },
+  {
+    name: "Transporte",
+    category: "Movilidad",
+    icon: "bus-outline",
+    value: 7500,
+    kind: "expense",
+  },
 ]
 
 const incomes = 1540000
@@ -60,14 +96,19 @@ const ThemePreview = () => {
   const styles = useThemedStyles(makeStyles)
 
   const chipStyle = useMemo(
-    () => (categoryId: string) => chipColors(theme, getTone(theme.categoryTones, categoryId)),
+    () => (categoryId: string) =>
+      chipColors(theme, getTone(theme.categoryTones, categoryId)),
     [theme],
   )
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigate(-1)} hitSlop={8} accessibilityLabel="Volver">
+        <TouchableOpacity
+          onPress={() => navigate(-1)}
+          hitSlop={8}
+          accessibilityLabel="Volver"
+        >
           <Ionicons name="chevron-back" size={24} color={theme.palette.ink} />
         </TouchableOpacity>
         <Text style={styles.title}>Tema</Text>
@@ -89,27 +130,43 @@ const ThemePreview = () => {
                 style={[styles.chip, active && styles.chipActive]}
                 onPress={() => setPref(m.id)}
               >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>{m.name}</Text>
+                <Text
+                  style={[styles.chipText, active && styles.chipTextActive]}
+                >
+                  {m.name}
+                </Text>
               </TouchableOpacity>
             )
           })}
         </View>
-        <Text style={styles.hint}>{modes.find((m) => m.id === pref)?.hint}</Text>
+        <Text style={styles.hint}>
+          {modes.find((m) => m.id === pref)?.hint}
+        </Text>
 
         {/* Hero balance card */}
         <View style={styles.card}>
           <Text style={styles.eyebrow}>SALDO DEL MES</Text>
-          <Text style={[styles.balance, { color: theme.palette.ink }]}>{money(balance)}</Text>
+          <Text style={[styles.balance, { color: theme.palette.ink }]}>
+            {money(balance)}
+          </Text>
           <View style={styles.divider} />
           <View style={styles.heroRow}>
             <View style={styles.heroCol}>
               <Text style={styles.heroLabel}>↑ Ingresos</Text>
-              <Text style={[styles.heroAmount, { color: amountColor("income") }]}>{money(incomes)}</Text>
+              <Text
+                style={[styles.heroAmount, { color: amountColor("income") }]}
+              >
+                {money(incomes)}
+              </Text>
             </View>
             <View style={styles.heroSep} />
             <View style={styles.heroCol}>
               <Text style={styles.heroLabel}>↓ Gastos</Text>
-              <Text style={[styles.heroAmount, { color: amountColor("expense") }]}>{money(expenses)}</Text>
+              <Text
+                style={[styles.heroAmount, { color: amountColor("expense") }]}
+              >
+                {money(expenses)}
+              </Text>
             </View>
           </View>
         </View>
@@ -119,15 +176,27 @@ const ThemePreview = () => {
           {sampleRows.map((row, i) => {
             const c = chipStyle(row.name)
             return (
-              <View key={row.name} style={[styles.txRow, i < sampleRows.length - 1 && styles.txBorder]}>
+              <View
+                key={row.name}
+                style={[
+                  styles.txRow,
+                  i < sampleRows.length - 1 && styles.txBorder,
+                ]}
+              >
                 <View style={[styles.chipIcon, { backgroundColor: c.bg }]}>
-                  <Ionicons name={row.icon as any} size={18} color={c.fg} />
+                  <Ionicons
+                    name={row.icon as keyof typeof Ionicons.glyphMap}
+                    size={18}
+                    color={c.fg}
+                  />
                 </View>
                 <View style={styles.txInfo}>
                   <Text style={styles.txName}>{row.name}</Text>
                   <Text style={styles.txCategory}>{row.category}</Text>
                 </View>
-                <Text style={[styles.txAmount, { color: amountColor(row.kind) }]}>
+                <Text
+                  style={[styles.txAmount, { color: amountColor(row.kind) }]}
+                >
                   {row.kind === "income" ? "+" : "−"}
                   {money(row.value)}
                 </Text>
@@ -143,18 +212,24 @@ const ThemePreview = () => {
               <Text style={styles.txName}>Tarjeta de crédito</Text>
               <Text style={styles.txCategory}>Saldo negativo</Text>
             </View>
-            <Text style={[styles.txAmount, { color: balanceColor(-230000) }]}>−{money(230000)}</Text>
+            <Text style={[styles.txAmount, { color: balanceColor(-230000) }]}>
+              −{money(230000)}
+            </Text>
           </View>
           <View style={styles.txRow}>
             <View style={styles.txInfo}>
               <Text style={styles.txName}>Restaurantes</Text>
               <Text style={styles.txCategory}>Sobregiro de presupuesto</Text>
             </View>
-            <Text style={[styles.txAmount, { color: balanceColor(-15000) }]}>−{money(15000)}</Text>
+            <Text style={[styles.txAmount, { color: balanceColor(-15000) }]}>
+              −{money(15000)}
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.footnote}>Cuando elijas, se aplica a toda la app.</Text>
+        <Text style={styles.footnote}>
+          Cuando elijas, se aplica a toda la app.
+        </Text>
       </ScrollView>
     </View>
   )

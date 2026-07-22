@@ -53,7 +53,11 @@ export const Button = ({
       ]}
       {...rest}
     >
-      {loading ? <ActivityIndicator color={theme.palette.onAccent} /> : children}
+      {loading ? (
+        <ActivityIndicator color={theme.palette.onAccent} />
+      ) : (
+        children
+      )}
     </Pressable>
   )
 }

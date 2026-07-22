@@ -100,13 +100,9 @@ const Category = () => {
   }
 
   const handleDeleteCategory = async () => {
-    try {
-      await deleteCategory(id)
+    await deleteCategory(id)
 
-      navigate("/categories")
-    } catch (error) {
-      throw error
-    }
+    navigate("/categories")
   }
 
   return (
@@ -135,7 +131,11 @@ const Category = () => {
               onPress={handleDeleteCategory}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Ionicons name="trash-outline" size={22} color={theme.palette.ink3} />
+              <Ionicons
+                name="trash-outline"
+                size={22}
+                color={theme.palette.ink3}
+              />
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
@@ -184,7 +184,11 @@ const Category = () => {
                 onPress={() => setIconQuery("")}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Ionicons name="close-circle" size={16} color={theme.palette.ink4} />
+                <Ionicons
+                  name="close-circle"
+                  size={16}
+                  color={theme.palette.ink4}
+                />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -242,117 +246,117 @@ const Category = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 12,
-  },
-  title: {
-    flex: 1,
-    fontFamily: theme.fonts.serif,
-    fontSize: 20,
-    color: theme.palette.ink,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  savePill: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
-  savePillText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
-  fixedTop: {
-    paddingHorizontal: 20,
-  },
-  gridScroll: {
-    flex: 1,
-  },
-  gridContent: {
-    paddingHorizontal: 20,
-    paddingTop: 4,
-  },
-  preview: {
-    alignItems: "center",
-    marginTop: 16,
-  },
-  nameInput: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    color: theme.palette.ink,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontFamily: theme.fonts.serif,
-    fontSize: 26,
-    marginTop: 12,
-    marginBottom: 12,
-  },
-  search: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 12,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-    padding: 0,
-  },
-  error: {
-    borderColor: theme.palette.neg,
-  },
-  message: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-    textAlign: "center",
-    marginVertical: 12,
-    width: "100%",
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    rowGap: 10,
-  },
-  card: {
-    width: "23%",
-    backgroundColor: theme.palette.surface,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardSelected: {
-    borderWidth: 2,
-    borderColor: theme.palette.ink,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 12,
+    },
+    title: {
+      flex: 1,
+      fontFamily: theme.fonts.serif,
+      fontSize: 20,
+      color: theme.palette.ink,
+    },
+    actions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 16,
+    },
+    savePill: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 20,
+      paddingHorizontal: 18,
+      paddingVertical: 8,
+    },
+    savePillText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
+    fixedTop: {
+      paddingHorizontal: 20,
+    },
+    gridScroll: {
+      flex: 1,
+    },
+    gridContent: {
+      paddingHorizontal: 20,
+      paddingTop: 4,
+    },
+    preview: {
+      alignItems: "center",
+      marginTop: 16,
+    },
+    nameInput: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      color: theme.palette.ink,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      fontFamily: theme.fonts.serif,
+      fontSize: 26,
+      marginTop: 12,
+      marginBottom: 12,
+    },
+    search: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      marginBottom: 12,
+    },
+    searchInput: {
+      flex: 1,
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+      padding: 0,
+    },
+    error: {
+      borderColor: theme.palette.neg,
+    },
+    message: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+      textAlign: "center",
+      marginVertical: 12,
+      width: "100%",
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      rowGap: 10,
+    },
+    card: {
+      width: "23%",
+      backgroundColor: theme.palette.surface,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    cardSelected: {
+      borderWidth: 2,
+      borderColor: theme.palette.ink,
+    },
   })
 
 export default Category

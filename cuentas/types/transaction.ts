@@ -1,17 +1,5 @@
 import { Category } from "./category"
 
-export interface TransactionAggregate {
-  _id: string
-  transactions: Transaction[]
-  minDate: Date
-  maxDate: Date
-  balance: {
-    incomes: number
-    expenses: number
-    balance: number
-  }
-}
-
 export enum TransactionType {
   expenses,
   income,
@@ -33,6 +21,18 @@ export interface Transaction {
   counterpartyAccountId?: string
   createdAt: Date
   updatedAt: Date
+}
+
+export interface TransactionAggregate {
+  _id: string
+  transactions: Transaction[]
+  minDate: Date
+  maxDate: Date
+  balance: {
+    incomes: number
+    expenses: number
+    balance: number
+  }
 }
 
 export interface TransactionDTO {

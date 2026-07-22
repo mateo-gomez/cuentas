@@ -13,9 +13,7 @@ import CategoryChip from "../../Components/CategoryChip"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
-import { useBudget } from "../../hooks"
-import { useCategories } from "../../hooks"
-import { useTabBar } from "../../hooks"
+import { useBudget, useCategories, useTabBar } from "../../hooks"
 import { formatNumber } from "../../utils"
 
 const now = new Date()
@@ -154,7 +152,9 @@ const CategoryRow = ({
               styles.catBarFill,
               {
                 width: `${pct * 100}%`,
-                backgroundColor: isOver ? theme.palette.neg : theme.palette.accent,
+                backgroundColor: isOver
+                  ? theme.palette.neg
+                  : theme.palette.accent,
               },
             ]}
           />
@@ -166,7 +166,6 @@ const CategoryRow = ({
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 const BudgetScreen = () => {
-  const { theme } = useTheme()
   const styles = useThemedStyles(makeStyles)
   const navigate = useNavigate()
   const tabBar = useTabBar()
@@ -282,188 +281,188 @@ const BudgetScreen = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  // Header
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 12,
-  },
-  eyebrow: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 11,
-    color: theme.palette.ink4,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 26,
-    color: theme.palette.ink,
-    marginTop: 2,
-  },
-  configPill: {
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  configPillText: {
-    fontSize: 13,
-    color: theme.palette.ink3,
-    fontFamily: theme.fonts.sans,
-  },
-  // Loading / empty states
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 20,
-    padding: 30,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: theme.palette.ink4,
-    fontFamily: theme.fonts.sans,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: theme.palette.ink3,
-    fontFamily: theme.fonts.sans,
-    lineHeight: 22,
-  },
-  ctaButton: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    alignItems: "center",
-  },
-  ctaButtonText: {
-    color: theme.palette.onAccent,
-    fontFamily: theme.fonts.sans,
-    fontWeight: "600",
-    fontSize: 15,
-  },
-  // Scroll content
-  content: {
-    padding: 16,
-    gap: 0,
-  },
-  // Hero card
-  heroCard: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 16,
-    paddingVertical: 24,
-    paddingHorizontal: 20,
-    marginBottom: 16,
-    alignItems: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
-    shadowRadius: 4,
-    gap: 20,
-  },
-  // Donut
-  donutWrap: {
-    width: RING_SIZE,
-    height: RING_SIZE,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  donutCenter: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: STROKE + 4,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  donutEyebrow: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 10,
-    color: theme.palette.ink4,
-    letterSpacing: 0.3,
-    textTransform: "lowercase",
-  },
-  donutAmount: {
-    fontFamily: theme.amountFamily,
-    ...theme.numeric,
-    fontSize: 22,
-    color: theme.palette.ink,
-    marginTop: 1,
-  },
-  // Stats row
-  statsRow: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  statItem: {
-    alignItems: "center",
-    gap: 2,
-  },
-  statLabel: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 11,
-    color: theme.palette.ink4,
-    letterSpacing: 0.4,
-  },
-  statValue: {
-    fontFamily: theme.amountFamily,
-    ...theme.numeric,
-    fontSize: 16,
-    color: theme.palette.ink,
-  },
-  statDivider: {
-    width: 1,
-    height: 28,
-    backgroundColor: theme.palette.line2,
-  },
-  // Category rows
-  catRow: {
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line2,
-    gap: 8,
-  },
-  catTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  catName: {
-    flex: 1,
-    fontSize: 14,
-    color: theme.palette.ink2,
-    fontFamily: theme.fonts.sans,
-  },
-  catRemaining: {
-    fontSize: 13,
-    fontFamily: theme.amountFamily,
-    ...theme.numeric,
-  },
-  catBarTrack: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: theme.palette.line2,
-    overflow: "hidden",
-    marginLeft: 38, // align with text after chip
-  },
-  catBarFill: {
-    height: "100%",
-    borderRadius: 2,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    // Header
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 12,
+    },
+    eyebrow: {
+      fontFamily: theme.fonts.mono,
+      fontSize: 11,
+      color: theme.palette.ink4,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
+    },
+    title: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 26,
+      color: theme.palette.ink,
+      marginTop: 2,
+    },
+    configPill: {
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+    },
+    configPillText: {
+      fontSize: 13,
+      color: theme.palette.ink3,
+      fontFamily: theme.fonts.sans,
+    },
+    // Loading / empty states
+    centered: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 20,
+      padding: 30,
+    },
+    loadingText: {
+      fontSize: 14,
+      color: theme.palette.ink4,
+      fontFamily: theme.fonts.sans,
+    },
+    emptyText: {
+      fontSize: 15,
+      color: theme.palette.ink3,
+      fontFamily: theme.fonts.sans,
+      lineHeight: 22,
+    },
+    ctaButton: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 10,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      alignItems: "center",
+    },
+    ctaButtonText: {
+      color: theme.palette.onAccent,
+      fontFamily: theme.fonts.sans,
+      fontWeight: "600",
+      fontSize: 15,
+    },
+    // Scroll content
+    content: {
+      padding: 16,
+      gap: 0,
+    },
+    // Hero card
+    heroCard: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 16,
+      paddingVertical: 24,
+      paddingHorizontal: 20,
+      marginBottom: 16,
+      alignItems: "center",
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.07,
+      shadowRadius: 4,
+      gap: 20,
+    },
+    // Donut
+    donutWrap: {
+      width: RING_SIZE,
+      height: RING_SIZE,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    donutCenter: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingHorizontal: STROKE + 4,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    donutEyebrow: {
+      fontFamily: theme.fonts.mono,
+      fontSize: 10,
+      color: theme.palette.ink4,
+      letterSpacing: 0.3,
+      textTransform: "lowercase",
+    },
+    donutAmount: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 22,
+      color: theme.palette.ink,
+      marginTop: 1,
+    },
+    // Stats row
+    statsRow: {
+      flexDirection: "row",
+      width: "100%",
+      justifyContent: "space-around",
+      alignItems: "center",
+    },
+    statItem: {
+      alignItems: "center",
+      gap: 2,
+    },
+    statLabel: {
+      fontFamily: theme.fonts.mono,
+      fontSize: 11,
+      color: theme.palette.ink4,
+      letterSpacing: 0.4,
+    },
+    statValue: {
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+      fontSize: 16,
+      color: theme.palette.ink,
+    },
+    statDivider: {
+      width: 1,
+      height: 28,
+      backgroundColor: theme.palette.line2,
+    },
+    // Category rows
+    catRow: {
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+      gap: 8,
+    },
+    catTop: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    catName: {
+      flex: 1,
+      fontSize: 14,
+      color: theme.palette.ink2,
+      fontFamily: theme.fonts.sans,
+    },
+    catRemaining: {
+      fontSize: 13,
+      fontFamily: theme.amountFamily,
+      ...theme.numeric,
+    },
+    catBarTrack: {
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: theme.palette.line2,
+      overflow: "hidden",
+      marginLeft: 38, // align with text after chip
+    },
+    catBarFill: {
+      height: "100%",
+      borderRadius: 2,
+    },
   })
 
 export default BudgetScreen

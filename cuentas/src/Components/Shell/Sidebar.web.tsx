@@ -57,7 +57,11 @@ export default function Sidebar() {
     <View style={styles.sidebar}>
       <View style={styles.brand}>
         <View style={styles.mark}>
-          <Ionicons name="reader-outline" size={18} color={theme.palette.onAccent} />
+          <Ionicons
+            name="reader-outline"
+            size={18}
+            color={theme.palette.onAccent}
+          />
         </View>
         <Text style={styles.brandText}>Cuentas</Text>
       </View>
@@ -90,7 +94,11 @@ export default function Sidebar() {
                 color={color}
               />
               <Text
-                style={[styles.itemLabel, { color }, active && styles.itemLabelActive]}
+                style={[
+                  styles.itemLabel,
+                  { color },
+                  active && styles.itemLabelActive,
+                ]}
               >
                 {item.label}
               </Text>

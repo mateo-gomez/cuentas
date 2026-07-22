@@ -91,9 +91,17 @@ const Settings = () => {
             style={styles.row}
             onPress={() => navigate(option.to)}
           >
-            <Ionicons name={option.icon} size={20} color={theme.palette.accent} />
+            <Ionicons
+              name={option.icon}
+              size={20}
+              color={theme.palette.accent}
+            />
             <Text style={styles.rowLabel}>{option.title}</Text>
-            <Ionicons name="chevron-forward" size={16} color={theme.palette.ink4} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.palette.ink4}
+            />
           </TouchableOpacity>
         ))}
 
@@ -107,10 +115,7 @@ const Settings = () => {
           </View>
         ))}
 
-        <TouchableOpacity
-          style={styles.row}
-          onPress={handleResetData}
-        >
+        <TouchableOpacity style={styles.row} onPress={handleResetData}>
           <Ionicons name="trash-outline" size={20} color={theme.palette.neg} />
           <Text style={[styles.rowLabel, styles.rowLabelDanger]}>
             Eliminar todos los datos
@@ -130,56 +135,56 @@ const Settings = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  title: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 22,
-    color: theme.palette.ink,
-  },
-  spacer: {
-    flex: 1,
-  },
-  list: {
-    paddingHorizontal: 20,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line2,
-  },
-  rowLabel: {
-    flex: 1,
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-  },
-  rowDisabled: {
-    opacity: 0.6,
-  },
-  rowLabelDisabled: {
-    color: theme.palette.ink4,
-  },
-  rowLabelDanger: {
-    color: theme.palette.neg,
-  },
-  comingSoon: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 11,
-    color: theme.palette.ink4,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+    },
+    title: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 22,
+      color: theme.palette.ink,
+    },
+    spacer: {
+      flex: 1,
+    },
+    list: {
+      paddingHorizontal: 20,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+    },
+    rowLabel: {
+      flex: 1,
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+    },
+    rowDisabled: {
+      opacity: 0.6,
+    },
+    rowLabelDisabled: {
+      color: theme.palette.ink4,
+    },
+    rowLabelDanger: {
+      color: theme.palette.neg,
+    },
+    comingSoon: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 11,
+      color: theme.palette.ink4,
+    },
   })
 
 export default Settings

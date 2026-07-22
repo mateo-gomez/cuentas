@@ -9,7 +9,7 @@ interface BackButtonProps {
   size?: number
   color?: string
   onPress?: () => void
-  [x: string]: any
+  [x: string]: unknown
 }
 
 export const BackButton = ({

@@ -1,9 +1,4 @@
-import {
-  FlatList,
-  Modal,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { FlatList, Modal, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles } from "../theme/index"
 import type { Theme } from "../theme/index"
@@ -76,7 +71,11 @@ export const CategoryPickerModal = ({
                   />
                   <StyledText style={styles.rowLabel}>{item.name}</StyledText>
                   {active ? (
-                    <Ionicons name="checkmark" size={20} color={theme.palette.accent} />
+                    <Ionicons
+                      name="checkmark"
+                      size={20}
+                      color={theme.palette.accent}
+                    />
                   ) : null}
                 </TouchableOpacity>
               )

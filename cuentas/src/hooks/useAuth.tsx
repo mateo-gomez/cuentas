@@ -29,7 +29,7 @@ export const useAuth = () => {
     if (user && onAuthScreen) {
       navigate("/", { replace: true })
     }
-  }, [user, location.pathname])
+  }, [user, location.pathname, navigate])
 
   useEffect(() => {
     checkUserLogged().then((auth) => {
@@ -37,7 +37,7 @@ export const useAuth = () => {
         setUser(auth.user)
       }
     })
-  }, [])
+  }, [setUser])
 
   const login = async ({
     email,

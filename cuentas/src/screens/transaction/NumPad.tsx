@@ -1,7 +1,6 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import VirtualKeyboard from "react-native-virtual-keyboard"
 import { useNavigate, useOutletContext } from "react-router"
-import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { Fragment } from "react"
@@ -66,36 +65,36 @@ const NumPad = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  numPad: {
-    backgroundColor: "transparent",
-    marginBottom: 0,
-    marginTop: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    paddingVertical: 4,
-  },
-  numPadRow: {
-    marginTop: 0,
-  },
-  numPadCell: {
-    height: 58,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  categoryTouchable: {
-    marginTop: 8,
-    backgroundColor: theme.palette.accent,
-    borderRadius: 12,
-    height: 48,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  categoryText: {
-    color: theme.palette.onAccent,
-    fontSize: 15,
-  },
+    numPad: {
+      backgroundColor: "transparent",
+      marginBottom: 0,
+      marginTop: 0,
+      marginLeft: 0,
+      marginRight: 0,
+      paddingVertical: 4,
+    },
+    numPadRow: {
+      marginTop: 0,
+    },
+    numPadCell: {
+      height: 58,
+      borderRadius: 8,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    categoryTouchable: {
+      marginTop: 8,
+      backgroundColor: theme.palette.accent,
+      borderRadius: 12,
+      height: 48,
+      justifyContent: "center",
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    categoryText: {
+      color: theme.palette.onAccent,
+      fontSize: 15,
+    },
   })
 
 export default NumPad

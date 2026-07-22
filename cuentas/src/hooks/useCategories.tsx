@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { client } from "../helpers"
 import { Category } from "../../types"
 import { getCategories } from "../services"
 

@@ -82,7 +82,11 @@ const CategoryList = () => {
               <Text style={styles.rowName} numberOfLines={1}>
                 {item.name}
               </Text>
-              <Ionicons name="pencil-outline" size={18} color={theme.palette.ink4} />
+              <Ionicons
+                name="pencil-outline"
+                size={18}
+                color={theme.palette.ink4}
+              />
             </TouchableOpacity>
           ))
         )}
@@ -93,71 +97,71 @@ const CategoryList = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 12,
-  },
-  title: {
-    flex: 1,
-    textAlign: "center",
-    fontFamily: theme.fonts.serif,
-    fontSize: 22,
-    color: theme.palette.ink,
-  },
-  newButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginHorizontal: 20,
-    marginBottom: 8,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: theme.palette.accent,
-  },
-  newButtonText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
-  body: {
-    flex: 1,
-  },
-  bodyContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.line2,
-  },
-  rowName: {
-    flex: 1,
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-  },
-  message: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-    textAlign: "center",
-    paddingVertical: 32,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 12,
+    },
+    title: {
+      flex: 1,
+      textAlign: "center",
+      fontFamily: theme.fonts.serif,
+      fontSize: 22,
+      color: theme.palette.ink,
+    },
+    newButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginHorizontal: 20,
+      marginBottom: 8,
+      paddingVertical: 12,
+      borderRadius: 12,
+      backgroundColor: theme.palette.accent,
+    },
+    newButtonText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
+    body: {
+      flex: 1,
+    },
+    bodyContent: {
+      paddingHorizontal: 20,
+      paddingTop: 8,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.palette.line2,
+    },
+    rowName: {
+      flex: 1,
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+    },
+    message: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+      textAlign: "center",
+      paddingVertical: 32,
+    },
   })
 
 export default CategoryList

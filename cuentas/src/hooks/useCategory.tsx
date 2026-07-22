@@ -24,7 +24,7 @@ export const useCategory = (id: string) => {
     }
 
     fetchCategory()
-  }, [])
+  }, [id])
 
   return { category, loading, error }
 }

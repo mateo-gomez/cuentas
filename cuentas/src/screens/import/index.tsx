@@ -97,7 +97,7 @@ const Import = () => {
     )
 
     try {
-      const response = await importTransactions(formData)
+      await importTransactions(formData)
 
       notify.success("Éxito", "Archivo subido correctamente.")
       setSelectedFile(null)
@@ -170,7 +170,11 @@ const Import = () => {
           </Text>
 
           <TouchableOpacity style={styles.pickButton} onPress={handlePickFile}>
-            <Ionicons name="document-outline" size={20} color={theme.palette.ink} />
+            <Ionicons
+              name="document-outline"
+              size={20}
+              color={theme.palette.ink}
+            />
             <Text style={styles.pickButtonText}>Seleccionar archivo Excel</Text>
           </TouchableOpacity>
 
@@ -276,106 +280,106 @@ const Import = () => {
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
-  flex: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 8,
-  },
-  title: {
-    fontFamily: theme.fonts.serif,
-    fontSize: 20,
-    color: theme.palette.ink,
-  },
-  container: {
-    padding: 20,
-    gap: 16,
-  },
-  hint: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 14,
-    color: theme.palette.ink3,
-    lineHeight: 20,
-  },
-  pickButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    paddingVertical: 14,
-  },
-  pickButtonText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.ink,
-  },
-  fileChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: theme.palette.surface3,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  fileName: {
-    flex: 1,
-    fontFamily: theme.fonts.mono,
-    fontSize: 13,
-    color: theme.palette.ink2,
-  },
-  uploadButton: {
-    backgroundColor: theme.palette.accent,
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: "center",
-  },
-  uploadButtonDisabled: {
-    opacity: 0.4,
-  },
-  uploadButtonText: {
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.palette.onAccent,
-  },
-  loader: {
-    marginTop: 8,
-  },
-  passwordBox: {
-    gap: 10,
-    marginTop: 4,
-  },
-  passwordInput: {
-    backgroundColor: theme.palette.surface,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.palette.line,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontFamily: theme.fonts.sans,
-    fontSize: 15,
-    color: theme.palette.ink,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: theme.palette.line,
-    marginVertical: 8,
-  },
+    screen: {
+      flex: 1,
+      backgroundColor: theme.palette.bg,
+    },
+    flex: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 8,
+    },
+    title: {
+      fontFamily: theme.fonts.serif,
+      fontSize: 20,
+      color: theme.palette.ink,
+    },
+    container: {
+      padding: 20,
+      gap: 16,
+    },
+    hint: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 14,
+      color: theme.palette.ink3,
+      lineHeight: 20,
+    },
+    pickButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      paddingVertical: 14,
+    },
+    pickButtonText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.ink,
+    },
+    fileChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      backgroundColor: theme.palette.surface3,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+    },
+    fileName: {
+      flex: 1,
+      fontFamily: theme.fonts.mono,
+      fontSize: 13,
+      color: theme.palette.ink2,
+    },
+    uploadButton: {
+      backgroundColor: theme.palette.accent,
+      borderRadius: 12,
+      paddingVertical: 15,
+      alignItems: "center",
+    },
+    uploadButtonDisabled: {
+      opacity: 0.4,
+    },
+    uploadButtonText: {
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.palette.onAccent,
+    },
+    loader: {
+      marginTop: 8,
+    },
+    passwordBox: {
+      gap: 10,
+      marginTop: 4,
+    },
+    passwordInput: {
+      backgroundColor: theme.palette.surface,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      fontFamily: theme.fonts.sans,
+      fontSize: 15,
+      color: theme.palette.ink,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: theme.palette.line,
+      marginVertical: 8,
+    },
   })
 
 export default Import

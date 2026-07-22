@@ -1,10 +1,4 @@
-import {
-  FlatList,
-  Modal,
-  Platform,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { FlatList, Modal, Platform, TouchableOpacity, View } from "react-native"
 import { useEffect, useRef } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles } from "../theme/index"

@@ -14,7 +14,7 @@ export const getBudget = async (
 export const saveBudget = async (dto: BudgetUpsertDTO): Promise<Budget> => {
   const { data } = await client.put<{ data: Budget }>(
     "/budget",
-    dto as unknown as Record<string, any>,
+    dto as unknown as Record<string, unknown>,
   )
   return data
 }
