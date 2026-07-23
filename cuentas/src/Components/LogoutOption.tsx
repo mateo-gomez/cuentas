@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth"
 import { Ionicons } from "@expo/vector-icons"
-import { TouchableHighlight, View } from "react-native"
+import { Pressable, View } from "react-native"
 import { useTheme, useThemedStyles } from "../theme/index"
 import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
@@ -15,24 +15,39 @@ export const LogoutOption = () => {
   }
 
   return (
-    <TouchableHighlight style={styles.touchable} onPress={handlePress}>
-      <View>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name="log-out-outline"
-            color={theme.palette.accent}
-            size={70}
-          />
-        </View>
-        <StyledText textCenter fontSize={"subheading"} fontWeight={"bold"}>
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel="Cerrar sesión"
+      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+    >
+      <View style={styles.content}>
+        <Ionicons name="log-out-outline" color={theme.palette.neg} size={20} />
+        <StyledText color="red" fontWeight="bold">
           Cerrar sesión
         </StyledText>
       </View>
-    </TouchableHighlight>
+    </Pressable>
   )
 }
 
-const makeStyles = (_theme: Theme) => ({
-  iconContainer: { alignItems: "center" as const, padding: 10 },
-  touchable: { padding: 20 },
+const makeStyles = (theme: Theme) => ({
+  button: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.palette.neg,
+    backgroundColor: theme.palette.surface,
+  },
+  buttonPressed: {
+    opacity: 0.6,
+  },
+  content: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    gap: 8,
+  },
 })
