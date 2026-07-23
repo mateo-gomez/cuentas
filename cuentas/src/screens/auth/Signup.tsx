@@ -4,8 +4,10 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Platform,
+  Image,
+  ScrollView,
 } from "react-native"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { StyledText, ErrorBanner } from "../../Components"
 import { useTheme, useThemedStyles } from "../../theme/index"
@@ -28,7 +30,13 @@ const Signup = () => {
   const [lastname, setLastname] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const passwordRef = useRef<TextInput>(null)
+  const nameRef = useRef<TextInput>(null)
+  const surenameRef = useRef<TextInput>(null)
+  const lastnameRef = useRef<TextInput>(null)
+
   const handleRegister = async () => {
+    if (loading) return
     setLoading(true)
     try {
       await register({ email, password, name, surename, lastname })
@@ -44,71 +52,120 @@ const Signup = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <StatusBar style="dark" />
-      <View>
-        <View style={{ marginBottom: 20 }}>
-          <StyledText fontSize="heading">Crea tu cuenta</StyledText>
-        </View>
+      <StatusBar style={theme.scheme === "dark" ? "light" : "dark"} />
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.card}>
+          <Image
+            source={require("../../../assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-        <View style={{ gap: 20 }}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Surename"
-            value={surename}
-            onChangeText={setSurename}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Lastname"
-            value={lastname}
-            onChangeText={setLastname}
-          />
-        </View>
-
-        <ErrorBanner message={error} />
-
-        <View style={{ marginTop: 20, gap: 10 }}>
-          <Button onPress={handleRegister} loading={loading} disabled={loading}>
-            <StyledText textCenter color="white" fontWeight="bold">
-              Registrarme
+          <View style={styles.header}>
+            <StyledText fontSize="heading" fontWeight="bold">
+              Crea tu cuenta
             </StyledText>
-          </Button>
+            <StyledText color="grey">
+              Empezá a organizar tus finanzas
+            </StyledText>
+          </View>
 
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            <StyledText>¿Ya tienes una cuenta? </StyledText>
-            <Link to="/login" underlayColor={theme.palette.bg}>
-              <StyledText
-                color={"primary"}
-                fontWeight="bold"
-                style={{ textDecorationLine: "underline" }}
-              >
-                Inicia sesión
+          <View style={styles.fields}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={theme.palette.ink4}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => passwordRef.current?.focus()}
+            />
+            <TextInput
+              ref={passwordRef}
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor={theme.palette.ink4}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="new-password"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => nameRef.current?.focus()}
+            />
+            <TextInput
+              ref={nameRef}
+              style={styles.input}
+              placeholder="Nombre"
+              placeholderTextColor={theme.palette.ink4}
+              value={name}
+              onChangeText={setName}
+              autoComplete="given-name"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => surenameRef.current?.focus()}
+            />
+            <TextInput
+              ref={surenameRef}
+              style={styles.input}
+              placeholder="Segundo nombre"
+              placeholderTextColor={theme.palette.ink4}
+              value={surename}
+              onChangeText={setSurename}
+              autoComplete="additional-name"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => lastnameRef.current?.focus()}
+            />
+            <TextInput
+              ref={lastnameRef}
+              style={styles.input}
+              placeholder="Apellido"
+              placeholderTextColor={theme.palette.ink4}
+              value={lastname}
+              onChangeText={setLastname}
+              autoComplete="family-name"
+              returnKeyType="go"
+              onSubmitEditing={handleRegister}
+            />
+          </View>
+
+          <ErrorBanner message={error} />
+
+          <View style={styles.actions}>
+            <Button
+              onPress={handleRegister}
+              loading={loading}
+              disabled={loading}
+            >
+              <StyledText textCenter color="white" fontWeight="bold">
+                Registrarme
               </StyledText>
-            </Link>
+            </Button>
+
+            <View style={styles.footer}>
+              <StyledText color="grey">¿Ya tienes una cuenta? </StyledText>
+              <Link to="/login" underlayColor={theme.palette.bg}>
+                <StyledText
+                  color={"secondary"}
+                  fontWeight="bold"
+                  style={{ textDecorationLine: "underline" }}
+                >
+                  Inicia sesión
+                </StyledText>
+              </Link>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   )
 }
@@ -116,20 +173,50 @@ const Signup = () => {
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      justifyContent: "center",
-      padding: 40,
       flex: 1,
       backgroundColor: theme.palette.bg,
     },
+    scroll: {
+      flexGrow: 1,
+      justifyContent: "center",
+      padding: 24,
+    },
+    card: {
+      width: "100%",
+      maxWidth: 420,
+      alignSelf: "center",
+    },
+    logo: {
+      width: 72,
+      height: 72,
+      alignSelf: "center",
+      marginBottom: 20,
+    },
+    header: {
+      alignItems: "center",
+      gap: 4,
+      marginBottom: 28,
+    },
+    fields: {
+      gap: 14,
+    },
     input: {
-      padding: 10,
+      height: 52,
+      paddingHorizontal: 16,
+      color: theme.palette.ink,
       backgroundColor: theme.palette.surface,
-      borderRadius: 5,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.palette.line,
+      fontSize: 16,
+    },
+    actions: {
+      marginTop: 24,
+      gap: 16,
+    },
+    footer: {
+      flexDirection: "row",
+      justifyContent: "center",
     },
   })
 
