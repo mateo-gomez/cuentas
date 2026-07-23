@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useLocation, useNavigate } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
@@ -56,13 +56,11 @@ export default function Sidebar() {
   return (
     <View style={styles.sidebar}>
       <View style={styles.brand}>
-        <View style={styles.mark}>
-          <Ionicons
-            name="reader-outline"
-            size={18}
-            color={theme.palette.onAccent}
-          />
-        </View>
+        <Image
+          source={require("../../../assets/icon.png")}
+          style={styles.mark}
+          resizeMode="cover"
+        />
         <Text style={styles.brandText}>Cuentas</Text>
       </View>
 
@@ -131,9 +129,6 @@ const makeStyles = (theme: Theme) => ({
     width: 30,
     height: 30,
     borderRadius: 9,
-    backgroundColor: theme.palette.accent,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
   },
   brandText: {
     fontSize: 18,

@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -196,7 +197,14 @@ const Home = () => {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Inline header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>cuentas</Text>
+        <View style={styles.brand}>
+          <Image
+            source={require("../../../assets/logo.png")}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>cuentas</Text>
+        </View>
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={styles.importPill}
@@ -375,6 +383,15 @@ const makeStyles = (theme: Theme) =>
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 4,
+    },
+    brand: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    brandLogo: {
+      width: 24,
+      height: 24,
     },
     headerTitle: {
       fontFamily: theme.weight.semibold,
