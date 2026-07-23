@@ -41,7 +41,5 @@ export const BackButton = ({
 }
 
 const makeStyles = (_theme: Theme) => ({
-  container: {
-    marginRight: 30,
-  },
+  container: {},
 })

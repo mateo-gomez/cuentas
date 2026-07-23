@@ -13,6 +13,7 @@ import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import { getTone } from "../../theme/iconTreatment"
 import { useCategoryReport, useCategoryTrend } from "../../hooks"
 import type { ReportSide } from "../../services"
@@ -161,7 +162,7 @@ const ReportScreen = () => {
   const movers = (trend?.items ?? []).filter((i) => i.delta !== 0).slice(0, 5)
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -316,16 +317,12 @@ const ReportScreen = () => {
           )}
         </ScrollView>
       )}
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
       flexDirection: "row",
       alignItems: "center",

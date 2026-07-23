@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { ScrollView, Text, TouchableOpacity, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { Screen } from "../../Components"
 import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
@@ -102,7 +103,7 @@ const ThemePreview = () => {
   )
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigate(-1)}
@@ -231,15 +232,11 @@ const ThemePreview = () => {
           Cuando elijas, se aplica a toda la app.
         </Text>
       </ScrollView>
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: theme.palette.bg,
-  },
   header: {
     flexDirection: "row" as const,
     alignItems: "center" as const,

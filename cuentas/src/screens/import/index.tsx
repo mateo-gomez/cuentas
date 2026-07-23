@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen, ScreenHeader } from "../../Components"
 import { useEffect, useState } from "react"
 import * as DocumentPicker from "expo-document-picker"
 import { appendPickedFile } from "../../utils/appendPickedFile"
@@ -144,17 +145,9 @@ const Import = () => {
   const uploadDisabled = !selectedFile || uploading
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Importar</Text>
-      </View>
+      <ScreenHeader style={styles.header} back title="Importar" />
 
       {/* ── Body ───────────────────────────────────────────────────────────── */}
       <KeyboardAvoidingView
@@ -274,31 +267,19 @@ const Import = () => {
           ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     flex: {
       flex: 1,
     },
     header: {
-      flexDirection: "row",
-      alignItems: "center",
       paddingHorizontal: 16,
       paddingTop: 12,
       paddingBottom: 8,
-      gap: 8,
-    },
-    title: {
-      fontFamily: theme.fonts.serif,
-      fontSize: 20,
-      color: theme.palette.ink,
     },
     container: {
       padding: 20,

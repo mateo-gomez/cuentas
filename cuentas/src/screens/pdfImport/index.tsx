@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useLocation, useNavigate } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen, ScreenHeader } from "../../Components"
 import { PdfImportRow } from "../../Components/PdfImportRow"
 import { OverlayLoader } from "../../Components/OverlayLoader"
 import { ErrorBanner } from "../../Components/ErrorBanner"
@@ -112,10 +113,10 @@ const PdfImportReview = () => {
 
   if (!result) {
     return (
-      <View style={[styles.screen, { paddingTop: insets.top }]}>
+      <Screen style={{ paddingTop: insets.top }}>
         <Text style={styles.title}>Revisión</Text>
         <ErrorBanner message="No hay una importación en curso para revisar." />
-      </View>
+      </Screen>
     )
   }
 
@@ -178,16 +179,8 @@ const PdfImportReview = () => {
     confirmState.status === "error" ? confirmState.message : ""
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Revisar importación</Text>
-      </View>
+    <Screen style={{ paddingTop: insets.top }}>
+      <ScreenHeader style={styles.header} back title="Revisar importación" />
 
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
@@ -308,23 +301,16 @@ const PdfImportReview = () => {
       {confirming ? (
         <OverlayLoader message="Guardando transacciones..." />
       ) : null}
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
-      flexDirection: "row",
-      alignItems: "center",
       paddingHorizontal: 16,
       paddingTop: 12,
       paddingBottom: 8,
-      gap: 8,
     },
     title: {
       fontFamily: theme.fonts.serif,

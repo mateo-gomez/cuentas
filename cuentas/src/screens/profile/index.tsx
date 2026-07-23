@@ -12,7 +12,7 @@ import { useNavigate } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { Button } from "../../Components/Button"
-import { ErrorBanner } from "../../Components"
+import { ErrorBanner, Screen } from "../../Components"
 import { useProfile } from "../../hooks"
 
 const Profile = () => {
@@ -70,7 +70,7 @@ const Profile = () => {
   }
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigate(-1)}
@@ -185,16 +185,12 @@ const Profile = () => {
       <ErrorBanner message={loading ? "" : error} />
 
       <View style={styles.spacer} />
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     spacer: {
       flex: 1,
     },

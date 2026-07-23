@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import { useAccounts } from "../../hooks"
 import { AccountPickerModal } from "../../Components/AccountPickerModal"
 import { OverlayLoader } from "../../Components/OverlayLoader"
@@ -171,7 +172,7 @@ const AccountTransfer = () => {
   }
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigate(-1)}
@@ -301,16 +302,12 @@ const AccountTransfer = () => {
           }
         />
       ) : null}
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     flex: {
       flex: 1,
     },

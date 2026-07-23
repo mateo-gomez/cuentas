@@ -10,6 +10,7 @@ import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import CategoryChip from "../../Components/CategoryChip"
 import { useCategories } from "../../hooks"
 
@@ -27,12 +28,7 @@ const CategoryList = () => {
     : "Todavía no tenés categorías. Creá la primera."
 
   return (
-    <View
-      style={[
-        styles.screen,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
-      ]}
-    >
+    <Screen style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -91,16 +87,12 @@ const CategoryList = () => {
           ))
         )}
       </ScrollView>
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
       flexDirection: "row",
       alignItems: "center",

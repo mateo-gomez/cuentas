@@ -1,19 +1,17 @@
-import {
-  View,
-  TextInput,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Image,
-  Platform,
-} from "react-native"
+import { View, TextInput, StyleSheet } from "react-native"
 import { useRef, useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import { StyledText, ErrorBanner } from "../../Components"
+import {
+  StyledText,
+  ErrorBanner,
+  AppLogo,
+  AuthLayout,
+  FormField,
+  Button,
+} from "../../Components"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import Link from "../../router/Link"
-import { Button } from "../../Components/Button"
-import { StatusBar } from "expo-status-bar"
 import { createLogger } from "../../lib/logger"
 
 const logger = createLogger("Login")
@@ -40,96 +38,71 @@ const Login = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <StatusBar style={theme.scheme === "dark" ? "light" : "dark"} />
-      <View style={styles.card}>
-        <Image
-          source={require("../../../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
+    <AuthLayout>
+      <AppLogo size={88} style={styles.logo} />
+
+      <View style={styles.header}>
+        <StyledText fontSize="heading" fontWeight="bold">
+          Inicia sesión
+        </StyledText>
+        <StyledText color="grey">Bienvenido de nuevo</StyledText>
+      </View>
+
+      <View style={styles.fields}>
+        <FormField
+          size="lg"
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          autoComplete="email"
+          keyboardType="email-address"
+          returnKeyType="next"
+          submitBehavior="submit"
+          onSubmitEditing={() => passwordRef.current?.focus()}
         />
+        <FormField
+          ref={passwordRef}
+          size="lg"
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoComplete="password"
+          returnKeyType="go"
+          onSubmitEditing={handleLogin}
+        />
+      </View>
 
-        <View style={styles.header}>
-          <StyledText fontSize="heading" fontWeight="bold">
-            Inicia sesión
-          </StyledText>
-          <StyledText color="grey">Bienvenido de nuevo</StyledText>
-        </View>
+      <ErrorBanner message={error} />
 
-        <View style={styles.fields}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={theme.palette.ink4}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-            returnKeyType="next"
-            submitBehavior="submit"
-            onSubmitEditing={() => passwordRef.current?.focus()}
-          />
-          <TextInput
-            ref={passwordRef}
-            style={styles.input}
-            placeholder="Contraseña"
-            placeholderTextColor={theme.palette.ink4}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password"
-            returnKeyType="go"
-            onSubmitEditing={handleLogin}
-          />
-        </View>
-
-        <ErrorBanner message={error} />
-
-        <View style={styles.actions}>
-          <Button onPress={handleLogin} loading={loading} disabled={loading}>
-            <StyledText color="white" fontWeight="bold" textCenter>
-              Iniciar sesión
+      <View style={styles.actions}>
+        <Button
+          onPress={handleLogin}
+          title="Iniciar sesión"
+          loading={loading}
+          disabled={loading}
+        />
+        <View style={styles.footer}>
+          <StyledText color="grey">¿No tienes una cuenta? </StyledText>
+          <Link to="/register" underlayColor={theme.palette.bg}>
+            <StyledText
+              color={"secondary"}
+              fontWeight="bold"
+              style={{ textDecorationLine: "underline" }}
+            >
+              Regístrate
             </StyledText>
-          </Button>
-          <View style={styles.footer}>
-            <StyledText color="grey">¿No tienes una cuenta? </StyledText>
-            <Link to="/register" underlayColor={theme.palette.bg}>
-              <StyledText
-                color={"secondary"}
-                fontWeight="bold"
-                style={{ textDecorationLine: "underline" }}
-              >
-                Regístrate
-              </StyledText>
-            </Link>
-          </View>
+          </Link>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </AuthLayout>
   )
 }
 
-const makeStyles = (theme: Theme) =>
+const makeStyles = (_theme: Theme) =>
   StyleSheet.create({
-    container: {
-      justifyContent: "center",
-      padding: 24,
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
-    card: {
-      width: "100%",
-      maxWidth: 420,
-      alignSelf: "center",
-    },
     logo: {
-      width: 88,
-      height: 88,
-      alignSelf: "center",
       marginBottom: 20,
     },
     header: {
@@ -139,16 +112,6 @@ const makeStyles = (theme: Theme) =>
     },
     fields: {
       gap: 14,
-    },
-    input: {
-      height: 52,
-      paddingHorizontal: 16,
-      color: theme.palette.ink,
-      backgroundColor: theme.palette.surface,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: theme.palette.line,
-      fontSize: 16,
     },
     actions: {
       marginTop: 24,

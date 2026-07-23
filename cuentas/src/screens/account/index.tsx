@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
+import { Screen, ScreenHeader } from "../../Components"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { useEffect, useState } from "react"
@@ -139,38 +140,34 @@ const Account = () => {
   }
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
-        </TouchableOpacity>
-
-        <Text style={styles.title} numberOfLines={1}>
-          {id ? "Editar cuenta" : "Nueva cuenta"}
-        </Text>
-
-        <View style={styles.actions}>
-          {id ? (
-            <TouchableOpacity
-              onPress={handleDeleteAccount}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={22}
-                color={theme.palette.ink3}
-              />
+      <ScreenHeader
+        style={styles.header}
+        back
+        title={id ? "Editar cuenta" : "Nueva cuenta"}
+        actions={
+          <>
+            {id ? (
+              <TouchableOpacity
+                onPress={handleDeleteAccount}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={22}
+                  color={theme.palette.ink3}
+                />
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
+              <Text style={styles.savePillText}>
+                {id ? "Guardar" : "Añadir"}
+              </Text>
             </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
-            <Text style={styles.savePillText}>{id ? "Guardar" : "Añadir"}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          </>
+        }
+      />
 
       {/* ── Body ───────────────────────────────────────────────────────────── */}
       <View style={styles.container}>
@@ -284,35 +281,16 @@ const Account = () => {
           </TouchableOpacity>
         ) : null}
       </View>
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingTop: 12,
       paddingBottom: 8,
-      gap: 12,
-    },
-    title: {
-      flex: 1,
-      fontFamily: theme.fonts.serif,
-      fontSize: 20,
-      color: theme.palette.ink,
-    },
-    actions: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
     },
     savePill: {
       backgroundColor: theme.palette.accent,

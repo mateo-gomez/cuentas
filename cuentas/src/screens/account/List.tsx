@@ -8,6 +8,7 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
+import { Screen } from "../../Components"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { useAmount } from "../../theme/useAmount"
@@ -65,7 +66,7 @@ const AccountsList = () => {
   const tabBar = useTabBar()
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigate(-1)}
@@ -119,16 +120,12 @@ const AccountsList = () => {
       )}
 
       <BottomTabBar {...tabBar} />
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
       flexDirection: "row",
       alignItems: "center",

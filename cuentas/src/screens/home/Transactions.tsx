@@ -17,6 +17,7 @@ import { CategoryPickerModal } from "../../Components/CategoryPickerModal"
 import { useCategories } from "../../hooks/useCategories"
 import { HeroCard } from "./components/HeroCard"
 import { DayGroup } from "./components/DayGroup"
+import { EmptyState } from "../../Components"
 
 const Transactions = ({
   start,
@@ -35,7 +36,6 @@ const Transactions = ({
 }) => {
   const { theme } = useTheme()
   const bar = useThemedStyles(makeBar)
-  const empty = useThemedStyles(makeEmpty)
   const { transactions, loading, balance, removeTransactions, assignCategory } =
     useTransactions({
       start,
@@ -152,13 +152,9 @@ const Transactions = ({
 
         {/* Daily groups */}
         {loading && !transactions.length ? (
-          <View style={empty.container}>
-            <Text style={empty.text}>Cargando...</Text>
-          </View>
+          <EmptyState message="Cargando..." />
         ) : !transactions.length ? (
-          <View style={empty.container}>
-            <Text style={empty.text}>No hay registros</Text>
-          </View>
+          <EmptyState message="No hay registros" />
         ) : (
           transactions.map((group) => (
             <DayGroup
@@ -289,21 +285,6 @@ const makeBar = (theme: Theme) =>
       fontFamily: theme.weight.semibold,
       fontSize: 14,
       color: theme.palette.onAccent,
-    },
-  })
-
-const makeEmpty = (theme: Theme) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      paddingTop: 40,
-    },
-    text: {
-      fontFamily: theme.fonts.sans,
-      fontSize: 14,
-      color: theme.palette.ink4,
     },
   })
 

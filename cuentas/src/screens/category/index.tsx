@@ -9,6 +9,7 @@ import {
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { useEffect, useMemo, useState } from "react"
+import { Screen, ScreenHeader } from "../../Components"
 import CategoryChip from "../../Components/CategoryChip"
 import { categoryIcons } from "../../constants/"
 import { useNavigate, useParams } from "react-router"
@@ -106,43 +107,34 @@ const Category = () => {
   }
 
   return (
-    <View
-      style={[
-        styles.screen,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
-      ]}
-    >
+    <Screen style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigate(-1)}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.palette.ink} />
-        </TouchableOpacity>
-
-        <Text style={styles.title} numberOfLines={1}>
-          {category ? "Editar categoría" : "Nueva categoría"}
-        </Text>
-
-        <View style={styles.actions}>
-          {id ? (
-            <TouchableOpacity
-              onPress={handleDeleteCategory}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={22}
-                color={theme.palette.ink3}
-              />
+      <ScreenHeader
+        style={styles.header}
+        back
+        title={category ? "Editar categoría" : "Nueva categoría"}
+        actions={
+          <>
+            {id ? (
+              <TouchableOpacity
+                onPress={handleDeleteCategory}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={22}
+                  color={theme.palette.ink3}
+                />
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
+              <Text style={styles.savePillText}>
+                {id ? "Guardar" : "Añadir"}
+              </Text>
             </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity style={styles.savePill} onPress={handleSubmit}>
-            <Text style={styles.savePillText}>{id ? "Guardar" : "Añadir"}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          </>
+        }
+      />
 
       {/* ── Fixed top: preview + name + icon search stay visible while the
           icon grid below scrolls on its own ── */}
@@ -240,35 +232,16 @@ const Category = () => {
           </View>
         </ScrollView>
       ) : null}
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingTop: 12,
       paddingBottom: 8,
-      gap: 12,
-    },
-    title: {
-      flex: 1,
-      fontFamily: theme.fonts.serif,
-      fontSize: 20,
-      color: theme.palette.ink,
-    },
-    actions: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 16,
     },
     savePill: {
       backgroundColor: theme.palette.accent,

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import { LogoutOption } from "../../Components/LogoutOption"
 import { AppVersion } from "../../Components/AppVersion"
 import BottomTabBar from "../../Components/BottomTabBar"
@@ -79,7 +80,7 @@ const Settings = () => {
   }
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       <View style={styles.header}>
         <Text style={styles.title}>Configuración</Text>
       </View>
@@ -129,16 +130,12 @@ const Settings = () => {
       <View style={styles.spacer} />
 
       <BottomTabBar {...tabBar} />
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     header: {
       flexDirection: "row",
       alignItems: "center",

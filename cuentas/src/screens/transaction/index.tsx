@@ -11,7 +11,7 @@ import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router"
 import { Category, TransactionDTO } from "../../../types"
-import { ErrorBanner, OverlayLoader } from "../../Components"
+import { ErrorBanner, OverlayLoader, Screen } from "../../Components"
 import { useAccounts, useTransaction } from "../../hooks"
 import {
   createTransaction,
@@ -244,7 +244,7 @@ const Transaction = () => {
   const currentCategory = category
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBackPress} style={styles.ghostBtn}>
@@ -393,16 +393,12 @@ const Transaction = () => {
           }}
         />
       </View>
-    </View>
+    </Screen>
   )
 }
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     // Header
     header: {
       flexDirection: "row",

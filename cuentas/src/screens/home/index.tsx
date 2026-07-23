@@ -1,6 +1,5 @@
 import {
   FlatList,
-  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
+import { AppLogo } from "../../Components"
 import { useNavigate } from "react-router"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
@@ -198,11 +198,7 @@ const Home = () => {
       {/* Inline header */}
       <View style={styles.header}>
         <View style={styles.brand}>
-          <Image
-            source={require("../../../assets/logo.png")}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
+          <AppLogo size={24} style={styles.brandLogo} />
           <Text style={styles.headerTitle}>cuentas</Text>
         </View>
         <View style={styles.headerActions}>

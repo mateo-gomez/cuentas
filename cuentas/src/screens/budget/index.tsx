@@ -13,6 +13,7 @@ import CategoryChip from "../../Components/CategoryChip"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import { useBudget, useCategories, useTabBar } from "../../hooks"
 import { formatNumber } from "../../utils"
 
@@ -191,7 +192,7 @@ const BudgetScreen = () => {
   const monthLabel = MONTHS_ES[now.getMonth()]
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       {/* ── Inline header ─────────────────────────────────────────────────── */}
       <View style={styles.header}>
         <View>
@@ -274,17 +275,13 @@ const BudgetScreen = () => {
       )}
 
       <BottomTabBar {...tabBar} />
-    </View>
+    </Screen>
   )
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
-    },
     // Header
     header: {
       flexDirection: "row",

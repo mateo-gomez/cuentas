@@ -14,6 +14,7 @@ import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
+import { Screen } from "../../Components"
 import { useBudget, useCategories } from "../../hooks"
 import { saveBudget } from "../../services"
 import { BudgetCategoryAllocation } from "../../../types"
@@ -96,7 +97,7 @@ const BudgetEdit = () => {
   }
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
+    <Screen style={{ paddingTop: insets.top }}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -174,7 +175,7 @@ const BudgetEdit = () => {
           )}
         />
       </KeyboardAvoidingView>
-    </View>
+    </Screen>
   )
 }
 
@@ -182,10 +183,6 @@ const makeStyles = (theme: Theme) =>
   StyleSheet.create({
     flex: {
       flex: 1,
-    },
-    screen: {
-      flex: 1,
-      backgroundColor: theme.palette.bg,
     },
     header: {
       flexDirection: "row",
