@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native"
@@ -77,6 +78,8 @@ const Home = () => {
   const [pageHeight, setPageHeight] = useState(0)
   const [selectedAccountId, setSelectedAccountId] = useState("")
   const [accountPickerVisible, setAccountPickerVisible] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [query, setQuery] = useState("")
   const { suggestions } = useSuggestions(selectedAccountId || undefined)
   const navigate = useNavigate()
   const insets = useSafeAreaInsets()
@@ -193,6 +196,14 @@ const Home = () => {
     scrollToMonth(nextIndex)
   }
 
+  const toggleSearch = () => {
+    setSearchOpen((open) => {
+      // Clear the query when closing so the list returns to the full month.
+      if (open) setQuery("")
+      return !open
+    })
+  }
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       {/* Inline header */}
@@ -203,7 +214,7 @@ const Home = () => {
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity
-            style={styles.importPill}
+            style={styles.iconAction}
             onPress={() => navigate("/import")}
             accessibilityRole="button"
             accessibilityLabel="Importar transacciones"
@@ -211,30 +222,66 @@ const Home = () => {
           >
             <Ionicons
               name="cloud-upload-outline"
-              size={16}
+              size={18}
               color={theme.palette.ink3}
             />
-            <Text style={styles.importPillText}>Importar</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.importPill}
+            style={styles.iconAction}
             onPress={() => navigate("/reports")}
             accessibilityRole="button"
             accessibilityLabel="Ver informes por categoría"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Ionicons
-              name="pie-chart-outline"
-              size={16}
+              name="stats-chart-outline"
+              size={18}
               color={theme.palette.ink3}
             />
-            <Text style={styles.importPillText}>Informes</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.searchPill} onPress={() => {}}>
-            <Text style={styles.searchPillText}>Buscar</Text>
+          <TouchableOpacity
+            style={[styles.iconAction, searchOpen && styles.iconActionActive]}
+            onPress={toggleSearch}
+            accessibilityRole="button"
+            accessibilityLabel="Buscar transacciones"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name={searchOpen ? "close" : "search-outline"}
+              size={18}
+              color={searchOpen ? theme.palette.ink : theme.palette.ink3}
+            />
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Search bar — client-side filter over the loaded month */}
+      {searchOpen ? (
+        <View style={styles.searchBar}>
+          <Ionicons name="search" size={16} color={theme.palette.ink3} />
+          <TextInput
+            style={styles.searchInput}
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Buscar por descripción o categoría"
+            placeholderTextColor={theme.palette.ink3}
+            autoFocus
+            returnKeyType="search"
+          />
+          {query.length > 0 ? (
+            <TouchableOpacity
+              onPress={() => setQuery("")}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name="close-circle"
+                size={16}
+                color={theme.palette.ink3}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      ) : null}
 
       {/* Month switcher */}
       <View style={styles.monthSwitcher}>
@@ -310,6 +357,7 @@ const Home = () => {
             start={visibleStep.start}
             end={visibleStep.end}
             accountId={selectedAccountId || undefined}
+            query={query}
           />
         ) : pageWidth > 0 && pageHeight > 0 ? (
           <FlatList
@@ -321,6 +369,7 @@ const Home = () => {
                 start={item.start}
                 end={item.end}
                 accountId={selectedAccountId || undefined}
+                query={query}
                 width={pageWidth}
                 height={pageHeight}
               />
@@ -397,30 +446,35 @@ const makeStyles = (theme: Theme) =>
     headerActions: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 12,
+      gap: 8,
     },
-    searchPill: {
+    iconAction: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: "center",
+      justifyContent: "center",
       backgroundColor: theme.palette.surface3,
-      borderRadius: 20,
-      paddingHorizontal: 14,
-      paddingVertical: 6,
     },
-    searchPillText: {
-      fontSize: 14,
-      color: theme.palette.ink3,
+    iconActionActive: {
+      backgroundColor: theme.palette.line,
     },
-    importPill: {
+    searchBar: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      backgroundColor: theme.palette.surface3,
-      borderRadius: 20,
+      gap: 8,
+      marginHorizontal: 20,
+      marginTop: 4,
       paddingHorizontal: 14,
-      paddingVertical: 6,
+      paddingVertical: 8,
+      borderRadius: 20,
+      backgroundColor: theme.palette.surface3,
     },
-    importPillText: {
+    searchInput: {
+      flex: 1,
       fontSize: 14,
-      color: theme.palette.ink3,
+      color: theme.palette.ink,
+      padding: 0,
     },
     monthSwitcher: {
       flexDirection: "row",

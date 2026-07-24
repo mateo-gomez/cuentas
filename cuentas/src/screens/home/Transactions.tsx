@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
@@ -19,16 +19,23 @@ import { HeroCard } from "./components/HeroCard"
 import { DayGroup } from "./components/DayGroup"
 import { EmptyState } from "../../Components"
 
+// Accent- and case-insensitive so "cafe" matches "Café".
+const normalize = (text: string) =>
+  text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+
 const Transactions = ({
   start,
   end,
   accountId,
+  query = "",
   width,
   height,
 }: {
   start: Date
   end: Date
   accountId?: string
+  // Client-side filter over the loaded month (description + category name).
+  query?: string
   // Bounded on native (each page lives inside Home's horizontal pager). Omitted
   // on web, where Transactions renders as a top-level flex:1 scroller.
   width?: number
@@ -51,6 +58,26 @@ const Transactions = ({
 
   const selectionMode = selectedIds.size > 0
   const busy = deleting || categorizing
+
+  // Filter the loaded month by description or category name. Groups left with no
+  // matching transaction are dropped so empty day headers don't render.
+  const visibleTransactions = useMemo(() => {
+    const q = normalize(query.trim())
+    if (!q) return transactions
+
+    return transactions
+      .map((group) => ({
+        ...group,
+        transactions: group.transactions.filter(
+          (tx) =>
+            normalize(tx.description ?? "").includes(q) ||
+            normalize(tx.category?.name ?? "").includes(q),
+        ),
+      }))
+      .filter((group) => group.transactions.length > 0)
+  }, [transactions, query])
+
+  const searching = query.trim().length > 0
 
   useWebScrollbar()
 
@@ -153,10 +180,12 @@ const Transactions = ({
         {/* Daily groups */}
         {loading && !transactions.length ? (
           <EmptyState message="Cargando..." />
-        ) : !transactions.length ? (
-          <EmptyState message="No hay registros" />
+        ) : !visibleTransactions.length ? (
+          <EmptyState
+            message={searching ? "Sin resultados" : "No hay registros"}
+          />
         ) : (
-          transactions.map((group) => (
+          visibleTransactions.map((group) => (
             <DayGroup
               key={group._id}
               group={group}
