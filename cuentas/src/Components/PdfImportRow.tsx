@@ -103,15 +103,12 @@ export const PdfImportRow = ({
           placeholderTextColor={theme.palette.ink4}
         />
 
-        <TouchableOpacity
-          style={styles.categoryPicker}
-          onPress={onPressCategory}
-        >
-          <StyledText
-            style={[
-              styles.category,
-              !categoryName && styles.categoryPlaceholder,
-            ]}
+        {/* Transfers don't carry a spending category — hide the picker so it
+            can't be edited and doesn't clutter the row. */}
+        {!isTransfer ? (
+          <TouchableOpacity
+            style={styles.categoryPicker}
+            onPress={onPressCategory}
           >
             {categoryName || "Elegir categoría"}
           </StyledText>
