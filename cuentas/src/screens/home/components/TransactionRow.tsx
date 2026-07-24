@@ -202,6 +202,7 @@ const makeRow = (theme: Theme) =>
     transferBadge: {
       flexDirection: "row",
       alignItems: "center",
+      flexShrink: 0,
       gap: 3,
       paddingHorizontal: 6,
       paddingVertical: 1,
@@ -238,6 +239,7 @@ const makeRow = (theme: Theme) =>
       justifyContent: "center",
     },
     categoryName: {
+      flexShrink: 1,
       fontFamily: theme.weight.medium,
       fontSize: 14,
       color: theme.palette.ink2,
