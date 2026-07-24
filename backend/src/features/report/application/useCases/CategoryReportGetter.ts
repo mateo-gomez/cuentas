@@ -39,10 +39,15 @@ export class CategoryReportGetter {
 
     const byCategory = new Map<string, CategoryReportItem>();
     for (const t of relevant) {
-      const item = byCategory.get(t.category._id) ?? this.emptyItem(t);
+      // category._id is a populated Mongoose ObjectId at runtime (the entity
+      // type says string but the repo does not map it). A Map keyed by the
+      // ObjectId object compares by reference, so two distinct ObjectId
+      // instances with the same value never dedupe — coerce to string.
+      const key = String(t.category._id);
+      const item = byCategory.get(key) ?? this.emptyItem(t);
       item.total += t.value;
       item.count += 1;
-      byCategory.set(t.category._id, item);
+      byCategory.set(key, item);
     }
 
     const grandTotal = relevant.reduce((sum, t) => sum + t.value, 0);
@@ -63,7 +68,7 @@ export class CategoryReportGetter {
   };
 
   private emptyItem = (t: Transaction): CategoryReportItem => ({
-    categoryId: t.category._id,
+    categoryId: String(t.category._id),
     name: t.category.name,
     icon: t.category.icon,
     total: 0,

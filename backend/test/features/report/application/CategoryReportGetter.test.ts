@@ -92,6 +92,33 @@ test("aggregates the income side when requested", async () => {
   expect(report.top?.categoryId).toBe("Salary");
 });
 
+test("dedupes categories whose _id is an ObjectId object, not a string", async () => {
+  // The repo populates category without mapping, so at runtime category._id is
+  // a Mongoose ObjectId. Two transactions of the same category carry distinct
+  // ObjectId instances that share the same hex. Simulate that: each tx gets a
+  // fresh object with the same toString() so a reference-keyed Map would split
+  // them into two rows (the duplicate-React-key bug).
+  const hex = "6a53ed12b9fd547ec972256d";
+  const oid = () => ({ toString: () => hex }) as unknown as string;
+  const catObj = () => ({
+    _id: oid(),
+    name: "Food",
+    icon: "food",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  });
+
+  const getter = build([
+    tx({ category: catObj(), value: 100 }),
+    tx({ category: catObj(), value: 50 }),
+  ]);
+
+  const report = await getter.execute("user-1", start, end);
+
+  expect(report.items).toHaveLength(1);
+  expect(report.items[0]).toMatchObject({ categoryId: hex, total: 150, count: 2 });
+});
+
 test("returns an empty report with null top when there is no data", async () => {
   const report = await build([]).execute("user-1", start, end);
 

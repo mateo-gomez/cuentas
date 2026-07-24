@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react"
+import React, { useCallback, useMemo, useRef, useState } from "react"
 import {
+  PanResponder,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -110,6 +111,9 @@ const DonutChart = ({
   )
 }
 
+// Minimum horizontal travel (px) to count as a month-changing swipe.
+const SWIPE_THRESHOLD = 60
+
 const now = new Date()
 
 const ReportScreen = () => {
@@ -132,11 +136,33 @@ const ReportScreen = () => {
   const isCurrentMonth =
     cursor.year === now.getFullYear() && cursor.month === now.getMonth()
 
-  const shiftMonth = (delta: number) =>
+  // Stable across renders so the PanResponder (created once) never goes stale.
+  const shiftMonth = useCallback((delta: number) => {
     setCursor(({ year, month }) => {
       const d = new Date(year, month + delta, 1)
+      // Never advance past the current month — there's no future data.
+      if (
+        d.getFullYear() > now.getFullYear() ||
+        (d.getFullYear() === now.getFullYear() && d.getMonth() > now.getMonth())
+      ) {
+        return { year, month }
+      }
       return { year: d.getFullYear(), month: d.getMonth() }
     })
+  }, [])
+
+  // Horizontal swipe changes the month: left = next, right = previous. Only
+  // claims clearly-horizontal drags so the vertical list keeps scrolling.
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) =>
+        Math.abs(g.dx) > 24 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
+      onPanResponderRelease: (_, g) => {
+        if (g.dx <= -SWIPE_THRESHOLD) shiftMonth(1)
+        else if (g.dx >= SWIPE_THRESHOLD) shiftMonth(-1)
+      },
+    }),
+  ).current
 
   const { report, loading } = useCategoryReport({ start, end, type: side })
   const { trend } = useCategoryTrend({
@@ -221,106 +247,108 @@ const ReportScreen = () => {
         ))}
       </View>
 
-      {loading ? (
-        <View style={styles.centered}>
-          <Text style={styles.loadingText}>Cargando...</Text>
-        </View>
-      ) : !hasData ? (
-        <View style={styles.centered}>
-          <Text style={[styles.emptyText, { textAlign: "center" }]}>
-            No hay {side === "expense" ? "gastos" : "ingresos"} este mes
-          </Text>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.chartCard}>
-            <DonutChart
-              items={items}
-              colorFor={colorFor}
-              centerTop={side === "expense" ? "gastado" : "ingresado"}
-              centerBottom={`$${formatNumber(report!.grandTotal)}`}
-            />
-            {report?.top && (
-              <Text style={styles.topLine}>
-                Mayor {side === "expense" ? "gasto" : "ingreso"}:{" "}
-                <Text style={styles.topLineStrong}>{report.top.name}</Text> (
-                {Math.round(report.top.share * 100)}%)
-              </Text>
-            )}
+      <View style={styles.swipeArea} {...panResponder.panHandlers}>
+        {loading ? (
+          <View style={styles.centered}>
+            <Text style={styles.loadingText}>Cargando...</Text>
           </View>
-
-          <View style={styles.list}>
-            {items.map((item) => (
-              <View key={item.categoryId} style={styles.row}>
-                <View style={styles.rowLeft}>
-                  <View
-                    style={[styles.dot, { backgroundColor: colorFor(item) }]}
-                  />
-                  <CategoryChip
-                    categoryId={item.categoryId}
-                    name={item.name}
-                    icon={item.icon}
-                    size="sm"
-                  />
-                  <Text style={styles.rowName} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                </View>
-                <View style={styles.rowRight}>
-                  <AmountText
-                    value={item.total}
-                    prefix="$"
-                    style={styles.rowAmount}
-                  />
-                  <Text style={styles.rowShare}>
-                    {Math.round(item.share * 100)}%
-                  </Text>
-                </View>
-              </View>
-            ))}
+        ) : !hasData ? (
+          <View style={styles.centered}>
+            <Text style={[styles.emptyText, { textAlign: "center" }]}>
+              No hay {side === "expense" ? "gastos" : "ingresos"} este mes
+            </Text>
           </View>
-
-          {movers.length > 0 && (
-            <View style={styles.trendSection}>
-              <Text style={styles.sectionTitle}>
-                Tendencias vs. mes anterior
-              </Text>
-              {movers.map((item: CategoryTrendItem) => {
-                const up = item.delta > 0
-                const color = deltaColor(item.delta)
-                return (
-                  <View key={item.categoryId} style={styles.trendRow}>
-                    <View style={styles.rowLeft}>
-                      <Ionicons
-                        name={up ? "arrow-up" : "arrow-down"}
-                        size={16}
-                        color={color}
-                      />
-                      <Text style={styles.rowName} numberOfLines={1}>
-                        {item.name}
-                      </Text>
-                    </View>
-                    <View style={styles.rowRight}>
-                      <AmountText
-                        value={item.delta}
-                        prefix={`${up ? "+" : "−"}$`}
-                        style={[styles.trendDelta, { color }]}
-                      />
-                      <Text style={styles.rowShare}>
-                        {item.deltaPct === null
-                          ? "nuevo"
-                          : `${up ? "+" : "−"}${Math.round(
-                              Math.abs(item.deltaPct) * 100,
-                            )}%`}
-                      </Text>
-                    </View>
-                  </View>
-                )
-              })}
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            <View style={styles.chartCard}>
+              <DonutChart
+                items={items}
+                colorFor={colorFor}
+                centerTop={side === "expense" ? "gastado" : "ingresado"}
+                centerBottom={`$${formatNumber(report!.grandTotal)}`}
+              />
+              {report?.top && (
+                <Text style={styles.topLine}>
+                  Mayor {side === "expense" ? "gasto" : "ingreso"}:{" "}
+                  <Text style={styles.topLineStrong}>{report.top.name}</Text> (
+                  {Math.round(report.top.share * 100)}%)
+                </Text>
+              )}
             </View>
-          )}
-        </ScrollView>
-      )}
+
+            <View style={styles.list}>
+              {items.map((item) => (
+                <View key={item.categoryId} style={styles.row}>
+                  <View style={styles.rowLeft}>
+                    <View
+                      style={[styles.dot, { backgroundColor: colorFor(item) }]}
+                    />
+                    <CategoryChip
+                      categoryId={item.categoryId}
+                      name={item.name}
+                      icon={item.icon}
+                      size="sm"
+                    />
+                    <Text style={styles.rowName} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                  </View>
+                  <View style={styles.rowRight}>
+                    <AmountText
+                      value={item.total}
+                      prefix="$"
+                      style={styles.rowAmount}
+                    />
+                    <Text style={styles.rowShare}>
+                      {Math.round(item.share * 100)}%
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            {movers.length > 0 && (
+              <View style={styles.trendSection}>
+                <Text style={styles.sectionTitle}>
+                  Tendencias vs. mes anterior
+                </Text>
+                {movers.map((item: CategoryTrendItem) => {
+                  const up = item.delta > 0
+                  const color = deltaColor(item.delta)
+                  return (
+                    <View key={item.categoryId} style={styles.trendRow}>
+                      <View style={styles.rowLeft}>
+                        <Ionicons
+                          name={up ? "arrow-up" : "arrow-down"}
+                          size={16}
+                          color={color}
+                        />
+                        <Text style={styles.rowName} numberOfLines={1}>
+                          {item.name}
+                        </Text>
+                      </View>
+                      <View style={styles.rowRight}>
+                        <AmountText
+                          value={item.delta}
+                          prefix={`${up ? "+" : "−"}$`}
+                          style={[styles.trendDelta, { color }]}
+                        />
+                        <Text style={styles.rowShare}>
+                          {item.deltaPct === null
+                            ? "nuevo"
+                            : `${up ? "+" : "−"}${Math.round(
+                                Math.abs(item.deltaPct) * 100,
+                              )}%`}
+                        </Text>
+                      </View>
+                    </View>
+                  )
+                })}
+              </View>
+            )}
+          </ScrollView>
+        )}
+      </View>
     </Screen>
   )
 }
@@ -385,6 +413,9 @@ const makeStyles = (theme: Theme) =>
     },
     togglePillTextActive: {
       color: theme.palette.bg,
+    },
+    swipeArea: {
+      flex: 1,
     },
     centered: {
       flex: 1,
