@@ -132,6 +132,29 @@ const PdfImportReview = () => {
     setRows((current) => current.filter((row) => row.rowId !== rowId))
   }
 
+  const normalizeDescription = (description: string) =>
+    description.trim().toLowerCase()
+
+  // Picking a transfer destination applies it to every OTHER transfer row that
+  // shares the same description (e.g. repeated card payments), so the user only
+  // assigns the card once instead of one row at a time.
+  const assignTransferDestination = (
+    rowId: string,
+    transferToAccountId: string,
+  ) => {
+    setRows((current) => {
+      const source = current.find((row) => row.rowId === rowId)
+      if (!source) return current
+      const key = normalizeDescription(source.description)
+      return current.map((row) =>
+        row.rowId === rowId ||
+        (row.isTransfer && normalizeDescription(row.description) === key)
+          ? { ...row, transferToAccountId }
+          : row,
+      )
+    })
+  }
+
   const handleConfirm = async () => {
     if (rows.length === 0) {
       notify.info("No hay transacciones para confirmar.")
@@ -279,7 +302,7 @@ const PdfImportReview = () => {
         }
         onSelect={(transferToAccountId) => {
           if (transferPickerRowId)
-            updateRow(transferPickerRowId, { transferToAccountId })
+            assignTransferDestination(transferPickerRowId, transferToAccountId)
         }}
         onClose={() => setTransferPickerRowId(null)}
       />
