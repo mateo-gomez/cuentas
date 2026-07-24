@@ -104,7 +104,9 @@ const AccountsList = () => {
       ) : null}
 
       {loading && !accounts.length ? (
-        <Text style={styles.message}>Cargando...</Text>
+        <View style={styles.loadingFill}>
+          <Text style={styles.message}>Cargando...</Text>
+        </View>
       ) : (
         <FlatList
           data={accounts}
@@ -162,6 +164,11 @@ const makeStyles = (theme: Theme) =>
     list: {
       paddingHorizontal: 20,
       paddingBottom: 20,
+    },
+    // Fills the space between the header and the tab bar so the tab bar stays
+    // pinned to the bottom while accounts load.
+    loadingFill: {
+      flex: 1,
     },
     message: {
       fontFamily: theme.fonts.sans,
