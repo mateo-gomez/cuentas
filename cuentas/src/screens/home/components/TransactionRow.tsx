@@ -12,9 +12,9 @@ import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles } from "../../../theme/index"
 import type { Theme } from "../../../theme/index"
 import { useAmount } from "../../../theme/useAmount"
-import { formatNumber } from "../../../utils"
 import { Transaction, TransactionType } from "../../../../types"
 import CategoryChip from "../../../Components/CategoryChip"
+import { AmountText } from "../../../Components"
 
 const isWeb = Platform.OS === "web"
 
@@ -143,15 +143,14 @@ export const TransactionRow = ({
           </Text>
         ) : null}
       </View>
-      <Text
+      <AmountText
+        value={transaction.value}
+        prefix={`${amountSign(isIncome ? "income" : "expense")}$`}
         style={[
           row.amount,
           { color: amountColor(isIncome ? "income" : "expense") },
         ]}
-      >
-        {amountSign(isIncome ? "income" : "expense")}$
-        {formatNumber(transaction.value)}
-      </Text>
+      />
 
       {/* Web-only quick-delete slot: reserved on web so it never shifts layout */}
       {isWeb && !selectionMode ? (

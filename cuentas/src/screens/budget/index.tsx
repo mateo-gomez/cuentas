@@ -13,9 +13,8 @@ import CategoryChip from "../../Components/CategoryChip"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
-import { Screen } from "../../Components"
+import { Screen, AmountText } from "../../Components"
 import { useBudget, useCategories, useTabBar } from "../../hooks"
-import { formatNumber } from "../../utils"
 
 const now = new Date()
 
@@ -88,16 +87,16 @@ const DonutRing = ({
       {/* Center text overlay */}
       <View style={styles.donutCenter} pointerEvents="none">
         <Text style={styles.donutEyebrow}>disponible</Text>
-        <Text
+        <AmountText
+          value={available}
+          prefix={`${isOver ? "−" : ""}$`}
           style={[
             styles.donutAmount,
             { color: isOver ? theme.palette.neg : theme.palette.ink },
           ]}
           numberOfLines={1}
           adjustsFontSizeToFit
-        >
-          {isOver ? "−" : ""}${formatNumber(Math.abs(available))}
-        </Text>
+        />
       </View>
     </View>
   )
@@ -138,13 +137,17 @@ const CategoryRow = ({
         <Text style={styles.catName} numberOfLines={1}>
           {name}
         </Text>
-        <Text style={[styles.catRemaining, { color: remainingColor }]}>
-          {isOver
-            ? `−$${formatNumber(Math.abs(remaining))}`
-            : allocated > 0
-            ? `$${formatNumber(remaining)}`
-            : "Sin límite"}
-        </Text>
+        {isOver || allocated > 0 ? (
+          <AmountText
+            value={remaining}
+            prefix={isOver ? "−$" : "$"}
+            style={[styles.catRemaining, { color: remainingColor }]}
+          />
+        ) : (
+          <Text style={[styles.catRemaining, { color: remainingColor }]}>
+            Sin límite
+          </Text>
+        )}
       </View>
       {allocated > 0 && (
         <View style={styles.catBarTrack}>
@@ -237,16 +240,20 @@ const BudgetScreen = () => {
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statLabel}>GASTADO</Text>
-                <Text style={styles.statValue}>
-                  ${formatNumber(totalSpent)}
-                </Text>
+                <AmountText
+                  value={totalSpent}
+                  prefix="$"
+                  style={styles.statValue}
+                />
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Text style={styles.statLabel}>META</Text>
-                <Text style={styles.statValue}>
-                  ${formatNumber(budget.total)}
-                </Text>
+                <AmountText
+                  value={budget.total}
+                  prefix="$"
+                  style={styles.statValue}
+                />
               </View>
             </View>
           </View>

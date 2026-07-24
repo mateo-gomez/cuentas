@@ -13,7 +13,7 @@ import { useNavigate } from "react-router"
 import CategoryChip from "../../Components/CategoryChip"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
-import { Screen } from "../../Components"
+import { Screen, AmountText } from "../../Components"
 import { getTone } from "../../theme/iconTreatment"
 import { useCategoryReport, useCategoryTrend } from "../../hooks"
 import type { ReportSide } from "../../services"
@@ -267,9 +267,11 @@ const ReportScreen = () => {
                   </Text>
                 </View>
                 <View style={styles.rowRight}>
-                  <Text style={styles.rowAmount}>
-                    ${formatNumber(item.total)}
-                  </Text>
+                  <AmountText
+                    value={item.total}
+                    prefix="$"
+                    style={styles.rowAmount}
+                  />
                   <Text style={styles.rowShare}>
                     {Math.round(item.share * 100)}%
                   </Text>
@@ -299,9 +301,11 @@ const ReportScreen = () => {
                       </Text>
                     </View>
                     <View style={styles.rowRight}>
-                      <Text style={[styles.trendDelta, { color }]}>
-                        {up ? "+" : "−"}${formatNumber(Math.abs(item.delta))}
-                      </Text>
+                      <AmountText
+                        value={item.delta}
+                        prefix={`${up ? "+" : "−"}$`}
+                        style={[styles.trendDelta, { color }]}
+                      />
                       <Text style={styles.rowShare}>
                         {item.deltaPct === null
                           ? "nuevo"

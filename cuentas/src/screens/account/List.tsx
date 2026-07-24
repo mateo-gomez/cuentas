@@ -8,14 +8,13 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigate } from "react-router"
-import { Screen } from "../../Components"
+import { Screen, AmountText } from "../../Components"
 import { useTheme, useThemedStyles } from "../../theme/index"
 import type { Theme } from "../../theme/index"
 import { useAmount } from "../../theme/useAmount"
 import { useAccounts, useTabBar } from "../../hooks"
 import BottomTabBar from "../../Components/BottomTabBar"
 import { Account } from "../../../types"
-import { formatNumber } from "../../utils"
 
 const AccountRow = ({ account }: { account: Account }) => {
   const navigate = useNavigate()
@@ -43,15 +42,14 @@ const AccountRow = ({ account }: { account: Account }) => {
           {account.type === "credit" ? "Tarjeta de crédito" : "Cuenta bancaria"}
         </Text>
       </View>
-      <Text
+      <AmountText
+        value={account.openingBalance}
+        prefix={`${account.openingBalance < 0 ? "−" : ""}$`}
         style={[
           styles.rowBalance,
           { color: balanceColor(account.openingBalance) },
         ]}
-      >
-        {account.openingBalance < 0 ? "−" : ""}$
-        {formatNumber(Math.abs(account.openingBalance))}
-      </Text>
+      />
       <Ionicons name="chevron-forward" size={18} color={theme.palette.ink4} />
     </TouchableOpacity>
   )

@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { useTheme, useThemedStyles, useAmount } from "../theme/index"
 import type { Theme } from "../theme/index"
 import { StyledText } from "./StyledText"
-import { formatNumber } from "../utils"
+import { AmountText } from "./AmountText"
 import { TransactionType } from "../../types"
 
 interface PdfImportRowProps {
@@ -110,21 +110,31 @@ export const PdfImportRow = ({
             style={styles.categoryPicker}
             onPress={onPressCategory}
           >
-            {categoryName || "Elegir categoría"}
-          </StyledText>
-          <Ionicons name="chevron-down" size={14} color={theme.palette.ink4} />
-        </TouchableOpacity>
+            <StyledText
+              style={[
+                styles.category,
+                !categoryName && styles.categoryPlaceholder,
+              ]}
+            >
+              {categoryName || "Elegir categoría"}
+            </StyledText>
+            <Ionicons
+              name="chevron-down"
+              size={14}
+              color={theme.palette.ink4}
+            />
+          </TouchableOpacity>
+        ) : null}
 
-        <StyledText
+        <AmountText
           selectable
+          value={value}
+          prefix={amountSign(isIncome ? "income" : "expense")}
           style={[
             styles.value,
             { color: amountColor(isIncome ? "income" : "expense") },
           ]}
-        >
-          {amountSign(isIncome ? "income" : "expense")}
-          {formatNumber(Math.abs(value))}
-        </StyledText>
+        />
 
         {showTransferControls ? (
           <View style={styles.transferBox}>

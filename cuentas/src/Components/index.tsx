@@ -1,3 +1,4 @@
+export * from "./AmountText"
 export * from "./AppBar"
 export * from "./AppLogo"
 export * from "./AuthLayout"

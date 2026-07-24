@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native"
 import { useTheme, useThemedStyles } from "../../../theme/index"
 import type { Theme } from "../../../theme/index"
-import { formatDate, formatNumber } from "../../../utils"
+import { formatDate } from "../../../utils"
 import { TransactionAggregate } from "../../../../types"
 import { TransactionRow } from "./TransactionRow"
+import { AmountText } from "../../../Components"
 
 interface DayGroupProps {
   group: TransactionAggregate
@@ -35,14 +36,14 @@ export const DayGroup = ({
       {/* Day header */}
       <View style={day.header}>
         <Text style={day.dateLabel}>{dayLabel}</Text>
-        <Text
+        <AmountText
+          value={dayTotal}
+          prefix={`${dayTotal >= 0 ? "+" : "−"}$`}
           style={[
             day.dayTotal,
             { color: dayTotal >= 0 ? theme.palette.pos : theme.palette.neg },
           ]}
-        >
-          {dayTotal >= 0 ? "+" : "−"}${formatNumber(Math.abs(dayTotal))}
-        </Text>
+        />
       </View>
 
       {/* Transactions */}

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native"
 import { useTheme, useThemedStyles } from "../../../theme/index"
 import type { Theme } from "../../../theme/index"
 import { useAmount } from "../../../theme/useAmount"
-import { formatNumber } from "../../../utils"
+import { AmountText } from "../../../Components"
 
 interface HeroCardProps {
   balance: number
@@ -19,9 +19,13 @@ export const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => {
   return (
     <View style={hero.card}>
       <Text style={hero.eyebrow}>SALDO DEL MES</Text>
-      <Text style={[hero.balanceText, { color: balanceColor(balance) }]}>
-        {balance < 0 ? "−" : ""}${formatNumber(Math.abs(balance))}
-      </Text>
+      <AmountText
+        value={balance}
+        prefix={`${balance < 0 ? "−" : ""}$`}
+        style={[hero.balanceText, { color: balanceColor(balance) }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      />
 
       {/* Dashed divider */}
       <View style={hero.dividerRow}>
@@ -34,16 +38,20 @@ export const HeroCard = ({ balance, incomes, expenses }: HeroCardProps) => {
       <View style={hero.row}>
         <View style={hero.col}>
           <Text style={hero.colLabel}>↑ Ingresos</Text>
-          <Text style={[hero.colAmount, { color: theme.palette.pos }]}>
-            ${formatNumber(incomes)}
-          </Text>
+          <AmountText
+            value={incomes}
+            prefix="$"
+            style={[hero.colAmount, { color: theme.palette.pos }]}
+          />
         </View>
         <View style={hero.separator} />
         <View style={hero.col}>
           <Text style={hero.colLabel}>↓ Gastos</Text>
-          <Text style={[hero.colAmount, { color: theme.palette.ink }]}>
-            ${formatNumber(expenses)}
-          </Text>
+          <AmountText
+            value={expenses}
+            prefix="$"
+            style={[hero.colAmount, { color: theme.palette.ink }]}
+          />
         </View>
       </View>
     </View>
